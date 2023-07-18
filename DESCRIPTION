@@ -1,12 +1,22 @@
 Package: AISanalyze
-Title: What the Package Does (One Line, Title Case)
+Title: Analyze, treat and extract AIS data
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Author: "Rémi Pigeault"
+Maintainer: Rémi Pigeault <remi.pigeault@tiho-hannover.de>
+Description: calculation of distance, travel time, speed of vessels based on AIS data. Interpolate their positions and extract AIS/vessels for desired locations/times.
+    Planned build function plotting the AIS positions and gaps on spatial and temporal scales.
+License: MIT + file LICENSE
+Imports: 
+    tidyverse (>= 2.0.0),
+    dplyr (>= 1.1.2),
+    sf (>= 1.0-9),
+    lubridate (>= 1.9.2),
+    units (>= 0.8-0),
+    purrr (>= 1.0.1)
+Depends: R(>= 4.0.1) 
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
