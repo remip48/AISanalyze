@@ -219,7 +219,7 @@ AISinterpolate_all <- function(ais_data,
     mutate(n_point_mmsi_final_data = n(),
            id_mmsi_point_interp = 1:n(),
            datetime = lubridate::as_datetime(timestamp),
-           date = as.character(date(datetime))) %>%
+           date = as.character(lubridate::date(datetime))) %>%
     ungroup()
 
   rm(interp_eez)

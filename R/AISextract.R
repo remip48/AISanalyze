@@ -91,11 +91,11 @@ AISextract <- function(data,
     ## if duplicate time, duplicate the time until max_time_diff secondes before each point, by interval times of t_gap.
     ## if accelerate, do this but decrease the number of times to extract by assigning the times to the closest time step designed (each one separated by t_gap up to max_time_diff before)
     if (duplicate_time) {
-      eff_temp <- extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
+      eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
       # } else if (accelerate) {
-      #   eff_temp <- extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
+      #   eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
     } else {
-      eff_temp <- extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
+      eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
     }
     ## so here : the real time of effort is the timestamp_ofEffort, while we extract AIS with max_time = 0 on timestamp = timestamp_AIS_to_extract
     eff_temp <- eff_temp %>%
@@ -109,7 +109,7 @@ AISextract <- function(data,
 
   eff_d <- eff_d %>%
     arrange(timestamp_AIS_to_extract) %>%
-    dplyr::mutate(dayhour = paste(date(datetime_AIS_to_extract), hour(datetime_AIS_to_extract)))
+    dplyr::mutate(dayhour = paste(lubridate::date(datetime_AIS_to_extract), lubridate::hour(datetime_AIS_to_extract)))
 
   tot <- unique(eff_d$dayhour)
 
@@ -173,7 +173,7 @@ AISextract <- function(data,
       #   dplyr::select(-dist_closer_eff)
     }
 
-    ais_on_effort <- extract_AIS_presence(data = eff_h,
+    ais_on_effort <- data_extract_ais(data = eff_h,
                                           data_mmsi = hourly_mmsi,
                                           search_into_radius_m = search_into_radius_m,
                                           max_time_diff = 0,

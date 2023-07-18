@@ -372,7 +372,7 @@ AISinterpolate_at <- function(ais_data,
 
   out <- out %>%
     dplyr::mutate(datetime = lubridate::as_datetime(timestamp),
-                  # date = as.character(lubridate::date(datetime)),
+                  date = as.character(lubridate::date(datetime)),
                   interpolated = ifelse(is.na(interpolated), F, interpolated))
 
   rm(ais_ok)

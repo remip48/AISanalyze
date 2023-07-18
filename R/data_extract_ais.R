@@ -56,12 +56,12 @@ data_extract_ais <- function(data,
              timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at))
 
   if (duplicate_time) {
-    data <- extend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
+    data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
     # } else if (accelerate) {
-    #   source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-1_extend_time_data.R")
-    #   data <- extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
+    #   source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-1_data_extend_time_data.R")
+    #   data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
   } else if (accelerate) {
-    data <- extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
+    data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
   } else {
     data <- data %>%
       mutate(timestamp_AIS_to_extract = timestamp,
