@@ -65,10 +65,10 @@ AISextract <- function(data,
     filter(lon > (min(data$lon) - d_max) & lon < (max(data$lon) + d_max) &
              lat > (min(data$lat) - d_max) & lat < (max(data$lat) + d_max))
 
-  dates_ais <- as.character(unique(date(lubridate::as_datetime(ais_data$timestamp))))
+  dates_ais <- as.character(unique(lubridate::date(lubridate::as_datetime(ais_data$timestamp))))
 
   data <- data %>%
-    dplyr::mutate(date = as.character(date(lubridate::as_datetime(timestamp))))
+    dplyr::mutate(date = as.character(lubridate::date(lubridate::as_datetime(timestamp))))
 
   colnam <- colnames(ais_data)
   if (any(colnam[!(colnam %in% c("timestamp", "lon", "lat", "mmsi"))] %in% c(colnames(data), "X", "Y"))) {
