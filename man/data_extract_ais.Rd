@@ -39,5 +39,5 @@ to add
 Extract vessels data at desired times in a desired radius. Used for AISextract. Use only if sure about this.
 }
 \examples{
-to add
+# to add
 }

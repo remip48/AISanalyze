@@ -33,7 +33,7 @@
 #' @return to add
 #' @export
 #'
-#' @examples to add
+#' @examples # to add
 AISinterpolate_all <- function(ais_data,
                                # parallelize=T,
                                # core_to_use=NA,
@@ -66,7 +66,7 @@ AISinterpolate_all <- function(ais_data,
 
   ais_data <- ais_data %>%
     group_by(mmsi) %>%
-    mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) < threshold_distance_station, T, F),
+    dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) < threshold_distance_station, T, F),
            high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) > threshold_high_speed, T, F),
            any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
            n_point_mmsi_initial_data = n(),
@@ -99,8 +99,8 @@ AISinterpolate_all <- function(ais_data,
   }
 
   ais_data <- ais_data %>%
-    arrange(mmsi, timestamp) %>%
-    mutate(id_ais_data_initial = 1:n())
+    dplyr::arrange(mmsi, timestamp) %>%
+    dplyr::mutate(id_ais_data_initial = 1:n())
 
   if (correct_speed) {
     strange_speed <- ais_data[ais_data$speed_kmh > threshold_speed_to_correct & ais_data$time_travelled < time_stop & !ais_data$high_speed, ] %>%
@@ -110,8 +110,8 @@ AISinterpolate_all <- function(ais_data,
       to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ]
 
       to_correct <- to_correct %>%
-        arrange(mmsi, timestamp) %>%
-        mutate(tlon = lon,
+        dplyr::arrange(mmsi, timestamp) %>%
+        dplyr::mutate(tlon = lon,
                tlat = lat
         ) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
@@ -122,10 +122,10 @@ AISinterpolate_all <- function(ais_data,
 
       to_correct <- to_correct %>%
         st_drop_geometry() %>%
-        mutate(X = coords_AIS[,1],
+        dplyr::mutate(X = coords_AIS[,1],
                Y = coords_AIS[,2]) %>%
         group_by(mmsi) %>%
-        mutate(distance_travelled = c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2)),
+        dplyr::mutate(distance_travelled = c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2)),
                time_travelled = timestamp - c(first(timestamp), timestamp[-n()]),
                speed_kmh = c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))
         ) %>%
@@ -136,8 +136,8 @@ AISinterpolate_all <- function(ais_data,
 
       ais_data <- ais_data[!(ais_data$id_ais_data_initial %in% c(strange_speed, strange_speed + 1)), ] %>%
         rbind(to_correct) %>%
-        arrange(id_ais_data_initial) %>%
-        mutate(id_ais_data_initial = 1:n())
+        dplyr::arrange(id_ais_data_initial) %>%
+        dplyr::mutate(id_ais_data_initial = 1:n())
 
       rm(to_correct)
       rm(coords_AIS)
@@ -147,8 +147,8 @@ AISinterpolate_all <- function(ais_data,
 
   to_interp <- ais_data %>%
     group_by(mmsi) %>%
-    mutate(idd = 1:n()) %>%
-    filter(idd != 1) %>%
+    dplyr::mutate(idd = 1:n()) %>%
+    dplyr::filter(idd != 1) %>%
     ungroup() %>%
     dplyr::select(-idd)
 
@@ -156,17 +156,17 @@ AISinterpolate_all <- function(ais_data,
 
   if (!interpolate_station) {
     to_interp <- to_interp %>%
-      filter(!station)
+      dplyr::filter(!station)
   }
   if (!interpolate_high_speed) {
     to_interp <- to_interp %>%
-      filter(!high_speed)
+      dplyr::filter(!high_speed)
   }
 
   prec <- ais_data[ais_data$id_ais_data_initial %in% (to_interp$id_ais_data_initial - 1), ]
 
   interp <- to_interp %>%
-    mutate(ttimestamp = prec$timestamp,
+    dplyr::mutate(ttimestamp = prec$timestamp,
            tmmsi = prec$mmsi,
            tlon = prec$lon,
            tlat = prec$lat)
@@ -210,13 +210,13 @@ AISinterpolate_all <- function(ais_data,
   }
 
   ais_data <- ais_data %>%
-    filter(!(ais_data$id_ais_data_initial %in% unique(interp_eez$id_ais_data_initial))) %>%
-    mutate(diffTime_interpolation = t_gap,
+    dplyr::filter(!(ais_data$id_ais_data_initial %in% unique(interp_eez$id_ais_data_initial))) %>%
+    dplyr::mutate(diffTime_interpolation = t_gap,
            interpolated = F) %>%
     rbind(interp_eez) %>%
-    arrange(mmsi, timestamp) %>%
+    dplyr::arrange(mmsi, timestamp) %>%
     group_by(mmsi) %>%
-    mutate(n_point_mmsi_final_data = n(),
+    dplyr::mutate(n_point_mmsi_final_data = n(),
            id_mmsi_point_interp = 1:n(),
            datetime = lubridate::as_datetime(timestamp),
            date = as.character(lubridate::date(datetime))) %>%
@@ -237,13 +237,13 @@ AISinterpolate_all <- function(ais_data,
 
     ais_data <- ais_data %>%
       group_by(mmsi) %>%
-      mutate(sum_distance_mmsi_on_Land = sum(distance_travelled[on_Land == T], na.rm = T),
+      dplyr::mutate(sum_distance_mmsi_on_Land = sum(distance_travelled[on_Land == T], na.rm = T),
              total_distance_mmsi = sum(distance_travelled, na.rm = T),
              sum_time_mmsi_on_Land = sum(time_travelled[on_Land == T], na.rm = T),
              total_time_mmsi = sum(time_travelled, na.rm = T)) %>%
       ungroup() %>%
       group_by(mmsi, id_mmsi_point_initial) %>%
-      mutate(sum_distance_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
+      dplyr::mutate(sum_distance_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
              sum_time_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(time_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
              sum_distance_interp_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[interpolated == T], na.rm = T), NA),
              sum_time_interp_for_initial_points = ifelse(any(interpolated), sum(time_travelled[interpolated == T], na.rm = T), NA),

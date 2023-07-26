@@ -21,7 +21,7 @@
 #' @return to add
 #' @export
 #'
-#' @examples to add
+#' @examples # to add
 data_extend_time <- function(data,
                              max_time_diff = 30*60,
                              t_gap = 15,
@@ -81,7 +81,7 @@ data_extend_time <- function(data,
   }
 
   data <- data %>%
-    arrange(timestamp_AIS_to_extract) %>%
+    dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(datetime_AIS_to_extract = lubridate::as_datetime(timestamp_AIS_to_extract))
 
   return(data)

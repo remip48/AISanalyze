@@ -4,12 +4,12 @@
 \alias{AIStravel}
 \title{Title}
 \usage{
-AIStravel(AIS, time_stop = Inf)
+AIStravel(AIS, time_stop = Inf, mmsi_to_order = T, time_to_order = T)
 }
 \arguments{
 \item{AIS}{AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity).}
 
-\item{time_stop}{time defining the maximum time interval where a vessel position is interpolated.}
+\item{time_stop}{time defining the maximum time interval where a vessel position is taken into account for analyze. If more, distance, speed and time for first point is define as 0.}
 }
 \value{
 to add
@@ -18,5 +18,5 @@ to add
 Title
 }
 \examples{
-to add
+# to add
 }

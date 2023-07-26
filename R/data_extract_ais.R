@@ -28,7 +28,7 @@
 #' @return to add
 #' @export
 #'
-#' @examples to add
+#' @examples # to add
 data_extract_ais <- function(data,
                                  data_mmsi,
                                  search_into_radius_m = 20000,
@@ -52,7 +52,7 @@ data_extract_ais <- function(data,
   # lapply(pack, library, character.only = TRUE)
 
   data_mmsi <- data_mmsi %>%
-    filter(timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at)) &
+    dplyr::filter(timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at)) &
              timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at))
 
   if (duplicate_time) {
@@ -64,12 +64,12 @@ data_extract_ais <- function(data,
     data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
   } else {
     data <- data %>%
-      mutate(timestamp_AIS_to_extract = timestamp,
+      dplyr::mutate(timestamp_AIS_to_extract = timestamp,
              diffTime_AIS_extraction_effort = 0)
   }
 
   data <- data %>%
-    arrange(timestamp_AIS_to_extract) %>%
+    dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(timestamp_eff = timestamp) %>%
     dplyr::select(!"timestamp") %>%
     dplyr::mutate(idd_effort = 1:n())

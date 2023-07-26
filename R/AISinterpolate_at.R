@@ -35,7 +35,7 @@
 #' @return to add
 #' @export
 #'
-#' @examples to add
+#' @examples # to add
 AISinterpolate_at <- function(ais_data,
                               data_to_interpolate,
                               radius = 20000, # km, or NA
@@ -68,7 +68,7 @@ AISinterpolate_at <- function(ais_data,
 
   ais_data <- ais_data %>%
     group_by(mmsi) %>%
-    mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) < threshold_distance_station, T, F),
+    dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) < threshold_distance_station, T, F),
            high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) > threshold_high_speed, T, F),
            any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
            n_point_mmsi_initial_data = n(),
@@ -101,8 +101,8 @@ AISinterpolate_at <- function(ais_data,
   }
 
   ais_data <- ais_data %>%
-    arrange(mmsi, timestamp) %>%
-    mutate(id_ais_data_initial = 1:n())
+    dplyr::arrange(mmsi, timestamp) %>%
+    dplyr::mutate(id_ais_data_initial = 1:n())
 
   ais_data_ref <- ais_data
 
@@ -114,8 +114,8 @@ AISinterpolate_at <- function(ais_data,
       to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ]
 
       to_correct <- to_correct %>%
-        arrange(mmsi, timestamp) %>%
-        mutate(tlon = lon,
+        dplyr::arrange(mmsi, timestamp) %>%
+        dplyr::mutate(tlon = lon,
                tlat = lat
         ) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
@@ -126,10 +126,10 @@ AISinterpolate_at <- function(ais_data,
 
       to_correct <- to_correct %>%
         st_drop_geometry() %>%
-        mutate(X = coords_AIS[,1],
+        dplyr::mutate(X = coords_AIS[,1],
                Y = coords_AIS[,2]) %>%
         group_by(mmsi) %>%
-        mutate(distance_travelled = c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2)),
+        dplyr::mutate(distance_travelled = c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2)),
                time_travelled = timestamp - c(first(timestamp), timestamp[-n()]),
                speed_kmh = c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))
         ) %>%
@@ -140,7 +140,7 @@ AISinterpolate_at <- function(ais_data,
 
       ais_data <- ais_data[!(ais_data$id_ais_data_initial %in% c(strange_speed, strange_speed + 1)), ] %>%
         rbind(to_correct) %>%
-        arrange(id_ais_data_initial) # %>%
+        dplyr::arrange(id_ais_data_initial) # %>%
       # mutate(id_ais_data_initial = 1:n())
 
       rm(to_correct)
@@ -172,14 +172,14 @@ AISinterpolate_at <- function(ais_data,
       distinct()
 
     temp <- ais_data %>%
-      filter(timestamp >= (t - time_stop) &
+      dplyr::filter(timestamp >= (t - time_stop) &
                timestamp <= (t + time_stop)) %>%
       dplyr::mutate(difftimestamp = timestamp - t) %>%
       dplyr::filter(lon > (min(data_coords$lon) - d_max) & lon < (max(data_coords$lon) + d_max) &
                       lat > (min(data_coords$lat) - d_max) & lat < (max(data_coords$lat) + d_max))
 
     temp <- temp %>%
-      mutate(tlon = lon, tlat = lat) %>%
+      dplyr::mutate(tlon = lon, tlat = lat) %>%
       st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
       st_transform(crs = 3035)
 
@@ -193,9 +193,9 @@ AISinterpolate_at <- function(ais_data,
 
     temp <- temp %>%
       st_drop_geometry() %>%
-      mutate(X_ais = coords[,1],
+      dplyr::mutate(X_ais = coords[,1],
              Y_ais = coords[,2]) %>%
-      filter(X_ais >= (min(data_coords$X, na.rm = T) - radius) & X_ais <= (max(data_coords$X, na.rm = T) + radius) &
+      dplyr::filter(X_ais >= (min(data_coords$X, na.rm = T) - radius) & X_ais <= (max(data_coords$X, na.rm = T) + radius) &
                Y_ais >= (min(data_coords$Y, na.rm = T) - radius) & Y_ais <= (max(data_coords$Y, na.rm = T) + radius)) %>%
       dplyr::select(-c(X_ais, Y_ais))
 
@@ -203,13 +203,13 @@ AISinterpolate_at <- function(ais_data,
     rm(coords)
 
     sup <- temp %>%
-      filter(difftimestamp > 0) %>%
+      dplyr::filter(difftimestamp > 0) %>%
       group_by(mmsi) %>%
       slice_min(difftimestamp) %>%
       ungroup()
 
     inf <- temp %>%
-      filter(difftimestamp < 0) %>%
+      dplyr::filter(difftimestamp < 0) %>%
       group_by(mmsi) %>%
       slice_max(difftimestamp) %>%
       ungroup()
@@ -229,31 +229,31 @@ AISinterpolate_at <- function(ais_data,
       rm(inf)
 
       out_ok <- to_interp %>%
-        filter(npoint == 1) %>%
+        dplyr::filter(npoint == 1) %>%
         dplyr::select(-c(npoint, difftimestamp, idd))
 
       to_interp <- to_interp %>%
-        filter(npoint == 2) %>%
-        arrange(mmsi, timestamp)
+        dplyr::filter(npoint == 2) %>%
+        dplyr::arrange(mmsi, timestamp)
 
       if (!interpolate_station) {
         to_interp <- to_interp %>%
-          filter(!station)
+          dplyr::filter(!station)
       }
       if (!interpolate_high_speed) {
         to_interp <- to_interp %>%
-          filter(!high_speed)
+          dplyr::filter(!high_speed)
       }
 
       if (nrow(to_interp) > 0) {
         prec <- to_interp %>%
-          filter(idd == 1)
+          dplyr::filter(idd == 1)
 
         interp_ref <- to_interp %>%
-          filter(idd == 2)
+          dplyr::filter(idd == 2)
 
         interp <- interp_ref %>%
-          mutate(ttimestamp = prec$timestamp,
+          dplyr::mutate(ttimestamp = prec$timestamp,
                  tmmsi = prec$mmsi,
                  tlon = prec$lon,
                  tlat = prec$lat)
@@ -285,7 +285,7 @@ AISinterpolate_at <- function(ais_data,
           to_keep <- colnames(interp_eez)
 
           interp_eez_int <- interp_eez %>%
-            filter(interpolated) %>%
+            dplyr::filter(interpolated) %>%
             dplyr::mutate(tlon = lon,
                           tlat = lat) %>%
             st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
@@ -336,7 +336,7 @@ AISinterpolate_at <- function(ais_data,
 
         out <- map_dfr(list(out_ok,
                             interp_eez %>%
-                              filter(interpolated) %>%
+                              dplyr::filter(interpolated) %>%
                               dplyr::select(-c(npoint, difftimestamp, idd #, ttimestamp, tmmsi, tlon, tlat
                               ))),
                        function(d) {return(d)})
@@ -362,7 +362,7 @@ AISinterpolate_at <- function(ais_data,
   if (return_all) {
     out <- out %>%
       rbind(ais_data_ref %>%
-              filter(!(id_ais_data_initial %in% out$id_ais_data_initial)))
+              dplyr::filter(!(id_ais_data_initial %in% out$id_ais_data_initial)))
   }
 
   if (!("interpolated") %in% colnames(out)) {

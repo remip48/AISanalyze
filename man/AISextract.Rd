@@ -26,9 +26,9 @@ AISextract(
 
 \item{duplicate_time}{if vessels positions must be extracted only for data times (TRUE) or every "t_gap" seconds up to max_time_diff before data times.}
 
-\item{t_gap}{interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before.}
+\item{t_gap}{interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before. You can also define the time interval where boat are considered with this value.}
 
-\item{average_at}{number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5.}
+\item{average_at}{number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5. You can also define the time interval where boat are considered with this value.}
 
 \item{accelerate}{TRUE or FALSE: if data times must be averaged within "average_at" seconds, to equlize times where vessels positions are extracted and decreased strongly computation time.}
 }
@@ -39,5 +39,5 @@ to add
 Extract vessels data at desired times in a desired radius
 }
 \examples{
-to add
+# to add
 }

@@ -23,14 +23,14 @@
 #' @param search_into_radius_m radius  in which vessels positions are returned
 #' @param max_time_diff number of seconds before the data time, when boat positions are considered/extracted.
 #' @param duplicate_time  if vessels positions must be extracted only for data times (TRUE) or every "t_gap" seconds up to max_time_diff before data times.
-#' @param t_gap interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before.
-#' @param average_at number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5.
+#' @param t_gap interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before. You can also define the time interval where boat are considered with this value.
+#' @param average_at number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5. You can also define the time interval where boat are considered with this value.
 #' @param accelerate TRUE or FALSE: if data times must be averaged within "average_at" seconds, to equlize times where vessels positions are extracted and decreased strongly computation time.
 #'
 #' @return to add
 #' @export
 #'
-#' @examples to add
+#' @examples # to add
 AISextract <- function(data,
                        ais_data,
                        # parallelize = T,
@@ -62,8 +62,8 @@ AISextract <- function(data,
   ais_data <- ais_data %>%
     dplyr::filter(timestamp >= (min(data$timestamp, na.rm = T) - (t_gap + max_time_diff + average_at)) &
                     timestamp <= (max(data$timestamp, na.rm = T) + t_gap + average_at)) %>%
-    filter(lon > (min(data$lon) - d_max) & lon < (max(data$lon) + d_max) &
-             lat > (min(data$lat) - d_max) & lat < (max(data$lat) + d_max))
+    dplyr::filter(lon > (min(data$lon) - d_max) & lon < (max(data$lon) + d_max) &
+                    lat > (min(data$lat) - d_max) & lat < (max(data$lat) + d_max))
 
   dates_ais <- as.character(unique(lubridate::date(lubridate::as_datetime(ais_data$timestamp))))
 
@@ -73,20 +73,20 @@ AISextract <- function(data,
   colnam <- colnames(ais_data)
   if (any(colnam[!(colnam %in% c("timestamp", "lon", "lat", "mmsi"))] %in% c(colnames(data), "X", "Y"))) {
     colnames(ais_data)[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))] <- paste0("ais_", colnam[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))])
-    cat(paste0("'", paste(colnam[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "columns in AIS data renamed as", paste0("'", paste(colnames(ais_data)[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "\n")
+    cat("\n", paste0("'", paste(colnam[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "columns in AIS data renamed as", paste0("'", paste(colnames(ais_data)[colnam %in% c(colnames(data), "X", "Y") & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "\n")
   }
   rm(colnam)
 
   if (any(colnames(data) == "mmsi")) {
     colnames(data)[colnames(data) == "mmsi"] <- "initial_mmsi"
-    cat("mmsi column in dataframe renamed as 'initial_mmsi'")
+    cat("\nmmsi column in dataframe renamed as 'initial_mmsi'")
   }
 
   eff_d <- map_dfr(dates_ais, function(d) {
     eff_temp <- data %>%
-      filter(date == d) %>%
+      dplyr::filter(date == d) %>%
       # dplyr::mutate(id_point_effort = 1:n()) %>%
-      arrange(timestamp)
+      dplyr::arrange(timestamp)
 
     ## if duplicate time, duplicate the time until max_time_diff secondes before each point, by interval times of t_gap.
     ## if accelerate, do this but decrease the number of times to extract by assigning the times to the closest time step designed (each one separated by t_gap up to max_time_diff before)
@@ -108,7 +108,7 @@ AISextract <- function(data,
   rm(data)
 
   eff_d <- eff_d %>%
-    arrange(timestamp_AIS_to_extract) %>%
+    dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(dayhour = paste(lubridate::date(datetime_AIS_to_extract), lubridate::hour(datetime_AIS_to_extract)))
 
   tot <- unique(eff_d$dayhour)
@@ -120,7 +120,7 @@ AISextract <- function(data,
     setTxtProgressBar(pb, match(h, tot))
 
     eff_h <- eff_d %>%
-      filter(dayhour == h) %>%
+      dplyr::filter(dayhour == h) %>%
       dplyr::mutate(tlon = lon, tlat = lat) %>%
       st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
       st_transform(crs = 3035)
@@ -135,9 +135,9 @@ AISextract <- function(data,
     rm(coords_eff_h)
 
     hourly_mmsi <- ais_data %>%
-      filter(timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at) &
+      dplyr::filter(timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at) &
                timestamp < (max(eff_h$timestamp, na.rm = T) + t_gap + average_at)) %>%
-      filter(lon > (min(eff_h$lon) - d_max) & lon < (max(eff_h$lon) + d_max) &
+      dplyr::filter(lon > (min(eff_h$lon) - d_max) & lon < (max(eff_h$lon) + d_max) &
                lat > (min(eff_h$lat) - d_max) & lat < (max(eff_h$lat) + d_max)) %>%
       dplyr::mutate(ais_lon = lon,
                     ais_lat = lat)
