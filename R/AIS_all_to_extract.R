@@ -1,50 +1,74 @@
 ################
-## function to compute function extract_AIS_presence() in an optimized way
-## need :
-## data : data frame with points where AIS must be extracted. Must contain timestamp, lon, lat
-## ais_data : ais data containing timestamp, lon, lat, mmsi
-## All the other parameter for the extract_AIS_presence() function
-## filter_radius_m: NA to not filter, or distance in m to return only lines with these distances
+## function to compute AIStravel, AISinterpolate_at and data_extract_ais functions at the same time in an optimized way.
+## Used to extract AIS data in the radius of an input data with location and time.
 
 ## advice : run this function in a for or lapply loop to apply it per day. The function can return a big dataset with combination of mmsi find for each
 ## data point, so doing this decrease the final dataset returned. The function apply the process for each day in any case.
-## dont use colnames idd
+## dont use columns with the name "idd"
 
-## return only data when dates are into ais data ?
-
-
-# source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-1_extend_data_time.R")
-# source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-2_extract_AIS.R")
-
-#' Extract vessels data at desired times in a desired radius
+#' AIS_all_to_extract
 #'
-#' @param data Your data frame, with a column timestamp, lon and lat (numeric value of time, longitude, latitude)
-#' @param ais_data AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity)
-#' @param search_into_radius_m radius  in which vessels positions are returned
-#' @param max_time_diff number of seconds before the data time, when boat positions are considered/extracted.
-#' @param duplicate_time  if vessels positions must be extracted only for data times (TRUE) or every "t_gap" seconds up to max_time_diff before data times.
-#' @param t_gap interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before. You can also define the time interval where boat are considered with this value.
-#' @param average_at number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5. You can also define the time interval where boat are considered with this value.
-#' @param accelerate TRUE or FALSE: if data times must be averaged within "average_at" seconds, to equlize times where vessels positions are extracted and decreased strongly computation time.
-#' @param time_stop
-#' @param mmsi_time_to_order
-#' @param QUIET
-#' @param correct_speed
-#' @param quantile_station
-#' @param threshold_distance_station
-#' @param quantile_high_speed
-#' @param threshold_speed_to_correct
-#' @param threshold_high_speed
-#' @param filter_station
-#' @param interpolate_station
-#' @param filter_high_speed
-#' @param interpolate_high_speed
-#' @param spatial_limit
-#' @param on_Land_analysis
-#' @param land_sf_polygon
-#' @param return_all
+#' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
+#' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
+#' @param search_into_radius_m radius in which vessels positions are extracted.
+#' @param max_time_diff number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.
+#' @param duplicate_time  if vessels positions must be extracted only for data timestamp (TRUE), or every "t_gap" seconds, up to "max_time_diff" before the data timestamps.
+#' @param t_gap interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.
+#' @param average_at if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.
+#' @param accelerate TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.
+#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
+#' @param QUIET if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
+#' @param correct_speed if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.
+#' @param quantile_station Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
+#' @param threshold_distance_station threshold of distance used to assess if the mmsi is a station.
+#' @param quantile_high_speed Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.
+#' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
+#' @param threshold_high_speed threshold of speed used to assess if the mmsi is an aircraft.
+#' @param filter_station if the stations are filtered or not.
+#' @param interpolate_station if the stations are interpolated or not.
+#' @param filter_high_speed if the aircraft are filtered or not.
+#' @param interpolate_high_speed if the aircraft are interpolated or not.
+#' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
+#' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
+#' @param parallelize if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)
+#' @param nb_cores number of cores to used for the parallelize
+#' @param outfile file for output if parallelize = T
+#' @param run_AIStravel if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.
+#' @param save_AIStravel if results from AIStravel must be saved, if run_AIStravel = T.
+#' @param file_AIStravel if save_AIStravel = T, file where AIS data are saved after AIStravel.
+#' @param run_AISinterpolate_at if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.
+#' @param save_AISinterlate_at if results from AISinterpolate_at must be saved, if run_AISinterpolate_at = T.
+#' @param file_AISinterlate_at if save_AISinterlate_at = T, file where AIS data are saved after AISinterpolate_at
+#' @param run_AISextract_perHour if the AIS data must be ran with AISextract, extracting AIS data for data timestamps, up to "max_time_diff".
+#' @param save_AISextract_perHour if results from AISextract must be saved, if run_AISextract_perHour = T.
+#' @param file_AISextract_perHour if save_AISextract_perHour = T, file where AIS data are saved after AISextract
+#' @param return_merged_all_extracted if all extracted AIS data, merged with the data frame of input, must be returned. Otherwise, return NULL. Usefull if results have been saved during the process and the output is not necessary (decrease memory used).
+#' @param radius radius within which AIS data are extracted around the data of input.
+#' @param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
+#' @param overwrite if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.
+#' @param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
 #'
-#' @return to add
+#' @return return the input data with AIS extracted merged. Each line of input data is duplicated in the output data, a duplicate for each "t_gap" to extract up to "max_time_diff", and a duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
+#' The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
+#' distance_effort_ais_m: distance (meters) between the data point and the MMSI for this line (filled with NA if no MMSI).
+#' timestamp_AIS_to_extract: timestamp for the extraction of the AIS for this line (= data timestamp if average_at = 0 & average_mmsi_at = 0 & accelerate = F).
+#' diffTime_AIS_extraction_effort: difference, in seconds, between the timestamp to extract (timestamp_AIS_to_extract) and the data timestamp.
+#' datetime_AIS_to_extract: datetime (ymd_hms) of timestamp_AIS_to_extract
+#' hour_AIS_to_extract: hour of timestamp_AIS_to_extract
+#' time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
+#' distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
+#' speed_kmh: speed (km/h) of the vessel since the last reception of an AIS signal.
+#' id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
+#' station: if the MMSI is a station or not.
+#' high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
+#' any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
+#' n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
+#' id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
+#' speed_kmh_corrected: if the speed of this line has been corrected or not.
+#' interpolated: if this AIS position is an interpolation or not.
+#' diffTime_AIS_effort: difference, in seconds, between the AIS position and the data timestamp.
+#'
 #' @export
 #'
 #' @examples # to add
@@ -102,7 +126,7 @@ AIS_all_to_extract <- function(data,
   dates_ais <- as.character(unique(lubridate::date(lubridate::as_datetime(ais_data$timestamp))))
   dates_ais <- dates_ais[dates_ais %in% unique(data$date)]
 
-  eff_d <- map_dfr(dates_ais, function(d) {
+  eff_d <- purrr::map_dfr(dates_ais, function(d) {
     eff_temp <- data %>%
       dplyr::filter(date == d) %>%
       dplyr::arrange(timestamp)
@@ -256,7 +280,7 @@ AIS_all_to_extract <- function(data,
         pb <- txtProgressBar(min = 0, max = length(tot), style = 3)
       }
 
-      daily_ais <- map_dfr(tot, function(h) {
+      daily_ais <- purrr::map_dfr(tot, function(h) {
         if (!QUIET) {
           setTxtProgressBar(pb, match(h, tot))
         }
@@ -396,7 +420,7 @@ AIS_all_to_extract <- function(data,
       stopCluster(cl)
       gc()
 
-      daily_ais <- map_dfr(daily_ais, function(d) {return(d)})
+      daily_ais <- purrr::map_dfr(daily_ais, function(d) {return(d)})
     }
 
     rm(ais_data_ref)

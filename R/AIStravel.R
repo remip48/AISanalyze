@@ -1,18 +1,18 @@
 #### to estimate distance, time and speed between each AIS data per mmsi
-## need :
-## lon, lat, timestamp, mmsi columns
-## AIS as parameter : AIS data
-## time_stop : time interval without AIS data for a single mmsi, in second, after what the first point is define as a new start (speed, distance and time = 0)
-## meaning possible pause during ship track or to limitate uncertainties of AIS interpolation. By default, no time_stop
 
-#' Title
+#' AIStravel
 #'
-#' @param AIS AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity).
-#' @param time_stop time defining the maximum time interval where a vessel position is taken into account for analyze. If more, distance, speed and time for first point is define as 0.
-#' @param mmsi_time_to_order if mmsi & time column must be ordered, if FALSE, is already ordered by MMSI and then by timestamp (arrange(mmsi, timestamp)).
+#' @param AOS AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
+#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
+#' @param return_sf if the output must be a sf object or a data frame with coordinates as column variable.
+#' @param return_3035_coords if ETRS3035 coordinates must be returned as X and Y column variables in the output data.
 #'
-#' @return to add
-#' @importFrom magrittr %>%
+#' @return return the AIS data with the speed calculated based on the distance and time travelled since last AIS reception. Contains the columns:
+#' time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
+#' distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
+#' speed_kmh: speed (km/h) of the vessel since the last reception of an AIS signal.
+#' X and Y columns if return_3035_coords = T (ETRS3035 coordinates)
 #' @export
 #'
 #' @examples # to add

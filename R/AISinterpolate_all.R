@@ -1,37 +1,34 @@
 ## to interpolate AIS data for each mmsi
-## parameter :
-## ais_data : data of AIS
-## threshold_speed_fixed : speed, in km/h, where the AIS point is deleted and time and distance are estimated, for the next point, from the previous point
-## threshold_speed_expr : function, with speed_kmh as parameter, filtering data with speed_kmh values higher than the function output. Example :
-## threshold_speed_expr = function(speed_kmh) {median(speed_kmh, na.rm = T)}
-## t_gap : the interval time to interpolate AIS data
-## spatial_limit : sf object, of polygon, delimiting the area where to keep the interpolated AIS data
-## threshold_high_speed : threshold in km/h where, when at least 90% of the AIS of a mmsi have speed superior, are removed (possible plane, or other ? but not boat)
-## time_stop : time interval, in second, where interpolation is not performed anymore, due to uncertainties of AIS interpolation inside or meaning a pause of the ship track
 
-## need : lon, lat, mmsi, timestamp, distance_travelled, time_travelled, speed_kmh
-
-#' Interpolate all vessels positions.
+#' AISinterpolate_all
 #'
-#' @param ais_data AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity). Must be an output of AIStravel and contain distance_travelled, time_travelled, speed_kmh columns.
-#' @param mmsi_time_to_order if mmsi & time column must be ordered, if FALSE, is already ordered by MMSI and then by timestamp (arrange(mmsi, timestamp)).
-#' @param correct_speed if points with high and unrealistic speed must be removed and speed at this location corrected from previous and next point.
-#' @param quantile_station if a mmsi have a percentage of data higher than this quantile, with distance_travelled < threshold_distance_station, this mmsi is designed as station (station = TRUE)
-#' @param threshold_distance_station define threshold of distance, in meters, identifying stations among mmsi.
-#' @param quantile_high_speed if a mmsi have a percentage of data higher than this quantile, with speed_kmh > threshold_high_speed, this mmsi is designed as high_speed (possible aircraft) (high_speed = TRUE)
-#' @param threshold_speed_to_correct define unrealistic speed for correct_speed argument.
-#' @param threshold_high_speed define threshold of speed, in km/h, identifying high_speed among mmsi.
-#' @param filter_station if stations must be filtered.
-#' @param filter_high_speed if high_speed mmsi must be filtered.
-#' @param interpolate_station f stations must be interpolated.
-#' @param interpolate_high_speed if high_speed mmsi must be interpolated.
-#' @param time_stop time defining the maximum time interval where a vessel position is interpolated.
-#' @param t_gap interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before.
-#' @param spatial_limit sf polygon defining the spatial limit of interpolation, otherwise let NA.
-#' @param on_Land_analysis if a spatial analysis must be conducted to estimate time and distance of vessels and on interpolation on land (to determine AIS and interpolation error). Make computation longer.
-#' @param land_sf_polygon if on_Land_analysis = TRUE, sf polygon containing the land.
+#' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
+#' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
+#' @param correct_speed if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.
+#' @param quantile_station Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
+#' @param threshold_distance_station threshold of distance used to assess if the mmsi is a station.
+#' @param quantile_high_speed Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.
+#' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
+#' @param threshold_high_speed threshold of speed used to assess if the mmsi is an aircraft.
+#' @param filter_station if the stations are filtered or not. mmsi_time_to_order
+#' @param filter_high_speed if the aircraft are filtered or not.
+#' @param interpolate_station if the stations are interpolated or not.
+#' @param interpolate_high_speed if the aircraft are interpolated or not.
+#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param t_gap interval of time (seconds) to which vessels positions are interpolated.
+#' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
+#' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
+#' @param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
 #'
-#' @return to add
+#' @return return AIS data with the columns:
+#' id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
+#' station: if the MMSI is a station or not.
+#' high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
+#' any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
+#' n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
+#' id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
+#' speed_kmh_corrected: if the speed of this line has been corrected or not.
+#' interpolated: if this AIS position is an interpolation or not.
 #' @export
 #'
 #' @examples # to add
