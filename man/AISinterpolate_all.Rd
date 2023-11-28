@@ -6,6 +6,7 @@
 \usage{
 AISinterpolate_all(
   ais_data,
+  mmsi_time_to_order = T,
   correct_speed = T,
   quantile_station = 0.95,
   threshold_distance_station = 1,
@@ -25,6 +26,8 @@ AISinterpolate_all(
 }
 \arguments{
 \item{ais_data}{AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity). Must be an output of AIStravel and contain distance_travelled, time_travelled, speed_kmh columns.}
+
+\item{mmsi_time_to_order}{if mmsi & time column must be ordered, if FALSE, is already ordered by MMSI and then by timestamp (arrange(mmsi, timestamp)).}
 
 \item{correct_speed}{if points with high and unrealistic speed must be removed and speed at this location corrected from previous and next point.}
 

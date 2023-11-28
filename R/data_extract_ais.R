@@ -51,9 +51,8 @@ data_extract_ais <- function(data,
   #
   # lapply(pack, library, character.only = TRUE)
 
-  data_mmsi <- data_mmsi %>%
-    dplyr::filter(timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at)) &
-             timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at))
+  data_mmsi <- data_mmsi[data_mmsi$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at + average_mmsi_at/2)) &
+                           data_mmsi$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2), ]
 
   if (duplicate_time) {
     data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
@@ -69,7 +68,7 @@ data_extract_ais <- function(data,
   }
 
   data <- data %>%
-    dplyr::arrange(timestamp_AIS_to_extract) %>%
+    # dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(timestamp_eff = timestamp) %>%
     dplyr::select(!"timestamp") %>%
     dplyr::mutate(idd_effort = 1:n())
@@ -80,9 +79,9 @@ data_extract_ais <- function(data,
     return(.x)
   }
 
-  which_point <- function(.x, point) {
-    return(.x[point])
-  }
+  # which_point <- function(.x, point) {
+  #   return(.x[point])
+  # }
 
   # NA_return <- function(.x) {
   #   return(NA)
@@ -97,28 +96,60 @@ data_extract_ais <- function(data,
 
     eff_dt <- data[data$timestamp_AIS_to_extract == dt,]
 
-    mmsi_eff <- data_mmsi[data_mmsi$timestamp > (dt - t_gap - average_at) &
-                            data_mmsi$timestamp < (dt + t_gap + average_at),] %>%
-      group_by(mmsi) %>%
-      dplyr::reframe(point = which.min(abs(timestamp - dt)),
-                     across(colnames(data_mmsi)[colnames(data_mmsi) != "mmsi"], ~ which_point(.x, point)))
+    mmsi_ref <- data_mmsi[data_mmsi$timestamp > (dt - t_gap - average_at - average_mmsi_at/2) &
+                            data_mmsi$timestamp < (dt + t_gap + average_at + average_mmsi_at/2) &
+                            data_mmsi$ais_X >= (min(eff_dt$X) - search_into_radius_m) & data_mmsi$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
+                            data_mmsi$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & data_mmsi$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
 
-    out <- eff_dt %>%
-      group_by(idd_effort) %>%
-      dplyr::reframe(across(colnames(eff_dt)[colnames(eff_dt) != "idd_effort"], ~ return_columns(.x)),
-                     mmsi_eff %>%
-                       dplyr::mutate(distance_effort_ais_m = sqrt((ais_X-X)^2 + (ais_Y-Y)^2)) %>%
-                       filter(distance_effort_ais_m <= search_into_radius_m)
-      )
+    if (nrow(mmsi_ref) > 1) {
+      mmsi_ref <- mmsi_ref %>%
+        dplyr::mutate(idd_ais = 1:n())
+
+      mmsi_eff <- mmsi_ref %>%
+        group_by(mmsi) %>%
+        dplyr::reframe(point = which.min(abs(timestamp - dt)),
+                       # across(colnames(data_mmsi)[colnames(data_mmsi) != "mmsi"], ~ which_point(.x, point))
+                       idd_ais = idd_ais[point],
+                       ais_X = ais_X[point],
+                       ais_Y = ais_Y[point],
+                       ais_timestamp = timestamp[point]
+        )
+
+      out <- eff_dt %>%
+        group_by(idd_effort) %>%
+        dplyr::reframe(#across(colnames(eff_dt)[colnames(eff_dt) != "idd_effort"], ~ return_columns(.x)),
+          mmsi_eff %>%
+            dplyr::mutate(distance_effort_ais_m = sqrt((ais_X-X)^2 + (ais_Y-Y)^2))
+        )
+
+      out <- out[out$distance_effort_ais_m <= search_into_radius_m, ] %>%
+        left_join(eff_dt, by = "idd_effort") %>%
+        left_join(mmsi_ref %>%
+                    dplyr::select(-c(ais_X, ais_Y, mmsi, timestamp)), by = "idd_ais") %>%
+        dplyr::select(-idd_ais)
+
+      rm(mmsi_eff)
+    } else {
+      out <- eff_dt
+    }
 
     rm(eff_dt)
-    rm(mmsi_eff)
+    rm(mmsi_ref)
 
     return(out)
 
-  }) %>%
-    dplyr::mutate(diffTime_AIS_effort = timestamp - timestamp_ofEffort) %>%
-    dplyr::select(-c(X, Y, point, ais_X, ais_Y))
+  })
+
+  if (!("ais_timestamp" %in% colnames(time_ais))) {
+    cat("No AIS data for data processed between", min(time_ais$datetime_AIS_to_extract), "and", max(time_ais$datetime_AIS_to_extract), "\n")
+    time_ais <- time_ais %>%
+      dplyr::mutate(ais_timestamp = NA)
+  }
+
+  time_ais <- time_ais %>%
+    dplyr::mutate(diffTime_AIS_effort = ais_timestamp - timestamp_eff,
+                  diffTime_AIS_extraction_effort = timestamp_AIS_to_extract - timestamp_eff) %>%
+    dplyr::select(-c("point")[c("point") %in% colnames(time_ais)])
 
   if (any(!(data$idd_effort %in% time_ais$idd_effort))) {
     time_ais <- map_dfr(list(time_ais,
@@ -135,7 +166,7 @@ data_extract_ais <- function(data,
 
   time_ais <- time_ais %>%
     dplyr::mutate(timestamp = timestamp_eff) %>%
-    dplyr::select(!"timestamp_eff")
+    dplyr::select(!c("timestamp_eff", "idd_effort"))
 
   # if (nrow(time_ais) == 0) {
   #   time_ais <- data %>%

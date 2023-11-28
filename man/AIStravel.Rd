@@ -4,12 +4,20 @@
 \alias{AIStravel}
 \title{Title}
 \usage{
-AIStravel(AIS, time_stop = Inf, mmsi_to_order = T, time_to_order = T)
+AIStravel(
+  AIS,
+  time_stop = Inf,
+  mmsi_time_to_order = T,
+  return_sf = F,
+  return_3035_coords = F
+)
 }
 \arguments{
 \item{AIS}{AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity).}
 
 \item{time_stop}{time defining the maximum time interval where a vessel position is taken into account for analyze. If more, distance, speed and time for first point is define as 0.}
+
+\item{mmsi_time_to_order}{if mmsi & time column must be ordered, if FALSE, is already ordered by MMSI and then by timestamp (arrange(mmsi, timestamp)).}
 }
 \value{
 to add

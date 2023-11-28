@@ -81,6 +81,7 @@ data_extend_time <- function(data,
   }
 
   data <- data %>%
+    distinct() %>%
     dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(datetime_AIS_to_extract = lubridate::as_datetime(timestamp_AIS_to_extract))
 

@@ -7,7 +7,15 @@
 AISinterpolate_at(
   ais_data,
   data_to_interpolate,
-  radius = 20000,
+  overwrite,
+  file_AISinterlate_at,
+  mmsi_time_to_order = T,
+  average_mmsi_at = 0,
+  parallelize = F,
+  nb_cores = 4,
+  outfile = "log.txt",
+  QUIET = F,
+  radius = Inf,
   correct_speed = T,
   quantile_station = 0.95,
   threshold_distance_station = 1,
@@ -18,7 +26,7 @@ AISinterpolate_at(
   filter_high_speed = T,
   interpolate_station = F,
   interpolate_high_speed = F,
-  time_stop = 5 * 60 * 60,
+  time_stop = Inf,
   spatial_limit = NA,
   on_Land_analysis = T,
   land_sf_polygon = NA,
@@ -29,6 +37,10 @@ AISinterpolate_at(
 \item{ais_data}{AIS data, with a column timestamp, lon, lat and mmsi (numeric value of time, longitude, latitude, Maritime Mobile Service Identity). Must be an output of AIStravel and contain distance_travelled, time_travelled, speed_kmh columns.}
 
 \item{data_to_interpolate}{data times where vessel positions must be interpolate. Contain timestamp, lon and latitude columns}
+
+\item{mmsi_time_to_order}{if mmsi & time column must be ordered, if FALSE, is already ordered by MMSI and then by timestamp (arrange(mmsi, timestamp)).}
+
+\item{QUIET}{to print steps along the process or not.}
 
 \item{radius}{radius around data where interpolations are performed. Decrease the radius to decrease computation time.}
 

@@ -41,7 +41,8 @@ AISextract <- function(data,
                        t_gap = 15,
                        average_at = 10,
                        # onLand = T,
-                       accelerate = F
+                       accelerate = F,
+                       QUIET = F
                        # limited_to_AIS_time = F
                        ) {
 
@@ -114,10 +115,14 @@ AISextract <- function(data,
   tot <- unique(eff_d$dayhour)
 
   # list_textract <- unique(eff_d$timestamp_AIS_to_extract)
-  pb <- txtProgressBar(min = 0, max = length(tot), style = 3)
+  if(!QUIET) {
+    pb <- txtProgressBar(min = 0, max = length(tot), style = 3)
+  }
 
   daily_ais <- map_dfr(tot, function(h) {
-    setTxtProgressBar(pb, match(h, tot))
+    if (!QUIET) {
+      setTxtProgressBar(pb, match(h, tot))
+    }
 
     eff_h <- eff_d %>%
       dplyr::filter(dayhour == h) %>%
