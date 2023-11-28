@@ -63,14 +63,6 @@ data_extend_time <- function(data,
     if (t_gap < 0 | max_time_diff < 0) {
       stop("t_gap or max_time_diff lower than 0")
     } else if (max_time_diff > 0 & t_gap > 0) {
-#' Title
-#'
-#' @param t
-#'
-#' @return
-#' @export
-#'
-#' @examples
       data <- map_dfr(.x = unique(c(seq(0, max_time_diff, t_gap), max_time_diff)), .f = function(t) {
         return(data %>%
                  dplyr::mutate(timestamp_AIS_to_extract = timestamp - t,

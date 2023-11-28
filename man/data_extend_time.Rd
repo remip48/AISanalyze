@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_extend_time.R
 \name{data_extend_time}
 \alias{data_extend_time}
-\title{Title}
+\title{data_extend_time}
 \usage{
 data_extend_time(
   data,
@@ -13,21 +13,24 @@ data_extend_time(
 )
 }
 \arguments{
-\item{data}{data with a column timestamp (numeric value of time)}
+\item{data}{Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).}
 
-\item{max_time_diff}{number of seconds before the data time, when boat positions are considered/extracted.}
+\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
 
-\item{t_gap}{interval of time where vessels positions are extracted, from the data time to "max_time_diff" seconds before.}
+\item{t_gap}{interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.}
 
-\item{accelerate}{TRUE or FALSE: if data times must be averaged within "average_at" seconds, to equlize times where vessels positions are extracted and decreased strongly computation time.}
+\item{accelerate}{TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
 
-\item{average_at}{number of seconds where times are averaged if accelerate = TRUE to decrease number of data time to extract. If average_at = 10, data times are averaged in the interval time-5:time+5.}
+\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
 }
 \value{
-to add
+the data frame with the lines duplicated for each "t_gap" to extract up to "max_time_diff". The output contains the columns:
+timestamp_AIS_to_extract: timestamp for the extraction of the AIS for this line (= data timestamp if average_at = 0 & average_mmsi_at = 0 & accelerate = F).
+diffTime_AIS_extraction_effort: difference, in seconds, between the timestamp to extract (timestamp_AIS_to_extract) and the data timestamp.
+datetime_AIS_to_extract: datetime (ymd_hms) of timestamp_AIS_to_extract
 }
 \description{
-Title
+data_extend_time
 }
 \examples{
 # to add

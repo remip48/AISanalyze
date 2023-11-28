@@ -2,7 +2,7 @@
 % Please edit documentation in R/AIS_all_to_extract.R
 \name{AIS_all_to_extract}
 \alias{AIS_all_to_extract}
-\title{Extract vessels data at desired times in a desired radius}
+\title{AIS_all_to_extract}
 \usage{
 AIS_all_to_extract(
   data,
@@ -129,10 +129,28 @@ AIS_all_to_extract(
 \item{overwrite}{if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.}
 }
 \value{
-to add
+return the input data with AIS extracted merged. Each line of input data is duplicated in the output data, a duplicate for each "t_gap" to extract up to "max_time_diff", and a duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
+The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
+distance_effort_ais_m: distance (meters) between the data point and the MMSI for this line (filled with NA if no MMSI).
+timestamp_AIS_to_extract: timestamp for the extraction of the AIS for this line (= data timestamp if average_at = 0 & average_mmsi_at = 0 & accelerate = F).
+diffTime_AIS_extraction_effort: difference, in seconds, between the timestamp to extract (timestamp_AIS_to_extract) and the data timestamp.
+datetime_AIS_to_extract: datetime (ymd_hms) of timestamp_AIS_to_extract
+hour_AIS_to_extract: hour of timestamp_AIS_to_extract
+time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
+distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
+speed_kmh: speed (km/h) of the vessel since the last reception of an AIS signal.
+id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
+station: if the MMSI is a station or not.
+high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
+any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
+n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
+id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
+speed_kmh_corrected: if the speed of this line has been corrected or not.
+interpolated: if this AIS position is an interpolation or not.
+diffTime_AIS_effort: difference, in seconds, between the AIS position and the data timestamp.
 }
 \description{
-Extract vessels data at desired times in a desired radius
+AIS_all_to_extract
 }
 \examples{
 # to add
