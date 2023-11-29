@@ -26,7 +26,8 @@
 #' @param parallelize if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)
 #' @param nb_cores number of cores to used for the parallelize
 #' @param outfile file for output if parallelize = T
-#'
+#' @param save_AISinterlate_at if results from AISinterpolate_at must be saved, if run_AISinterpolate_at = T.
+
 #' @return return AIS data with the columns:
 #' id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
 #' station: if the MMSI is a station or not.
@@ -36,14 +37,14 @@
 #' id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
 #' speed_kmh_corrected: if the speed of this line has been corrected or not.
 #' interpolated: if this AIS position is an interpolation or not.
-
 #' @export
 #'
 #' @examples # to add
 AISinterpolate_at <- function(ais_data,
                               data_to_interpolate,
                               overwrite = F,
-                              file_AISinterlate_at = "AISinterlate_at.rds",
+                              save_AISinterlate_at = F,
+                              file_AISinterlate_at = NA,
                               mmsi_time_to_order = T,
                               average_mmsi_at = 0,
                               parallelize = F,
@@ -76,6 +77,10 @@ AISinterpolate_at <- function(ais_data,
   # }
   #
   # lapply(pack, library, character.only = TRUE)
+
+  if (save_AISinterlate_at & is.na(file_AISinterlate_at)) {
+    cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: file won't be saved in the process\n")
+  }
 
   timestamp_to_interpolate <- na.omit(unique(data_to_interpolate$timestamp))
 
@@ -363,7 +368,8 @@ AISinterpolate_at <- function(ais_data,
     return((t-raverage_mmsi_at):(t+raverage_mmsi_at))
   })))
 
-  ais_ok <- ais_data[ais_data$timestamp %in% timestamp_averaged, ]
+  ais_ok <- ais_data %>%
+    dplyr::filter(timestamp %in% timestamp_averaged)
 
   to_run <- na.omit(map_int(timestamp_to_interpolate, function(t) {
     done <- ais_ok$mmsi[ais_ok$timestamp %in% (t-raverage_mmsi_at):(t+raverage_mmsi_at)]
@@ -404,7 +410,8 @@ AISinterpolate_at <- function(ais_data,
     ais_data <- map_dfr(hour_to_run, function(hh) {
 
       if (overwrite |
-          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds")))) {
+          is.na(file_AISinterlate_at) | !save_AISinterlate_at |
+          (!is.na(file_AISinterlate_at) & !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))) {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         out <- map_dfr(to_run, function(t) {
@@ -474,7 +481,8 @@ AISinterpolate_at <- function(ais_data,
             n_point <- table(to_interp$mmsi)
             m_to_interp <- names(n_point)[n_point == 2]
 
-            out_ok <- to_interp[to_interp$mmsi %in% names(n_point)[n_point == 1], ]
+            out_ok <- to_interp %>%
+              dplyr::filter(mmsi %in% names(n_point)[n_point == 1])
 
             if (!interpolate_station) {
               m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
@@ -500,7 +508,7 @@ AISinterpolate_at <- function(ais_data,
               if (any(interp$tmmsi != interp$mmsi)) {
                 cat("CHECK THE CODE FOR tmmsi == mmsi\n")
                 interp <- interp %>%
-                  filter(tmmsi == mmsi)
+                  dplyr::filter(tmmsi == mmsi)
               }
 
               rm(prec)
@@ -555,7 +563,7 @@ AISinterpolate_at <- function(ais_data,
                   st_drop_geometry() %>%
                   dplyr::select(all_of(to_keep)) %>%
                   rbind(interp_eez %>%
-                          filter(!interpolated))
+                          dplyr::filter(!interpolated))
 
                 rm(interp_eez_int)
                 rm(to_keep)
@@ -599,6 +607,8 @@ AISinterpolate_at <- function(ais_data,
                 dplyr::mutate(X = coords_ais[,1],
                               Y = coords_ais[,2])
 
+
+
               out <- map_dfr(list(out_ok,
                                   interp_eez),
                              function(d) {return(d)}) %>%
@@ -635,7 +645,8 @@ AISinterpolate_at <- function(ais_data,
     ais_data <- map_dfr(hour_to_run, function(hh) {
 
       if (overwrite |
-          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds")))) {
+          is.na(file_AISinterlate_at) | !save_AISinterlate_at |
+          (!is.na(file_AISinterlate_at) & !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))) {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         out <- foreach(t = to_run,
@@ -710,7 +721,8 @@ AISinterpolate_at <- function(ais_data,
             n_point <- table(to_interp$mmsi)
             m_to_interp <- names(n_point)[n_point == 2]
 
-            out_ok <- to_interp[to_interp$mmsi %in% names(n_point)[n_point == 1], ]
+            out_ok <- to_interp %>%
+              dplyr::filter(mmsi %in% names(n_point)[n_point == 1])
 
             if (!interpolate_station) {
               m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
@@ -736,7 +748,7 @@ AISinterpolate_at <- function(ais_data,
               if (any(interp$tmmsi != interp$mmsi)) {
                 cat("CHECK THE CODE FOR tmmsi == mmsi\n")
                 interp <- interp %>%
-                  filter(tmmsi == mmsi)
+                  dplyr::filter(tmmsi == mmsi)
               }
 
               rm(prec)
@@ -791,7 +803,7 @@ AISinterpolate_at <- function(ais_data,
                   st_drop_geometry() %>%
                   dplyr::select(all_of(to_keep)) %>%
                   rbind(interp_eez %>%
-                          filter(!interpolated))
+                          dplyr::filter(!interpolated))
 
                 rm(interp_eez_int)
                 rm(to_keep)
