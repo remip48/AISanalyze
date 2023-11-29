@@ -21,6 +21,15 @@ AIStravel <- function(AIS,
                       return_3035_coords = F
 ) {
 
+  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
+  inst <- which(!(pack %in% installed.packages()[,1]))
+
+  if (length(inst) > 0) {
+    lapply(pack[inst], function(p) {install.packages(p)})
+  }
+
+  lapply(pack, library, character.only = TRUE)
+
   if (mmsi_time_to_order) {
     AIS <- AIS %>%
       dplyr::arrange(mmsi, timestamp)

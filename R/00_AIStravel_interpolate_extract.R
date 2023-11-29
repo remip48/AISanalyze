@@ -111,6 +111,15 @@ AIStravel_interpolate_extract <- function(data,
                                overwrite = F
 ) {
 
+  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
+  inst <- which(!(pack %in% installed.packages()[,1]))
+
+  if (length(inst) > 0) {
+    lapply(pack[inst], function(p) {install.packages(p)})
+  }
+
+  lapply(pack, library, character.only = TRUE)
+
   ais_data <- ais_data %>%
     dplyr::mutate(mmsi = ifelse(is.na(mmsi) | is.nan(mmsi) | is.null(mmsi), 0.1, mmsi))
 

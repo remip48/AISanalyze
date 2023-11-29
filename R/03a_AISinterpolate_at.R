@@ -68,6 +68,15 @@ AISinterpolate_at <- function(ais_data,
                               return_all = F
 ){
 
+  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
+  inst <- which(!(pack %in% installed.packages()[,1]))
+
+  if (length(inst) > 0) {
+    lapply(pack[inst], function(p) {install.packages(p)})
+  }
+
+  lapply(pack, library, character.only = TRUE)
+
   timestamp_to_interpolate <- na.omit(unique(data_to_interpolate$timestamp))
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
