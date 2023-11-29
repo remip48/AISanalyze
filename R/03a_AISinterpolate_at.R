@@ -43,8 +43,8 @@
 AISinterpolate_at <- function(ais_data,
                               data_to_interpolate,
                               overwrite = F,
-                              save_AISinterlate_at = F,
-                              file_AISinterlate_at = NA,
+                              save_AISinterlate_at = T,
+                              file_AISinterlate_at = "AISinterpolate_at.rds",
                               mmsi_time_to_order = T,
                               average_mmsi_at = 0,
                               parallelize = F,
@@ -79,7 +79,7 @@ AISinterpolate_at <- function(ais_data,
   # lapply(pack, library, character.only = TRUE)
 
   if (save_AISinterlate_at & is.na(file_AISinterlate_at)) {
-    cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: file won't be saved in the process\n")
+    cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: check if okay\n")
   }
 
   timestamp_to_interpolate <- na.omit(unique(data_to_interpolate$timestamp))
@@ -410,8 +410,7 @@ AISinterpolate_at <- function(ais_data,
     ais_data <- map_dfr(hour_to_run, function(hh) {
 
       if (overwrite |
-          is.na(file_AISinterlate_at) | !save_AISinterlate_at |
-          (!is.na(file_AISinterlate_at) & !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))) {
+          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))  {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         out <- map_dfr(to_run, function(t) {
@@ -626,10 +625,13 @@ AISinterpolate_at <- function(ais_data,
           }
         })
 
-        saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        if (save_AISinterlate_at) {
+          saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        }
 
         gc()
       } else {
+        cat("LOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
         out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
       }
 
@@ -645,8 +647,7 @@ AISinterpolate_at <- function(ais_data,
     ais_data <- map_dfr(hour_to_run, function(hh) {
 
       if (overwrite |
-          is.na(file_AISinterlate_at) | !save_AISinterlate_at |
-          (!is.na(file_AISinterlate_at) & !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))) {
+          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds")))) {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         out <- foreach(t = to_run,
@@ -866,10 +867,13 @@ AISinterpolate_at <- function(ais_data,
 
         out <- map_dfr(out, function(d) {return(d)})
 
-        saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        if (save_AISinterlate_at) {
+          saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        }
 
         gc()
       } else {
+        cat("LOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
         out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
       }
 
