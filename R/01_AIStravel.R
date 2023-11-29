@@ -35,12 +35,11 @@ AIStravel <- function(AIS,
       dplyr::arrange(mmsi, timestamp)
   }
 
-  AIS <- AIS %>%
-    dplyr::filter(!duplicated(paste0(mmsi, timestamp)))
+  AIS <- AIS[!duplicated(paste0(AIS$mmsi, AIS$timestamp)), ]
 
   AIS <- AIS %>%
     dplyr::mutate(tlon = lon,
-           tlat = lat) %>%
+                  tlat = lat) %>%
     st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
     st_transform(crs = 3035)
 
@@ -58,7 +57,7 @@ AIStravel <- function(AIS,
     dplyr::mutate(X = coords_AIS[,1],
                   Y = coords_AIS[,2],
                   tmmsi = c("initial", mmsi_prev)) %>%
-    filter(!is.na(X) & !is.na(Y) & !is.nan(X) & !is.nan(Y))
+    dplyr::filter(!is.na(X) & !is.na(Y) & !is.nan(X) & !is.nan(Y))
 
   AIS <- AIS %>%
     dplyr::mutate(time_travelled = timestamp - c(first(timestamp), timestamp[-n()]),
