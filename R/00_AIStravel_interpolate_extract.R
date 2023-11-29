@@ -304,13 +304,13 @@ AIStravel_interpolate_extract <- function(data,
                           ais_lat = lat)
 
           ais_on_effort <- AISextract(data = eff_h,
-                                            data_mmsi = hourly_mmsi,
-                                            search_into_radius_m = search_into_radius_m,
-                                            max_time_diff = 0,
-                                            duplicate_time = F,
-                                            t_gap = t_gap,
-                                            average_at = 0,
-                                            accelerate = F
+                                      ais_data = hourly_mmsi,
+                                      search_into_radius_m = search_into_radius_m,
+                                      max_time_diff = 0,
+                                      duplicate_time = F,
+                                      t_gap = t_gap,
+                                      average_at = 0,
+                                      accelerate = F
           )
 
           # ais_on_effort <- ais_on_effort %>%
