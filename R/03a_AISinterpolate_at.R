@@ -214,6 +214,8 @@ AISinterpolate_at <- function(ais_data,
     ungroup()
 
   if (correct_speed) {
+    cat("Correct speeds\n")
+
     strange_speed <- ais_data %>%  # [(ais_data$speed_kmh > threshold_speed_to_correct | ais_data$speed_kmh >) &
       group_by(mmsi) %>%
       dplyr::mutate(threshold_strange_speed = median(speed_kmh[speed_kmh > 0], na.rm = T),

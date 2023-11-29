@@ -133,6 +133,8 @@ AISinterpolate_all <- function(ais_data,
     ungroup()
 
   if (correct_speed) {
+    cat("Correct speeds\n")
+
     strange_speed <- ais_data %>%
       group_by(mmsi) %>%
       dplyr::mutate(threshold_strange_speed = median(speed_kmh[speed_kmh > 0], na.rm = T),
@@ -313,14 +315,14 @@ AISinterpolate_all <- function(ais_data,
 
   interp <- interp[interp$mmsi == interp$tmmsi, ] %>%
     group_by(id_ais_data_initial) %>%
-    dplyr::summarise(timestamp = c(seq(from = ttimestamp, to = timestamp - t_gap/2, by = t_gap), timestamp)[-1],
-                     diffTime_interpolation = t_gap,
-                     speed_kmh = unique(speed_kmh),
-                     interpolated = c(rep(T, length(timestamp) - 1), F),
-                     time_travelled = c(rep(t_gap, length(timestamp) - 1), last(timestamp) - timestamp[length(timestamp) - 1]),
-                     distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
-                     lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = T)),
-                     lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = T))
+    dplyr::reframe(timestamp = c(seq(from = ttimestamp, to = timestamp - t_gap/2, by = t_gap), timestamp)[-1],
+                   diffTime_interpolation = t_gap,
+                   speed_kmh = unique(speed_kmh),
+                   interpolated = c(rep(T, length(timestamp) - 1), F),
+                   time_travelled = c(rep(t_gap, length(timestamp) - 1), last(timestamp) - timestamp[length(timestamp) - 1]),
+                   distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
+                   lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = T)),
+                   lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = T))
     )
 
   interp_eez <- to_interp %>%

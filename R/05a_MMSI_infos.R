@@ -52,7 +52,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
   if (any(out$n_length > 1)) {
 
     to_corr <- out %>%
-      filter(n_length > 1)
+      dplyr::filter(n_length > 1)
 
     uni_length <- temp[temp$mmsi %in% unique(to_corr$mmsi) & !is.na(temp$length), ] %>%
       group_by(mmsi, length) %>%
@@ -76,7 +76,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
              npoint_length_weighted = as.numeric(npoint_length_weighted))
 
     out <- map_dfr(list(out %>%
-                          filter(n_length < 2) %>%
+                          dplyr::filter(n_length < 2) %>%
                           mutate(length = as.numeric(length),
                                  npoint_length = as.numeric(npoint_length),
                                  npoint_length_weighted = as.numeric(npoint_length_weighted)),
@@ -105,11 +105,11 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
   if (any(out_type$n_type > 1)) {
 
     to_corr <- out_type %>%
-      filter(n_type > 1)
+      dplyr::filter(n_type > 1)
 
     uni_type <- temp[temp$mmsi %in% unique(to_corr$mmsi) & !is.na(temp$shiptype), ] %>%
       mutate(shiptype = ifelse(tolower(str_remove_all(shiptype, " ")) %in% c("undefined", "unknown", "", "na"), NA, shiptype)) %>%
-      filter(!is.na(shiptype)) %>%
+      dplyr::filter(!is.na(shiptype)) %>%
       group_by(mmsi, shiptype) %>%
       dplyr::summarise(n_t = sum(n),
                        n_ti = sum(real_n)
@@ -128,7 +128,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
       left_join(uni_type, by = "mmsi")
 
     out_type <- map_dfr(list(out_type %>%
-                               filter(n_type < 2),
+                               dplyr::filter(n_type < 2),
                              to_corr), function(f) {return(f)})
 
   }

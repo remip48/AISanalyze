@@ -3,7 +3,6 @@
 #'
 #' advice : run this function in a for or lapply loop to apply it per day. The function can return a big dataset with combination of mmsi find for each
 #' data point, so doing this decrease the final dataset returned. The function apply the process for each day in any case.
-#' dont use columns with the name "idd"
 #'
 #' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
 #' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
