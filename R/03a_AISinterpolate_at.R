@@ -607,8 +607,6 @@ AISinterpolate_at <- function(ais_data,
                 dplyr::mutate(X = coords_ais[,1],
                               Y = coords_ais[,2])
 
-
-
               out <- map_dfr(list(out_ok,
                                   interp_eez),
                              function(d) {return(d)}) %>%
@@ -629,6 +627,7 @@ AISinterpolate_at <- function(ais_data,
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
         }
+        cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
 
         gc()
       } else {
@@ -871,6 +870,7 @@ AISinterpolate_at <- function(ais_data,
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
         }
+        cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
 
         gc()
       } else {
