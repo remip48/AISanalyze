@@ -41,14 +41,14 @@ AISextract <- function(data,
                              accelerate = F
 ) {
 
-  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
-  inst <- which(!(pack %in% installed.packages()[,1]))
-
-  if (length(inst) > 0) {
-    lapply(pack[inst], function(p) {install.packages(p)})
-  }
-
-  lapply(pack, library, character.only = TRUE)
+  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
+  # inst <- which(!(pack %in% installed.packages()[,1]))
+  #
+  # if (length(inst) > 0) {
+  #   lapply(pack[inst], function(p) {install.packages(p)})
+  # }
+  #
+  # lapply(pack, library, character.only = TRUE)
 
   ais_data <- ais_data[ais_data$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at + average_mmsi_at/2)) &
                            ais_data$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2), ]

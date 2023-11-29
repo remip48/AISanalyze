@@ -12,14 +12,14 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
                        threshold_length = 475,
                        weight_complete_data = 10) {
 
-  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
-  inst <- which(!(pack %in% installed.packages()[,1]))
-
-  if (length(inst) > 0) {
-    lapply(pack[inst], function(p) {install.packages(p)})
-  }
-
-  lapply(pack, library, character.only = TRUE)
+  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
+  # inst <- which(!(pack %in% installed.packages()[,1]))
+  #
+  # if (length(inst) > 0) {
+  #   lapply(pack[inst], function(p) {install.packages(p)})
+  # }
+  #
+  # lapply(pack, library, character.only = TRUE)
 
   weight_complete_data <- as.numeric(weight_complete_data)
   weight_complete_data <- ifelse(is.na(weight_complete_data) | is.nan(weight_complete_data) | is.null(weight_complete_data),

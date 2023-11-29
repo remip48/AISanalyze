@@ -48,14 +48,14 @@ AISinterpolate_all <- function(ais_data,
                                on_Land_analysis = F,
                                land_sf_polygon = NA){
 
-  pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "uils", "stringr", "doParallel")
-  inst <- which(!(pack %in% installed.packages()[,1]))
-
-  if (length(inst) > 0) {
-    lapply(pack[inst], function(p) {install.packages(p)})
-  }
-
-  lapply(pack, library, character.only = TRUE)
+  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
+  # inst <- which(!(pack %in% installed.packages()[,1]))
+  #
+  # if (length(inst) > 0) {
+  #   lapply(pack[inst], function(p) {install.packages(p)})
+  # }
+  #
+  # lapply(pack, library, character.only = TRUE)
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
     if (!("sf" %in% class(ais_data))) {
