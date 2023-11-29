@@ -1,6 +1,4 @@
-## to interpolate AIS data for each mmsi
-
-#' AISinterpolate_all
+#' to interpolate AIS data for each mmsi
 #'
 #' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
 #' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
@@ -14,7 +12,7 @@
 #' @param filter_high_speed if the aircraft are filtered or not.
 #' @param interpolate_station if the stations are interpolated or not.
 #' @param interpolate_high_speed if the aircraft are interpolated or not.
-#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
 #' @param t_gap interval of time (seconds) to which vessels positions are interpolated.
 #' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
 #' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
@@ -33,24 +31,21 @@
 #'
 #' @examples # to add
 AISinterpolate_all <- function(ais_data,
-                               # parallelize=T,
-                               # core_to_use=NA,
                                mmsi_time_to_order = T,
                                correct_speed = T,
-                               quantile_station = 0.95,
-                               threshold_distance_station = 1,
-                               quantile_high_speed = 0.90,
-                               threshold_speed_to_correct = 90,
-                               # threshold_speed_expr = function(speed_kmh) {threshold_speed_fixed},
-                               threshold_high_speed = 90,
+                               quantile_station = 0.975,
+                               threshold_distance_station = 10,
+                               quantile_high_speed = 0.97,
+                               threshold_speed_to_correct = 100,
+                               threshold_high_speed = 110,
                                filter_station = T,
                                filter_high_speed = T,
                                interpolate_station = F,
                                interpolate_high_speed = F,
                                time_stop = 5 * 60 * 60,
-                               t_gap = 4,
+                               t_gap = 30,
                                spatial_limit = NA,
-                               on_Land_analysis = T,
+                               on_Land_analysis = F,
                                land_sf_polygon = NA){
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {

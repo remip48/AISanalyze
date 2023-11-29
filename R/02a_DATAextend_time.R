@@ -1,7 +1,4 @@
-###########♠
-## function to duplicate data with times before the data timestamp, to investigate the AIS presence before the time of the data.
-
-#' data_extend_time
+#' function to duplicate data with times before the data timestamp, to investigate the AIS presence before the time of the data.
 #'
 #' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
 #' @param max_time_diff number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.
@@ -17,20 +14,11 @@
 #' @export
 #'
 #' @examples # to add
-data_extend_time <- function(data,
-                             max_time_diff = 30*60,
-                             t_gap = 15,
-                             accelerate = F,
-                             average_at = 10) {
-
-  # pack <- c("tidyverse", "dplyr")
-  # inst <- which(!(pack %in% installed.packages()[,1]))
-  #
-  # if (length(inst) > 0) {
-  #   lapply(pack[inst], function(p) {install.packages(p)})
-  # }
-  #
-  # lapply(pack, library, character.only = TRUE)
+DATAextend_time <- function(data,
+                             max_time_diff = 1 * 60 * 60,
+                             t_gap = 30,
+                             accelerate = T,
+                             average_at = 30) {
 
   if (accelerate) {
     list_times <- seq(min(data$timestamp, na.rm = T) - (max_time_diff + t_gap), max(data$timestamp, na.rm = T) + t_gap, by = average_at)

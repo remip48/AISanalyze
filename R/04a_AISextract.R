@@ -1,7 +1,4 @@
-#############################
-## function to extract the AIS position on a points
-
-#' data_extract_ais
+#' function to extract the AIS position on a points
 #'
 #' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
 #' @param data_mmsi AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
@@ -34,38 +31,26 @@
 #' @export
 #'
 #' @examples # to add
-data_extract_ais <- function(data,
+AISextract <- function(data,
                              data_mmsi,
-                             search_into_radius_m = 20000,
-                             duplicate_time = T,
+                             search_into_radius_m = 50000,
+                             duplicate_time = F,
                              max_time_diff = 0,
                              average_at = 0,
-                             t_gap,
-                             # list_t_extract = NA,
-                             # onLand = F,
-                             accelerate = T
-                             # limited_to_AIS_time = F
+                             t_gap = 10*60,
+                             accelerate = F
 ) {
-
-  # pack <- c("tidyverse", "dplyr")
-  # inst <- which(!(pack %in% installed.packages()[,1]))
-  #
-  # if (length(inst) > 0) {
-  #   lapply(pack[inst], function(p) {install.packages(p)})
-  # }
-  #
-  # lapply(pack, library, character.only = TRUE)
 
   data_mmsi <- data_mmsi[data_mmsi$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at + average_mmsi_at/2)) &
                            data_mmsi$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2), ]
 
   if (duplicate_time) {
-    data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
+    data <- DATAextend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
     # } else if (accelerate) {
-    #   source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-1_data_extend_time_data.R")
-    #   data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
+    #   source("C:/Users/234028/Documents/Gitlab/CoastalFutures/source/AIS/03-1_DATAextend_time_data.R")
+    #   data <- DATAextend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
   } else if (accelerate) {
-    data <- data_extend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
+    data <- DATAextend_time(data = data, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
   } else {
     data <- data %>%
       dplyr::mutate(timestamp_AIS_to_extract = timestamp,

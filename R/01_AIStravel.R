@@ -1,12 +1,10 @@
-#### to estimate distance, time and speed between each AIS data per mmsi
-
-#' AIStravel
+#' to estimate distance, time and speed between each AIS data per mmsi
 #'
-#' @param AOS AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
-#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param AIS AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
+#' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
 #' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
-#' @param return_sf if the output must be a sf object or a data frame with coordinates as column variable.
-#' @param return_3035_coords if ETRS3035 coordinates must be returned as X and Y column variables in the output data.
+#' @param return_sf if the output is a sf object or a data frame with coordinates as column variable.
+#' @param return_3035_coords if ETRS3035 coordinates are returned as X and Y column variables in the output data.
 #'
 #' @return return the AIS data with the speed calculated based on the distance and time travelled since last AIS reception. Contains the columns:
 #' time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
@@ -17,23 +15,11 @@
 #'
 #' @examples # to add
 AIStravel <- function(AIS,
-                      time_stop = Inf,
+                      time_stop = 5*60*60,
                       mmsi_time_to_order = T,
                       return_sf = F,
                       return_3035_coords = F
-                      # parallelize=T,
-                      # core_to_use=NA
 ) {
-
-  # load_packages <- function(p) {
-  #   if (p %in% rownames(installed.packages())) {
-  #     library(p, character.only = TRUE)
-  #   } else {
-  #     install.packages(p)
-  #     library(p, character.only = TRUE)
-  #   }
-  # }
-  # lapply(c("tidyverse", "dplyr", "sf"), load_packages)
 
   if (mmsi_time_to_order) {
     AIS <- AIS %>%

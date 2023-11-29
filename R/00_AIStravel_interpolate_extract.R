@@ -1,12 +1,9 @@
-################
-## function to compute AIStravel, AISinterpolate_at and data_extract_ais functions at the same time in an optimized way.
-## Used to extract AIS data in the radius of an input data with location and time.
-
-## advice : run this function in a for or lapply loop to apply it per day. The function can return a big dataset with combination of mmsi find for each
-## data point, so doing this decrease the final dataset returned. The function apply the process for each day in any case.
-## dont use columns with the name "idd"
-
-#' AIS_all_to_extract
+#' Function to compute AIStravel, AISinterpolate_at and AISextract functions at the same time in an optimized way.
+#' Used to extract AIS data in the radius of an input data with location and time.
+#'
+#' advice : run this function in a for or lapply loop to apply it per day. The function can return a big dataset with combination of mmsi find for each
+#' data point, so doing this decrease the final dataset returned. The function apply the process for each day in any case.
+#' dont use columns with the name "idd"
 #'
 #' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
 #' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
@@ -16,7 +13,7 @@
 #' @param t_gap interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.
 #' @param average_at if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.
 #' @param accelerate TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.
-#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
 #' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
 #' @param QUIET if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
 #' @param correct_speed if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.
@@ -72,45 +69,42 @@
 #' @export
 #'
 #' @examples # to add
-AIS_all_to_extract <- function(data,
+AIStravel_interpolate_extract <- function(data,
                                ais_data,
-                               # parallelize = T,
-                               # core_to_use = NA,
                                parallelize = F,
-                               nb_cores = 4,
+                               nb_cores = NA,
                                outfile = "log.txt",
                                run_AIStravel = T,
-                               save_AIStravel = F,
+                               save_AIStravel = T,
                                file_AIStravel = "AIStravel.rds",
                                run_AISinterpolate_at = T,
-                               save_AISinterlate_at = F,
+                               save_AISinterlate_at = T,
                                file_AISinterlate_at = "AISinterlate_at.rds",
                                run_AISextract_perHour = T,
-                               save_AISextract_perHour = F,
+                               save_AISextract_perHour = T,
                                file_AISextract_perHour = "AISextract.rds",
                                return_merged_all_extracted = T,
-                               time_stop = Inf,
-                               radius = Inf,
+                               time_stop = 5*60*60,
+                               radius = 200000,
                                mmsi_time_to_order = T,
-                               search_into_radius_m = 20000,
-                               max_time_diff = 30 * 60,
-                               duplicate_time = F,
-                               t_gap = 15,
-                               average_at = 10,
+                               search_into_radius_m = 50000,
+                               max_time_diff = 1 * 60 * 60,
+                               duplicate_time = T,
+                               t_gap = 2*60,
+                               average_at = 30,
                                average_mmsi_at = 0,
-                               # onLand = T,
-                               accelerate = F,
+                               accelerate = T,
                                QUIET = F,
                                correct_speed = T,
-                               quantile_station = 0.95,
-                               threshold_distance_station = 0,
-                               quantile_high_speed = 0.90,
+                               quantile_station = 0.975,
+                               threshold_distance_station = 10,
+                               quantile_high_speed = 0.97,
                                threshold_speed_to_correct = 100,
                                threshold_high_speed = 110,
                                filter_station = T,
-                               interpolate_station = F,
+                               interpolate_station = T,
                                filter_high_speed = T,
-                               interpolate_high_speed = F,
+                               interpolate_high_speed = T,
                                spatial_limit = NA,
                                on_Land_analysis = F,
                                land_sf_polygon = NA,
@@ -134,11 +128,11 @@ AIS_all_to_extract <- function(data,
     ## if duplicate time, duplicate the time until max_time_diff secondes before each point, by interval times of t_gap.
     ## if accelerate, do this but decrease the number of times to extract by assigning the times to the closest time step designed (each one separated by t_gap up to max_time_diff before)
     if (duplicate_time) {
-      eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
+      eff_temp <- DATAextend_time(data = eff_temp, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
       # } else if (accelerate) {
-      #   eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
+      #   eff_temp <- DATAextend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap)
     } else {
-      eff_temp <- data_extend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
+      eff_temp <- DATAextend_time(data = eff_temp, accelerate = accelerate, max_time_diff = 0, t_gap = t_gap, average_at = average_at)
     }
     ## so here : the real time of effort is the timestamp_ofEffort, while we extract AIS with max_time = 0 on timestamp = timestamp_AIS_to_extract
     eff_temp <- eff_temp %>%
@@ -299,7 +293,7 @@ AIS_all_to_extract <- function(data,
             dplyr::rename(ais_lon = lon,
                           ais_lat = lat)
 
-          ais_on_effort <- data_extract_ais(data = eff_h,
+          ais_on_effort <- AISextract(data = eff_h,
                                             data_mmsi = hourly_mmsi,
                                             search_into_radius_m = search_into_radius_m,
                                             max_time_diff = 0,
@@ -372,7 +366,7 @@ AIS_all_to_extract <- function(data,
           dplyr::rename(ais_lon = lon,
                         ais_lat = lat)
 
-          ais_on_effort <- data_extract_ais(data = eff_h,
+          ais_on_effort <- AISextract(data = eff_h,
                                             data_mmsi = hourly_mmsi,
                                             search_into_radius_m = search_into_radius_m,
                                             max_time_diff = 0,

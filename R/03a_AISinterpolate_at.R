@@ -1,6 +1,4 @@
-## Interpolate AIS data at the times of input.
-
-#' AISinterpolate_at
+#' Interpolate AIS data at the times of input.
 #'
 #' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
 #' @param data_to_interpolate data timestamps where vessel positions must be interpolate. Contains timestamp, lon and latitude columns
@@ -17,7 +15,7 @@
 #' @param filter_high_speed if the aircraft are filtered or not.
 #' @param interpolate_station if the stations are interpolated or not.
 #' @param interpolate_high_speed if the aircraft are interpolated or not.
-#' @param time_stop number of seconds that looked for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
+#' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
 #' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
 #' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
 #' @param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
@@ -44,28 +42,28 @@
 #' @examples # to add
 AISinterpolate_at <- function(ais_data,
                               data_to_interpolate,
-                              overwrite,
-                              file_AISinterlate_at,
+                              overwrite = F,
+                              file_AISinterlate_at = "AISinterlate_at.rds",
                               mmsi_time_to_order = T,
                               average_mmsi_at = 0,
                               parallelize = F,
-                              nb_cores = 4,
+                              nb_cores = NA,
                               outfile = "log.txt",
                               QUIET = F,
-                              radius = Inf, # km, or NA
+                              radius = 200000, # km, or NA
                               correct_speed = T,
-                              quantile_station = 0.95,
-                              threshold_distance_station = 1,
-                              quantile_high_speed = 0.90,
-                              threshold_speed_to_correct = 90,
-                              threshold_high_speed = 90,
+                              quantile_station = 0.975,
+                              threshold_distance_station = 10,
+                              quantile_high_speed = 0.97,
+                              threshold_speed_to_correct = 100,
+                              threshold_high_speed = 110,
                               filter_station = T,
                               filter_high_speed = T,
-                              interpolate_station = F,
-                              interpolate_high_speed = F,
-                              time_stop = Inf,
+                              interpolate_station = T,
+                              interpolate_high_speed = T,
+                              time_stop = 5*60*60,
                               spatial_limit = NA,
-                              on_Land_analysis = T,
+                              on_Land_analysis = F,
                               land_sf_polygon = NA,
                               return_all = F
 ){
