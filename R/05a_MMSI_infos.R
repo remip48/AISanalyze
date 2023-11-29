@@ -32,7 +32,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
     ungroup() %>%
     dplyr::mutate(length = as.numeric(length),
                   length = ifelse(length == 0 | length > threshold_length, NA, length),
-                  real_n = n(),
+                  real_n = n,
                   n = ifelse(!is.na(length) & !is.na(shiptype), n*weight_complete_data, n)) %>%
     as.data.frame()
 
@@ -59,7 +59,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
       dplyr::summarise(n_l = sum(n),
                        n_li = sum(real_n)
                        # dates = paste(unique(date[!is.na(as.numeric(length))]), collapse = ", ")
-                       ) %>%
+      ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(length = length[which.max(n_l)],
@@ -114,7 +114,7 @@ MMSIlength <- function(ais, ## need one column length, one shiptype, and one dat
       dplyr::summarise(n_t = sum(n),
                        n_ti = sum(real_n)
                        # date = paste(unique(date[!is.na(shiptype)]), collapse = ", ")
-                       ) %>%
+      ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(type = shiptype[which.max(n_t)],
