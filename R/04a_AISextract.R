@@ -1,7 +1,7 @@
 #' function to extract the AIS position on a points
 #'
 #' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
-#' @param data_mmsi AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
+#' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
 #' @param search_into_radius_m radius in which vessels positions are extracted.
 #' @param duplicate_time  if vessels positions must be extracted only for data timestamp (TRUE), or every "t_gap" seconds, up to "max_time_diff" before the data timestamps.
 #' @param max_time_diff number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.
@@ -32,7 +32,7 @@
 #'
 #' @examples # to add
 AISextract <- function(data,
-                             data_mmsi,
+                             ais_data,
                              search_into_radius_m = 50000,
                              duplicate_time = F,
                              max_time_diff = 0,
@@ -41,8 +41,8 @@ AISextract <- function(data,
                              accelerate = F
 ) {
 
-  data_mmsi <- data_mmsi[data_mmsi$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at + average_mmsi_at/2)) &
-                           data_mmsi$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2), ]
+  ais_data <- ais_data[ais_data$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at + average_mmsi_at/2)) &
+                           ais_data$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2), ]
 
   if (duplicate_time) {
     data <- DATAextend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
@@ -86,10 +86,10 @@ AISextract <- function(data,
 
     eff_dt <- data[data$timestamp_AIS_to_extract == dt,]
 
-    mmsi_ref <- data_mmsi[data_mmsi$timestamp > (dt - t_gap - average_at - average_mmsi_at/2) &
-                            data_mmsi$timestamp < (dt + t_gap + average_at + average_mmsi_at/2) &
-                            data_mmsi$ais_X >= (min(eff_dt$X) - search_into_radius_m) & data_mmsi$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
-                            data_mmsi$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & data_mmsi$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
+    mmsi_ref <- ais_data[ais_data$timestamp > (dt - t_gap - average_at - average_mmsi_at/2) &
+                            ais_data$timestamp < (dt + t_gap + average_at + average_mmsi_at/2) &
+                            ais_data$ais_X >= (min(eff_dt$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
+                            ais_data$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
 
     if (nrow(mmsi_ref) > 1) {
       mmsi_ref <- mmsi_ref %>%
@@ -98,7 +98,7 @@ AISextract <- function(data,
       mmsi_eff <- mmsi_ref %>%
         group_by(mmsi) %>%
         dplyr::reframe(point = which.min(abs(timestamp - dt)),
-                       # across(colnames(data_mmsi)[colnames(data_mmsi) != "mmsi"], ~ which_point(.x, point))
+                       # across(colnames(ais_data)[colnames(ais_data) != "mmsi"], ~ which_point(.x, point))
                        idd_ais = idd_ais[point],
                        ais_X = ais_X[point],
                        ais_Y = ais_Y[point],
