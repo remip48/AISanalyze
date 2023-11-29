@@ -79,8 +79,9 @@ AISinterpolate_at <- function(ais_data,
   # lapply(pack, library, character.only = TRUE)
 
   if (save_AISinterlate_at & is.na(file_AISinterlate_at)) {
-    cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: check if okay\n")
+    cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: change file name\n")
   }
+  file_AISinterlate_at <- as.character(file_AISinterlate_at)
 
   timestamp_to_interpolate <- na.omit(unique(data_to_interpolate$timestamp))
 
