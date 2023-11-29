@@ -416,7 +416,7 @@ AISinterpolate_at <- function(ais_data,
 
         out <- map_dfr(to_run, function(t) {
           if (!QUIET) {
-            setTxtProgressBar(pb, match(t, to_run))
+            setTxtProgressBar(pb, match(t, all_to_run))
           }
 
           if (radius != Inf) {
