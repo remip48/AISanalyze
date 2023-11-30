@@ -2,7 +2,7 @@
 % Please edit documentation in R/03b_AISinterpolate_all.R
 \name{AISinterpolate_all}
 \alias{AISinterpolate_all}
-\title{to interpolate AIS data for each mmsi}
+\title{Interpolate all AIS data at the desired interval of time.}
 \usage{
 AISinterpolate_all(
   ais_data,
@@ -11,6 +11,11 @@ AISinterpolate_all(
   time_stop = 5 * 60 * 60,
   correct_speed = T,
   threshold_speed_to_correct = 100,
+  threshold_speed_to_correct_expr = function(speed_kmh) {
+    
+    return((median(speed_kmh[speed_kmh > 0], na.rm = T) + sd(speed_kmh[speed_kmh > 0 &
+    speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)]) * 2.5 + 15))
+ },
   filter_station = T,
   filter_high_speed = T,
   quantile_station = 0.975,
@@ -22,47 +27,52 @@ AISinterpolate_all(
 )
 }
 \arguments{
-\item{ais_data}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
+\item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
-\item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
+\item{mmsi_time_to_order}{if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.}
 
-\item{t_gap}{interval of time (seconds) to which vessels positions are interpolated.}
+\item{t_gap}{see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction (otherwise other AIS data are filtered out).}
 
-\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
+\item{time_stop}{number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.}
 
-\item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
+\item{correct_speed}{if TRUE, GPS errors and GPS delays are identified and removed from AIS data. Vessel speeds, distance and time travelled are corrected. Usually necessary.}
 
 \item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
 
-\item{filter_station}{if the stations are filtered or not. mmsi_time_to_order}
+\item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions.}
 
-\item{filter_high_speed}{if the aircraft are filtered or not.}
+\item{filter_station}{if TRUE, filter the stations out.}
 
-\item{quantile_station}{Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
+\item{filter_high_speed}{if TRUE, filter the aircraft out.}
 
-\item{threshold_distance_station}{threshold of distance used to assess if the mmsi is a station.}
+\item{quantile_station}{Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
 
-\item{quantile_high_speed}{Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.}
+\item{threshold_distance_station}{Threshold of distance (meters) used to assess if the MMSI is a station.}
 
-\item{threshold_high_speed}{threshold of speed used to assess if the mmsi is an aircraft.}
+\item{quantile_high_speed}{Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.}
 
-\item{interpolate_station}{if the stations are interpolated or not.}
+\item{threshold_high_speed}{Threshold of speed (km/h) used to assess if the MMSI is an aircraft.}
 
-\item{interpolate_high_speed}{if the aircraft are interpolated or not.}
+\item{interpolate_station}{if FALSE, do not interpolate the positions of the stations.}
+
+\item{interpolate_high_speed}{if FALSE, do not interpolate the positions of the aircrafts.}
 }
 \value{
 return AIS data with the columns:
-id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
-station: if the MMSI is a station or not.
-high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
-any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
-n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
-id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
-speed_kmh_corrected: if the speed of this line has been corrected or not.
-interpolated: if this AIS position is an interpolation or not.
+id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
+station: if TRUE, the MMSI has been identified as a station.
+high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+interpolated: if TRUE, this MMSI position has been interpolated.
+time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
+distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
+speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
 }
 \description{
-to interpolate AIS data for each mmsi
+Interpolate all AIS data to have AIS positions at the desired interval of time, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
 }
 \examples{
 # to add

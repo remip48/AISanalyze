@@ -3,8 +3,8 @@
 #' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data.
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
-#' @param threshold_length
-#' @param weight_complete_data
+#' @param threshold_length threshold (meters) above which the length is considered as unrealistic (and set as NA).
+#' @param weight_complete_data weigth for lines having both the information on length and on the type: complete lines are supposed to be more reliable (10 by default for the weight).
 #'
 #' @return
 #' @export

@@ -2,59 +2,47 @@
 % Please edit documentation in R/04a_AISextract.R
 \name{AISextract}
 \alias{AISextract}
-\title{function to extract the AIS position on a points}
+\title{Extract the AIS position for desired location and times}
 \usage{
 AISextract(
   data,
   ais_data,
   search_into_radius_m = 50000,
   duplicate_time = F,
-  t_gap = 10 * 60,
   max_time_diff = 0,
+  t_gap = 10 * 60,
   accelerate = F,
   average_at = 0
 )
 }
 \arguments{
-\item{data}{Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).}
+\item{data}{Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.}
 
-\item{ais_data}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
+\item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
-\item{search_into_radius_m}{radius in which vessels positions are extracted.}
+\item{search_into_radius_m}{radius (kilometer) where the MMSIs are extracted and returned.}
 
-\item{duplicate_time}{if vessels positions must be extracted only for data timestamp (TRUE), or every "t_gap" seconds, up to "max_time_diff" before the data timestamps.}
+\item{duplicate_time}{if TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.}
 
-\item{t_gap}{interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.}
+\item{max_time_diff}{if duplicate_time = TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.}
 
-\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
+\item{t_gap}{see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction (otherwise other AIS data are filtered out).}
 
-\item{accelerate}{TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
+\item{accelerate}{if TRUE, data timestamps are averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
 
-\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
+\item{average_at}{if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).}
 }
 \value{
-return the input data with AIS extracted merged. Each line of input data is duplicated: a duplicate for each "t_gap" to extract up to "max_time_diff", and among these, duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
+return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
 The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
-distance_effort_ais_m: distance (meters) between the data point and the MMSI for this line (filled with NA if no MMSI).
-timestamp_AIS_to_extract: timestamp for the extraction of the AIS for this line (= data timestamp if average_at = 0 & average_mmsi_at = 0 & accelerate = F).
-diffTime_AIS_extraction_effort: difference, in seconds, between the timestamp to extract (timestamp_AIS_to_extract) and the data timestamp.
-datetime_AIS_to_extract: datetime (ymd_hms) of timestamp_AIS_to_extract
-hour_AIS_to_extract: hour of timestamp_AIS_to_extract
-time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
-distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
-speed_kmh: speed (km/h) of the vessel since the last reception of an AIS signal.
-id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
-station: if the MMSI is a station or not.
-high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
-any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
-n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
-id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
-speed_kmh_corrected: if the speed of this line has been corrected or not.
-interpolated: if this AIS position is an interpolation or not.
-diffTime_AIS_effort: difference, in seconds, between the AIS position and the data timestamp.
+distance_effort_ais_m: distance (meters) between the data location and the MMSI at this time (filled with NA if no MMSI).
+timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
+diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
+datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
+diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"
 }
 \description{
-function to extract the AIS position on a points
+Extract the AIS position around the locations and at the time of the data
 }
 \examples{
 # to add
