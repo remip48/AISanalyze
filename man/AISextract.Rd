@@ -6,31 +6,31 @@
 \usage{
 AISextract(
   data,
-  data_mmsi,
+  ais_data,
   search_into_radius_m = 50000,
   duplicate_time = F,
-  max_time_diff = 0,
-  average_at = 0,
   t_gap = 10 * 60,
-  accelerate = F
+  max_time_diff = 0,
+  accelerate = F,
+  average_at = 0
 )
 }
 \arguments{
 \item{data}{Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).}
 
-\item{data_mmsi}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
+\item{ais_data}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
 
 \item{search_into_radius_m}{radius in which vessels positions are extracted.}
 
 \item{duplicate_time}{if vessels positions must be extracted only for data timestamp (TRUE), or every "t_gap" seconds, up to "max_time_diff" before the data timestamps.}
 
-\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
-
-\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
-
 \item{t_gap}{interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.}
 
+\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
+
 \item{accelerate}{TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
+
+\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
 }
 \value{
 return the input data with AIS extracted merged. Each line of input data is duplicated: a duplicate for each "t_gap" to extract up to "max_time_diff", and among these, duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.

@@ -7,21 +7,18 @@
 AISinterpolate_all(
   ais_data,
   mmsi_time_to_order = T,
+  t_gap = 30,
+  time_stop = 5 * 60 * 60,
   correct_speed = T,
+  threshold_speed_to_correct = 100,
+  filter_station = T,
+  filter_high_speed = T,
   quantile_station = 0.975,
   threshold_distance_station = 10,
   quantile_high_speed = 0.97,
-  threshold_speed_to_correct = 100,
   threshold_high_speed = 110,
-  filter_station = T,
-  filter_high_speed = T,
   interpolate_station = F,
-  interpolate_high_speed = F,
-  time_stop = 5 * 60 * 60,
-  t_gap = 30,
-  spatial_limit = NA,
-  on_Land_analysis = F,
-  land_sf_polygon = NA
+  interpolate_high_speed = F
 )
 }
 \arguments{
@@ -29,7 +26,17 @@ AISinterpolate_all(
 
 \item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
 
+\item{t_gap}{interval of time (seconds) to which vessels positions are interpolated.}
+
+\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
+
 \item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
+
+\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
+
+\item{filter_station}{if the stations are filtered or not. mmsi_time_to_order}
+
+\item{filter_high_speed}{if the aircraft are filtered or not.}
 
 \item{quantile_station}{Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
 
@@ -37,27 +44,11 @@ AISinterpolate_all(
 
 \item{quantile_high_speed}{Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.}
 
-\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
-
 \item{threshold_high_speed}{threshold of speed used to assess if the mmsi is an aircraft.}
-
-\item{filter_station}{if the stations are filtered or not. mmsi_time_to_order}
-
-\item{filter_high_speed}{if the aircraft are filtered or not.}
 
 \item{interpolate_station}{if the stations are interpolated or not.}
 
 \item{interpolate_high_speed}{if the aircraft are interpolated or not.}
-
-\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
-
-\item{t_gap}{interval of time (seconds) to which vessels positions are interpolated.}
-
-\item{spatial_limit}{sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.}
-
-\item{on_Land_analysis}{sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.}
-
-\item{land_sf_polygon}{if on_Land_analysis, sf polygon object for countries.}
 }
 \value{
 return AIS data with the columns:

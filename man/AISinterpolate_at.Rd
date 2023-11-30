@@ -5,46 +5,69 @@
 \title{Interpolate AIS data at the times of input.}
 \usage{
 AISinterpolate_at(
-  ais_data,
   data_to_interpolate,
-  overwrite = F,
-  file_AISinterlate_at = "AISinterlate_at.rds",
+  ais_data,
   mmsi_time_to_order = T,
-  average_mmsi_at = 0,
-  parallelize = F,
-  nb_cores = NA,
-  outfile = "log.txt",
-  QUIET = F,
+  save_AISinterlate_at = T,
+  overwrite = F,
+  file_AISinterlate_at = "AISinterpolate_at.rds",
   radius = 2e+05,
+  time_stop = 5 * 60 * 60,
   correct_speed = T,
+  threshold_speed_to_correct = 100,
+  average_mmsi_at = 0,
+  filter_station = T,
+  filter_high_speed = T,
   quantile_station = 0.975,
   threshold_distance_station = 10,
   quantile_high_speed = 0.97,
-  threshold_speed_to_correct = 100,
   threshold_high_speed = 110,
-  filter_station = T,
-  filter_high_speed = T,
   interpolate_station = T,
   interpolate_high_speed = T,
-  time_stop = 5 * 60 * 60,
-  spatial_limit = NA,
-  on_Land_analysis = F,
-  land_sf_polygon = NA,
-  return_all = F
+  parallelize = F,
+  nb_cores = NA,
+  outfile = "log.txt",
+  QUIET = F
 )
 }
 \arguments{
+\item{data_to_interpolate}{data timestamps where vessel positions must be interpolate. Contains timestamp, lon and latitude columns}
+
 \item{ais_data}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
 
-\item{data_to_interpolate}{data timestamps where vessel positions must be interpolate. Contains timestamp, lon and latitude columns}
+\item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
+
+\item{save_AISinterlate_at}{if results from AISinterpolate_at must be saved, if run_AISinterpolate_at = T.}
 
 \item{overwrite}{if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.}
 
 \item{file_AISinterlate_at}{if save_AISinterlate_at = T, file where AIS data are saved after AISinterpolate_at}
 
-\item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
+\item{radius}{radius within which AIS data are extracted around the data of input.}
+
+\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
+
+\item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
+
+\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
 
 \item{average_mmsi_at}{number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.}
+
+\item{filter_station}{if the stations are filtered or not.}
+
+\item{filter_high_speed}{if the aircraft are filtered or not.}
+
+\item{quantile_station}{Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
+
+\item{threshold_distance_station}{threshold of distance used to assess if the mmsi is a station.}
+
+\item{quantile_high_speed}{Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.}
+
+\item{threshold_high_speed}{threshold of speed used to assess if the mmsi is an aircraft.}
+
+\item{interpolate_station}{if the stations are interpolated or not.}
+
+\item{interpolate_high_speed}{if the aircraft are interpolated or not.}
 
 \item{parallelize}{if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)}
 
@@ -53,38 +76,6 @@ AISinterpolate_at(
 \item{outfile}{file for output if parallelize = T}
 
 \item{QUIET}{if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.}
-
-\item{radius}{radius within which AIS data are extracted around the data of input.}
-
-\item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
-
-\item{quantile_station}{Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
-
-\item{threshold_distance_station}{threshold of distance used to assess if the mmsi is a station.}
-
-\item{quantile_high_speed}{Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.}
-
-\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
-
-\item{threshold_high_speed}{threshold of speed used to assess if the mmsi is an aircraft.}
-
-\item{filter_station}{if the stations are filtered or not.}
-
-\item{filter_high_speed}{if the aircraft are filtered or not.}
-
-\item{interpolate_station}{if the stations are interpolated or not.}
-
-\item{interpolate_high_speed}{if the aircraft are interpolated or not.}
-
-\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
-
-\item{spatial_limit}{sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.}
-
-\item{on_Land_analysis}{sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.}
-
-\item{land_sf_polygon}{if on_Land_analysis, sf polygon object for countries.}
-
-\item{return_all}{if all AIS data must be returned, after ordering, correction, cleaning and interpolation, or only interpolated positions of the vessels at the time desired (smaller dataset).}
 }
 \value{
 return AIS data with the columns:

@@ -5,7 +5,7 @@
 \title{to estimate distance, time and speed between each AIS data per mmsi}
 \usage{
 AIStravel(
-  AIS,
+  ais_data,
   time_stop = 5 * 60 * 60,
   mmsi_time_to_order = T,
   return_sf = F,
@@ -13,8 +13,6 @@ AIStravel(
 )
 }
 \arguments{
-\item{AIS}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
-
 \item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
 
 \item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
@@ -22,6 +20,8 @@ AIStravel(
 \item{return_sf}{if the output is a sf object or a data frame with coordinates as column variable.}
 
 \item{return_3035_coords}{if ETRS3035 coordinates are returned as X and Y column variables in the output data.}
+
+\item{AIS}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
 }
 \value{
 return the AIS data with the speed calculated based on the distance and time travelled since last AIS reception. Contains the columns:

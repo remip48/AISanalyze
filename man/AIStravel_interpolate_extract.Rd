@@ -8,44 +8,40 @@ Used to extract AIS data in the radius of an input data with location and time.}
 AIStravel_interpolate_extract(
   data,
   ais_data,
-  parallelize = F,
-  nb_cores = NA,
-  outfile = "log.txt",
+  mmsi_time_to_order = T,
   run_AIStravel = T,
   save_AIStravel = T,
   file_AIStravel = "AIStravel.rds",
+  overwrite = F,
+  time_stop = 5 * 60 * 60,
   run_AISinterpolate_at = T,
   save_AISinterlate_at = T,
-  file_AISinterlate_at = "AISinterlate_at.rds",
-  run_AISextract_perHour = T,
-  save_AISextract_perHour = T,
-  file_AISextract_perHour = "AISextract.rds",
-  return_merged_all_extracted = T,
-  time_stop = 5 * 60 * 60,
-  radius = 2e+05,
-  mmsi_time_to_order = T,
-  search_into_radius_m = 50000,
-  max_time_diff = 1 * 60 * 60,
-  duplicate_time = T,
-  t_gap = 2 * 60,
-  average_at = 30,
-  average_mmsi_at = 0,
-  accelerate = T,
-  QUIET = F,
+  file_AISinterlate_at = "AISinterpolate_at.rds",
   correct_speed = T,
+  threshold_speed_to_correct = 100,
+  duplicate_time = T,
+  max_time_diff = 1 * 60 * 60,
+  t_gap = 2 * 60,
+  accelerate = T,
+  average_at = 30,
+  filter_station = T,
+  filter_high_speed = T,
+  interpolate_station = T,
+  interpolate_high_speed = T,
+  radius = 2e+05,
   quantile_station = 0.975,
   threshold_distance_station = 10,
   quantile_high_speed = 0.97,
-  threshold_speed_to_correct = 100,
   threshold_high_speed = 110,
-  filter_station = T,
-  interpolate_station = T,
-  filter_high_speed = T,
-  interpolate_high_speed = T,
-  spatial_limit = NA,
-  on_Land_analysis = F,
-  land_sf_polygon = NA,
-  overwrite = F
+  run_AISextract_perHour = T,
+  save_AISextract_perHour = T,
+  file_AISextract_perHour = "AISextract.rds",
+  search_into_radius_m = 50000,
+  return_merged_all_extracted = T,
+  parallelize = F,
+  nb_cores = NA,
+  outfile = "log.txt",
+  QUIET = F
 )
 }
 \arguments{
@@ -53,11 +49,7 @@ AIStravel_interpolate_extract(
 
 \item{ais_data}{AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.}
 
-\item{parallelize}{if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)}
-
-\item{nb_cores}{number of cores to used for the parallelize}
-
-\item{outfile}{file for output if parallelize = T}
+\item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
 
 \item{run_AIStravel}{if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.}
 
@@ -65,43 +57,39 @@ AIStravel_interpolate_extract(
 
 \item{file_AIStravel}{if save_AIStravel = T, file where AIS data are saved after AIStravel.}
 
+\item{overwrite}{if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.}
+
+\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
+
 \item{run_AISinterpolate_at}{if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.}
 
 \item{save_AISinterlate_at}{if results from AISinterpolate_at must be saved, if run_AISinterpolate_at = T.}
 
 \item{file_AISinterlate_at}{if save_AISinterlate_at = T, file where AIS data are saved after AISinterpolate_at}
 
-\item{run_AISextract_perHour}{if the AIS data must be ran with AISextract, extracting AIS data for data timestamps, up to "max_time_diff".}
+\item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
 
-\item{save_AISextract_perHour}{if results from AISextract must be saved, if run_AISextract_perHour = T.}
-
-\item{file_AISextract_perHour}{if save_AISextract_perHour = T, file where AIS data are saved after AISextract}
-
-\item{return_merged_all_extracted}{if all extracted AIS data, merged with the data frame of input, must be returned. Otherwise, return NULL. Usefull if results have been saved during the process and the output is not necessary (decrease memory used).}
-
-\item{time_stop}{number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.}
-
-\item{radius}{radius within which AIS data are extracted around the data of input.}
-
-\item{mmsi_time_to_order}{if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.}
-
-\item{search_into_radius_m}{radius in which vessels positions are extracted.}
-
-\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
+\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
 
 \item{duplicate_time}{if vessels positions must be extracted only for data timestamp (TRUE), or every "t_gap" seconds, up to "max_time_diff" before the data timestamps.}
 
+\item{max_time_diff}{number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.}
+
 \item{t_gap}{interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.}
-
-\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
-
-\item{average_mmsi_at}{number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.}
 
 \item{accelerate}{TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
 
-\item{QUIET}{if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.}
+\item{average_at}{if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.}
 
-\item{correct_speed}{if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.}
+\item{filter_station}{if the stations are filtered or not.}
+
+\item{filter_high_speed}{if the aircraft are filtered or not.}
+
+\item{interpolate_station}{if the stations are interpolated or not.}
+
+\item{interpolate_high_speed}{if the aircraft are interpolated or not.}
+
+\item{radius}{radius within which AIS data are extracted around the data of input.}
 
 \item{quantile_station}{Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
 
@@ -109,25 +97,25 @@ AIStravel_interpolate_extract(
 
 \item{quantile_high_speed}{Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.}
 
-\item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
-
 \item{threshold_high_speed}{threshold of speed used to assess if the mmsi is an aircraft.}
 
-\item{filter_station}{if the stations are filtered or not.}
+\item{run_AISextract_perHour}{if the AIS data must be ran with AISextract, extracting AIS data for data timestamps, up to "max_time_diff".}
 
-\item{interpolate_station}{if the stations are interpolated or not.}
+\item{save_AISextract_perHour}{if results from AISextract must be saved, if run_AISextract_perHour = T.}
 
-\item{filter_high_speed}{if the aircraft are filtered or not.}
+\item{file_AISextract_perHour}{if save_AISextract_perHour = T, file where AIS data are saved after AISextract}
 
-\item{interpolate_high_speed}{if the aircraft are interpolated or not.}
+\item{search_into_radius_m}{radius in which vessels positions are extracted.}
 
-\item{spatial_limit}{sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.}
+\item{return_merged_all_extracted}{if all extracted AIS data, merged with the data frame of input, must be returned. Otherwise, return NULL. Usefull if results have been saved during the process and the output is not necessary (decrease memory used).}
 
-\item{on_Land_analysis}{sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.}
+\item{parallelize}{if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)}
 
-\item{land_sf_polygon}{if on_Land_analysis, sf polygon object for countries.}
+\item{nb_cores}{number of cores to used for the parallelize}
 
-\item{overwrite}{if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.}
+\item{outfile}{file for output if parallelize = T}
+
+\item{QUIET}{if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.}
 }
 \value{
 return the input data with AIS extracted merged. Each line of input data is duplicated in the output data, a duplicate for each "t_gap" to extract up to "max_time_diff", and a duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
@@ -153,7 +141,6 @@ diffTime_AIS_effort: difference, in seconds, between the AIS position and the da
 \description{
 advice : run this function in a for or lapply loop to apply it per day. The function can return a big dataset with combination of mmsi find for each
 data point, so doing this decrease the final dataset returned. The function apply the process for each day in any case.
-dont use columns with the name "idd"
 }
 \examples{
 # to add
