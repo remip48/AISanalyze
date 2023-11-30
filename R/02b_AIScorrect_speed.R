@@ -153,7 +153,7 @@ AIScorrect_speed <- function(ais_data,
 
     strange_speed <- ais_data %>%  # [(ais_data$speed_kmh > threshold_speed_to_correct | ais_data$speed_kmh >) &
       dplyr::group_by(mmsi) %>%
-      dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr
+      dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)
       ) %>%
       dplyr::ungroup() %>%
       dplyr::filter(id_mmsi_point_initial != 1) %>%

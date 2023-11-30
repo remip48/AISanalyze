@@ -46,6 +46,8 @@ AISinterpolate_at <- function(data_to_interpolate,
                               time_stop = 5*60*60,
                               correct_speed = T,
                               threshold_speed_to_correct = 100,
+                              threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 0], na.rm = T) +
+                                                                                               sd(speed_kmh[speed_kmh > 0 & speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)])*2.5 + 15))},
                               average_mmsi_at = 0,
                               filter_station = T,
                               filter_high_speed = T,
@@ -216,12 +218,13 @@ AISinterpolate_at <- function(data_to_interpolate,
     dplyr::ungroup()
 
   if (correct_speed) {
-    cat("Correct speeds\n")
+    cat("   --> Correct speeds\n")
 
     ais_data <- AIScorrect_speed(ais_data = ais_data,
                                  mmsi_time_to_order = F,
                                  correct_high_speed_craft = F,
                                  threshold_speed_to_correct = threshold_speed_to_correct,
+                                 threshold_speed_to_correct_expr = threshold_speed_to_correct_expr,
                                  time_stop = time_stop)
 
   }
