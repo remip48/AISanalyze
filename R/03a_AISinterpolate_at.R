@@ -1,42 +1,45 @@
-#' Interpolate AIS data at the times of input.
+#' Interpolate AIS data at the desired times.
 #'
-#' @param ais_data AIS data. Must contain a column timestamp, lon, lat and mmsi (numeric value). the mmsi column is the identifier for vessel, and values can be replaced by the IMO for example, but the name of the column must be mmsi.
-#' @param data_to_interpolate data timestamps where vessel positions must be interpolate. Contains timestamp, lon and latitude columns
-#' @param mmsi_time_to_order if MMSI and time are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution.
-#' @param radius radius within which AIS data are extracted around the data of input.
-#' @param QUIET if iterations are printed, either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
-#' @param correct_speed if speeds of vessel need to be corrected, to remove GPS errors/delay and unrealistic speeds.
-#' @param quantile_station Quantile of distance by mmsi used to assess if the mmsi is a station or not. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
-#' @param threshold_distance_station threshold of distance used to assess if the mmsi is a station.
-#' @param quantile_high_speed Quantile of speed by mmsi used to assess if the mmsi is a aircraft or not. We used 0.975 to prevent misinterpretations from GPS errors.
-#' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
-#' @param threshold_high_speed threshold of speed used to assess if the mmsi is an aircraft.
-#' @param filter_station if the stations are filtered or not.
-#' @param filter_high_speed if the aircraft are filtered or not.
-#' @param interpolate_station if the stations are interpolated or not.
-#' @param interpolate_high_speed if the aircraft are interpolated or not.
-#' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
-#' @param overwrite if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.
-#' @param file_AISinterlate_at if save_AISinterlate_at = T, file where AIS data are saved after AISinterpolate_at
-#' @param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
-#' @param parallelize if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)
-#' @param nb_cores number of cores to used for the parallelize
-#' @param outfile file for output if parallelize = T
-#' @param save_AISinterlate_at if results from AISinterpolate_at must be saved, if run_AISinterpolate_at = T.
-
-#' @return return AIS data with the columns:
-#' id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
-#' station: if the MMSI is a station or not.
-#' high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
-#' any_NA_speed_kmh: if any of the MMSI point has a value of speed of NA (so distance_travelled or time_travelled has a issue and the MMSI points must be checked). Should not occur.
-#' n_point_mmsi_initial_data: number of point of the MMSI in the initial AIS data, removing firstly the inexisting longitude and latitude points.
-#' id_mmsi_point_initial: identifier for the MMSI point in the ordered, corrected and cleaned AIS data.
-#' speed_kmh_corrected: if the speed of this line has been corrected or not.
-#' interpolated: if this AIS position is an interpolation or not.
+#' Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long.
+#'
+#' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
+#' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
+#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)
+#' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
+#' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
+#' @param radius radius (kilometers) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
+#' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
+#' @param correct_speed if TRUE, GPS errors and GPS delays are identified and removed from AIS data. Vessel speeds, distance and time travelled are corrected. Usually necessary.
+#' @param threshold_speed_to_correct threshold (km/h) above which speeds are considered as unrealistic and due to a GPS error or delay.
+#' @param threshold_speed_to_correct_expr expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions.
+#' @param filter_station if TRUE, filter the stations out.
+#' @param filter_high_speed if TRUE, filter the aircraft out.
+#' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
+#' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
+#' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
+#' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
+#' @param interpolate_station if FALSE, do not interpolate the positions of the stations.
+#' @param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
+#' @param parallelize if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)
+#' @param nb_cores number of cores to used with doParallel.
+#' @param outfile file to print the logs if parallelize = T.
+#' @param QUIET if TRUE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
+#'
+#' @return return AIS data at the timestamps desired, interpolated (or not). Contains the columns:
+#' id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
+#' station: if TRUE, the MMSI has been identified as a station.
+#' high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+#' any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+#' n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+#' id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+#' speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+#' interpolated: if TRUE, this MMSI position has been interpolated.
+#'
 #' @export
 #'
 #' @examples # to add
-AISinterpolate_at <- function(data_to_interpolate,
+AISinterpolate_at <- function(data,
                               ais_data,
                               mmsi_time_to_order = T,
                               save_AISinterlate_at = T,
@@ -48,7 +51,7 @@ AISinterpolate_at <- function(data_to_interpolate,
                               threshold_speed_to_correct = 100,
                               threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 0], na.rm = T) +
                                                                                                sd(speed_kmh[speed_kmh > 0 & speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)])*2.5 + 15))},
-                              average_mmsi_at = 0,
+                              # average_mmsi_at = 0,
                               filter_station = T,
                               filter_high_speed = T,
                               quantile_station = 0.975,
@@ -71,7 +74,8 @@ AISinterpolate_at <- function(data_to_interpolate,
   # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
   # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
   # param return_all if all AIS data must be returned, after ordering, correction, cleaning and interpolation, or only interpolated positions of the vessels at the time desired (smaller dataset).
-
+  # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
+  average_mmsi_at <- 0
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -84,10 +88,10 @@ AISinterpolate_at <- function(data_to_interpolate,
 
   if (save_AISinterlate_at & is.na(file_AISinterlate_at)) {
     cat("save_AISinterlate_at is TRUE but file_AISinterlate_at is NA: change file name\n")
+    file_AISinterlate_at <- "NA"
   }
-  file_AISinterlate_at <- as.character(file_AISinterlate_at)
 
-  timestamp_to_interpolate <- na.omit(unique(data_to_interpolate$timestamp))
+  timestamp_to_interpolate <- na.omit(unique(data$timestamp))
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
     if (!("sf" %in% class(ais_data))) {
@@ -124,10 +128,10 @@ AISinterpolate_at <- function(data_to_interpolate,
     dplyr::mutate(id_ais_data_initial = 1:n())
 
   ais_data <- ais_data %>%
-    dplyr::mutate(inside_temp = ifelse(timestamp >= min(data_to_interpolate$timestamp, na.rm = T) &
-                                         timestamp <= max(data_to_interpolate$timestamp, na.rm = T), T, F),
-                  before_temp = ifelse(timestamp < min(data_to_interpolate$timestamp, na.rm = T), T, F),
-                  after_temp = ifelse(timestamp > max(data_to_interpolate$timestamp, na.rm = T), T, F))
+    dplyr::mutate(inside_temp = ifelse(timestamp >= min(data$timestamp, na.rm = T) &
+                                         timestamp <= max(data$timestamp, na.rm = T), T, F),
+                  before_temp = ifelse(timestamp < min(data$timestamp, na.rm = T), T, F),
+                  after_temp = ifelse(timestamp > max(data$timestamp, na.rm = T), T, F))
 
   ais_data <- ais_data %>%
     dplyr::group_by(mmsi) %>%
@@ -145,8 +149,8 @@ AISinterpolate_at <- function(data_to_interpolate,
   # }
 
   if (radius != Inf) {
-    ais_data <- ais_data[ais_data$X >= (min(data_to_interpolate$X, na.rm = T) - radius) & ais_data$X <= (max(data_to_interpolate$X, na.rm = T) + radius) &
-                           ais_data$Y >= (min(data_to_interpolate$Y, na.rm = T) - radius) & ais_data$Y <= (max(data_to_interpolate$Y, na.rm = T) + radius), ]
+    ais_data <- ais_data[ais_data$X >= (min(data$X, na.rm = T) - radius) & ais_data$X <= (max(data$X, na.rm = T) + radius) &
+                           ais_data$Y >= (min(data$Y, na.rm = T) - radius) & ais_data$Y <= (max(data$Y, na.rm = T) + radius), ]
   }
   if (time_stop != Inf) {
     ais_data <- ais_data[ais_data$timestamp >= (min(timestamp_to_interpolate) - (time_stop + average_mmsi_at)) &
@@ -285,7 +289,7 @@ AISinterpolate_at <- function(data_to_interpolate,
           }
 
           if (radius != Inf) {
-            data_coords <- data_to_interpolate[data_to_interpolate$timestamp == t, ]
+            data_coords <- data[data$timestamp == t, ]
 
             if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
               if (!("sf" %in% class(data_coords))) {
@@ -526,7 +530,7 @@ AISinterpolate_at <- function(data_to_interpolate,
           }
 
           if (radius != Inf) {
-            data_coords <- data_to_interpolate[data_to_interpolate$timestamp == t, ]
+            data_coords <- data[data$timestamp == t, ]
 
             if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
               if (!("sf" %in% class(data_coords))) {

@@ -1,15 +1,17 @@
-#' function to duplicate data with times before the data timestamp, to investigate the AIS presence before the time of the data.
+#' Extend timestamps of data to past timestamps
 #'
-#' @param data Data of interest for AIS extraction. Must contain a column "timestamp", "lon" and "lat" (numeric values).
-#' @param max_time_diff number of seconds before the timestamp of every data timestamp, where boat positions are considered/extracted.
-#' @param t_gap interval of time into which vessels positions are extracted, from the data timestamp up to "max_time_diff" seconds before. This defines also the time interval where boat are considered for the extraction.
-#' @param accelerate TRUE or FALSE: if data timestamps must be averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.
-#' @param average_at if accelerate = TRUE, average the data timestamps to +- average_at to decrease the number of data timestamp to process. This defines also the time interval where boat are considered for the extraction.
+#' Extend timestamps of data to past timestamps, by duplicating the data lines (except timestamp, which goes from the timestamp of the data to "max_time_diff" seconds before, by steps of "t_gap"). Used in internal functions to investigate the AIS presence before the timestamp of the data.
 #'
-#' @return the data frame with the lines duplicated for each "t_gap" to extract up to "max_time_diff". The output contains the columns:
-#' timestamp_AIS_to_extract: timestamp for the extraction of the AIS for this line (= data timestamp if average_at = 0 & average_mmsi_at = 0 & accelerate = F).
-#' diffTime_AIS_extraction_effort: difference, in seconds, between the timestamp to extract (timestamp_AIS_to_extract) and the data timestamp.
-#' datetime_AIS_to_extract: datetime (ymd_hms) of timestamp_AIS_to_extract
+#' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
+#' @param max_time_diff if duplicate_time = TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.
+#' @param t_gap see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "average_at" parameter (otherwise other AIS data are filtered out).
+#' @param accelerate if TRUE, data timestamps are averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.
+#' @param average_at if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).
+#'
+#' @return The data frame with the lines duplicated for each timestamps, from the data timestamps up to "max_time_diff" by steps of "t_gap". Contains the columns:
+#' timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
+#' diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
+#' datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
 
 #' @export
 #'

@@ -1,6 +1,8 @@
-#' Title
+#' Estimate vessel type and vessel length
 #'
-#' @param ais
+#' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data.
+#'
+#' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param threshold_length
 #' @param weight_complete_data
 #'
@@ -8,7 +10,7 @@
 #' @export
 #'
 #' @examples
-MMSIlength <- function(ais, ## need one column length, one shiptype, and one date
+MMSI_infos <- function(ais_data, ## need one column length, one shiptype, and one date
                        threshold_length = 475,
                        weight_complete_data = 10) {
 
