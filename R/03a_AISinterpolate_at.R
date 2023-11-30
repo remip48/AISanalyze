@@ -487,8 +487,8 @@ AISinterpolate_at <- function(data_to_interpolate,
 
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+          cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
         }
-        cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
 
         gc()
       } else {
@@ -730,8 +730,8 @@ AISinterpolate_at <- function(data_to_interpolate,
 
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+          cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
         }
-        cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
 
         gc()
       } else {

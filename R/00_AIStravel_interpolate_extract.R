@@ -330,8 +330,8 @@ AIStravel_interpolate_extract <- function(data,
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
                     file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
-          cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
 
           rm(eff_h)
           rm(hourly_mmsi)
@@ -407,8 +407,8 @@ AIStravel_interpolate_extract <- function(data,
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
                     file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
-          cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
 
           rm(eff_h)
           rm(hourly_mmsi)
