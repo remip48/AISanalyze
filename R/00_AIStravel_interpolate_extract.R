@@ -100,7 +100,7 @@ AIStravel_interpolate_extract <- function(data,
                                           nb_cores = NA,
                                           outfile = "log.txt",
                                           # average_mmsi_at = 0,
-                                          QUIET = F,
+                                          QUIET = F
                                           # spatial_limit = NA,
                                           # on_Land_analysis = F,
                                           # land_sf_polygon = NA,
