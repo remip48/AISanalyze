@@ -108,7 +108,7 @@ AIStravel <- function(ais_data,
   }
 
   rm(mmsi_prev)
-  rm(coords_ais_data)
+  # rm(coords_ais_data)
 
   return(ais_data)
 
