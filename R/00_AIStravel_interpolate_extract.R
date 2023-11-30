@@ -206,18 +206,18 @@ AIStravel_interpolate_extract <- function(data,
   if (run_AISinterpolate_at) {
     cat("Interpolating MMSI positions for data times\n")
 
-    if (any(!is.na(spatial_limit))) {
-      if (st_crs(spatial_limit)$input != "EPSG:3035") {
-        spatial_limit <- spatial_limit %>%
-          st_transform(crs = 3035)
-      }
-    }
-    if (any(!is.na(land_sf_polygon))) {
-      if (st_crs(land_sf_polygon)$input != "EPSG:3035") {
-        land_sf_polygon <- land_sf_polygon %>%
-          st_transform(crs = 3035)
-      }
-    }
+    # if (any(!is.na(spatial_limit))) {
+    #   if (st_crs(spatial_limit)$input != "EPSG:3035") {
+    #     spatial_limit <- spatial_limit %>%
+    #       st_transform(crs = 3035)
+    #   }
+    # }
+    # if (any(!is.na(land_sf_polygon))) {
+    #   if (st_crs(land_sf_polygon)$input != "EPSG:3035") {
+    #     land_sf_polygon <- land_sf_polygon %>%
+    #       st_transform(crs = 3035)
+    #   }
+    # }
 
     ais_data <- AISinterpolate_at(ais_data = ais_data,
                                   mmsi_time_to_order = F,
