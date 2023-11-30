@@ -1,4 +1,5 @@
 AIScorrect_speed <- function(ais_data,
+                             mmsi_time_to_order = T,
                              correct_high_speed_craft = F,
                              threshold_speed_to_correct = 100,
                              threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 0], na.rm = T) +

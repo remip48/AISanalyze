@@ -219,6 +219,7 @@ AISinterpolate_at <- function(data_to_interpolate,
     cat("Correct speeds\n")
 
     ais_data <- AIScorrect_speed(ais_data = ais_data,
+                                 mmsi_time_to_order = F,
                                  correct_high_speed_craft = F,
                                  threshold_speed_to_correct = threshold_speed_to_correct,
                                  time_stop = time_stop)
