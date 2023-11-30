@@ -35,10 +35,10 @@ AISextract <- function(data,
                        ais_data,
                        search_into_radius_m = 50000,
                        duplicate_time = F,
-                       max_time_diff = 0,
-                       average_at = 0,
                        t_gap = 10*60,
-                       accelerate = F
+                       max_time_diff = 0,
+                       accelerate = F,
+                       average_at = 0
 ) {
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")

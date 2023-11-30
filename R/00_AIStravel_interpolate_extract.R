@@ -25,8 +25,6 @@
 #' @param interpolate_station if the stations are interpolated or not.
 #' @param filter_high_speed if the aircraft are filtered or not.
 #' @param interpolate_high_speed if the aircraft are interpolated or not.
-#' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
-#' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
 #' @param parallelize if the interpolation and extract must be parallelized (required performant computer with increasing AIS dataframe and data timestamp to process.)
 #' @param nb_cores number of cores to used for the parallelize
 #' @param outfile file for output if parallelize = T
@@ -41,9 +39,7 @@
 #' @param file_AISextract_perHour if save_AISextract_perHour = T, file where AIS data are saved after AISextract
 #' @param return_merged_all_extracted if all extracted AIS data, merged with the data frame of input, must be returned. Otherwise, return NULL. Usefull if results have been saved during the process and the output is not necessary (decrease memory used).
 #' @param radius radius within which AIS data are extracted around the data of input.
-#' @param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
 #' @param overwrite if any file must be written (save_AIStravel, save_AISinterlate_at, save_AISextract_perHour), if file are overwritten. Otherwise load the files if files are already existing and if the file is needed in the function.
-#' @param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
 #'
 #' @return return the input data with AIS extracted merged. Each line of input data is duplicated in the output data, a duplicate for each "t_gap" to extract up to "max_time_diff", and a duplicate for each MMSI present in the "radius" at the timestamp of interest. If no AIS are present in the radius, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
 #' The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
@@ -69,46 +65,52 @@
 #'
 #' @examples # to add
 AIStravel_interpolate_extract <- function(data,
-                               ais_data,
-                               parallelize = F,
-                               nb_cores = NA,
-                               outfile = "log.txt",
-                               run_AIStravel = T,
-                               save_AIStravel = T,
-                               file_AIStravel = "AIStravel.rds",
-                               run_AISinterpolate_at = T,
-                               save_AISinterlate_at = T,
-                               file_AISinterlate_at = "AISinterpolate_at.rds",
-                               run_AISextract_perHour = T,
-                               save_AISextract_perHour = T,
-                               file_AISextract_perHour = "AISextract.rds",
-                               return_merged_all_extracted = T,
-                               time_stop = 5*60*60,
-                               radius = 200000,
-                               mmsi_time_to_order = T,
-                               search_into_radius_m = 50000,
-                               max_time_diff = 1 * 60 * 60,
-                               duplicate_time = T,
-                               t_gap = 2*60,
-                               average_at = 30,
-                               average_mmsi_at = 0,
-                               accelerate = T,
-                               QUIET = F,
-                               correct_speed = T,
-                               quantile_station = 0.975,
-                               threshold_distance_station = 10,
-                               quantile_high_speed = 0.97,
-                               threshold_speed_to_correct = 100,
-                               threshold_high_speed = 110,
-                               filter_station = T,
-                               interpolate_station = T,
-                               filter_high_speed = T,
-                               interpolate_high_speed = T,
-                               spatial_limit = NA,
-                               on_Land_analysis = F,
-                               land_sf_polygon = NA,
-                               overwrite = F
+                                          ais_data,
+                                          mmsi_time_to_order = T,
+                                          run_AIStravel = T,
+                                          save_AIStravel = T,
+                                          file_AIStravel = "AIStravel.rds",
+                                          overwrite = F,
+                                          time_stop = 5*60*60,
+                                          run_AISinterpolate_at = T,
+                                          save_AISinterlate_at = T,
+                                          file_AISinterlate_at = "AISinterpolate_at.rds",
+                                          correct_speed = T,
+                                          threshold_speed_to_correct = 100,
+                                          duplicate_time = T,
+                                          max_time_diff = 1 * 60 * 60,
+                                          t_gap = 2*60,
+                                          accelerate = T,
+                                          average_at = 30,
+                                          filter_station = T,
+                                          filter_high_speed = T,
+                                          interpolate_station = T,
+                                          interpolate_high_speed = T,
+                                          radius = 200000,
+                                          quantile_station = 0.975,
+                                          threshold_distance_station = 10,
+                                          quantile_high_speed = 0.97,
+                                          threshold_high_speed = 110,
+                                          run_AISextract_perHour = T,
+                                          save_AISextract_perHour = T,
+                                          file_AISextract_perHour = "AISextract.rds",
+                                          search_into_radius_m = 50000,
+                                          return_merged_all_extracted = T,
+                                          parallelize = F,
+                                          nb_cores = NA,
+                                          outfile = "log.txt",
+                                          # average_mmsi_at = 0,
+                                          QUIET = F,
+                                          # spatial_limit = NA,
+                                          # on_Land_analysis = F,
+                                          # land_sf_polygon = NA,
 ) {
+
+  # param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
+  # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
+  # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
+  average_mmsi_at <- 0
+  # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -185,8 +187,8 @@ AIStravel_interpolate_extract <- function(data,
   if (run_AIStravel) {
     cat("Estimating speed, distance and time travelled by MMSI\n")
 
-    ais_data <- AIStravel(ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
-                                     ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
+    ais_data <- AIStravel(ais_data = ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
+                                                ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
                           time_stop = time_stop,
                           mmsi_time_to_order = mmsi_time_to_order,
                           return_sf = F,
@@ -225,7 +227,7 @@ AIStravel_interpolate_extract <- function(data,
                                   average_mmsi_at = average_mmsi_at,
                                   data_to_interpolate = (eff_d %>%
                                                            dplyr::select(timestamp, lon, lat, X, Y) %>%
-                                                           distinct()),
+                                                           dplyr::distinct()),
                                   radius = radius,
                                   quantile_station = quantile_station,
                                   threshold_distance_station = threshold_distance_station,
@@ -238,10 +240,10 @@ AIStravel_interpolate_extract <- function(data,
                                   interpolate_high_speed = interpolate_high_speed,
                                   save_AISinterlate_at = save_AISinterlate_at,
                                   time_stop = time_stop,
-                                  spatial_limit = spatial_limit,
-                                  on_Land_analysis = on_Land_analysis,
-                                  land_sf_polygon = land_sf_polygon,
-                                  return_all = F,
+                                  # spatial_limit = spatial_limit,
+                                  # on_Land_analysis = on_Land_analysis,
+                                  # land_sf_polygon = land_sf_polygon,
+                                  # return_all = F,
                                   parallelize = parallelize,
                                   nb_cores = nb_cores,
                                   outfile = outfile)
@@ -449,6 +451,7 @@ AIStravel_interpolate_extract <- function(data,
   rm(dates_ais)
 
   gc()
+  cat("                                DONE                                  \n")
 
   return(daily_ais)
 

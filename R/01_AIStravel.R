@@ -14,7 +14,8 @@
 #' @export
 #'
 #' @examples # to add
-AIStravel <- function(AIS,
+
+AIStravel <- function(ais_data,
                       time_stop = 5*60*60,
                       mmsi_time_to_order = T,
                       return_sf = F,
@@ -31,35 +32,69 @@ AIStravel <- function(AIS,
   # lapply(pack, library, character.only = TRUE)
 
   if (mmsi_time_to_order) {
-    AIS <- AIS %>%
+    ais_data <- ais_data %>%
       dplyr::arrange(mmsi, timestamp)
   }
 
-  AIS <- AIS[!duplicated(paste0(AIS$mmsi, AIS$timestamp)), ]
+  ais_data <- ais_data[!duplicated(paste0(ais_data$mmsi, ais_data$timestamp)), ]
 
-  AIS <- AIS %>%
-    dplyr::mutate(tlon = lon,
-                  tlat = lat) %>%
-    st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
-    st_transform(crs = 3035)
+  ####
+  if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
+    if (!("sf" %in% class(ais_data))) {
+      ais_data <- ais_data %>%
+        dplyr::mutate(tlon = lon,
+                      tlat = lat) %>%
+        sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+    }
+    if (st_crs(ais_data)$input != "EPSG:3035") {
+      ais_data <- ais_data %>%
+        sf::st_transform(crs = 3035)
+    }
 
-  coords_AIS <- AIS %>%
-    st_coordinates()
+    coords_AIS <- ais_data %>%
+      sf::st_coordinates() %>%
+      as.data.frame()
 
-  mmsi_prev <- AIS$mmsi[-nrow(AIS)]
+    if (!return_sf) {
+      ais_data <- ais_data %>%
+        sf::st_drop_geometry()
+    }
 
-  if (!return_sf) {
-    AIS <- AIS %>%
-      st_drop_geometry()
+    ais_data <- ais_data %>%
+      # sf::st_drop_geometry() %>%
+      dplyr::mutate(X = coords_AIS[,1],
+                    Y = coords_AIS[,2])
+
+    rm(coords_AIS)
   }
 
-  AIS <- AIS %>%
-    dplyr::mutate(X = coords_AIS[,1],
-                  Y = coords_AIS[,2],
-                  tmmsi = c("initial", mmsi_prev)) %>%
-    dplyr::filter(!is.na(X) & !is.na(Y) & !is.nan(X) & !is.nan(Y))
+  ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
+  ####
 
-  AIS <- AIS %>%
+  # ais_data <- ais_data %>%
+  #   dplyr::mutate(tlon = lon,
+  #                 tlat = lat) %>%
+  #   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
+  #   sf::st_transform(crs = 3035)
+#
+  # coords_ais_data <- ais_data %>%
+  #   st_coordinates()
+
+  mmsi_prev <- ais_data$mmsi[-nrow(ais_data)]
+
+  # if (!return_sf) {
+  #   ais_data <- ais_data %>%
+  #     sf::st_drop_geometry()
+  # }
+
+  ais_data <- ais_data %>%
+    dplyr::mutate(
+      # X = coords_ais_data[,1],
+      #             Y = coords_ais_data[,2],
+                  tmmsi = c("initial", mmsi_prev)) #%>%
+    # dplyr::filter(!is.na(X) & !is.na(Y) & !is.nan(X) & !is.nan(Y))
+
+  ais_data <- ais_data %>%
     dplyr::mutate(time_travelled = timestamp - c(first(timestamp), timestamp[-n()]),
                   time_travelled = ifelse(time_travelled > time_stop | mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)), 0, time_travelled),
                   distance_travelled = ifelse(time_travelled == 0, 0, c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2))),
@@ -68,13 +103,13 @@ AIStravel <- function(AIS,
     dplyr::select(-c("tmmsi"))
 
   if (!return_3035_coords) {
-    AIS <- AIS %>%
+    ais_data <- ais_data %>%
       dplyr::select(-c("X", "Y"))
   }
 
   rm(mmsi_prev)
-  rm(coords_AIS)
+  rm(coords_ais_data)
 
-  return(AIS)
+  return(ais_data)
 
 }

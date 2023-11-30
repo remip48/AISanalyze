@@ -14,10 +14,7 @@
 #' @param interpolate_high_speed if the aircraft are interpolated or not.
 #' @param time_stop number of seconds around the AIS reception considered for interpolation of vessel positions. Interval of time higher than "time_stop" between 2 AIS receptions are considered as a stop of the movement. Filter also AIS data around data timestamp +- time_stop to accelerate the process.
 #' @param t_gap interval of time (seconds) to which vessels positions are interpolated.
-#' @param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
-#' @param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
-#' @param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
-#'
+
 #' @return return AIS data with the columns:
 #' id_ais_data_initial: identifier of the row line in the ais data, ordered, corrected and cleaned. Use for internal computation. For interpolated data, id_ais_data_initial is the same than the next real existing line.
 #' station: if the MMSI is a station or not.
@@ -32,21 +29,27 @@
 #' @examples # to add
 AISinterpolate_all <- function(ais_data,
                                mmsi_time_to_order = T,
+                               t_gap = 30,
+                               time_stop = 5 * 60 * 60,
                                correct_speed = T,
+                               threshold_speed_to_correct = 100,
+                               filter_station = T,
+                               filter_high_speed = T,
                                quantile_station = 0.975,
                                threshold_distance_station = 10,
                                quantile_high_speed = 0.97,
-                               threshold_speed_to_correct = 100,
                                threshold_high_speed = 110,
-                               filter_station = T,
-                               filter_high_speed = T,
                                interpolate_station = F,
-                               interpolate_high_speed = F,
-                               time_stop = 5 * 60 * 60,
-                               t_gap = 30,
-                               spatial_limit = NA,
-                               on_Land_analysis = F,
-                               land_sf_polygon = NA){
+                               interpolate_high_speed = F#,
+                               # spatial_limit = NA,
+                               # on_Land_analysis = F,
+                               # land_sf_polygon = NA
+                               ){
+
+  # param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
+  # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
+  # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
+
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -332,22 +335,22 @@ AISinterpolate_all <- function(ais_data,
   rm(to_interp)
   rm(interp)
 
-  if (!is.na(spatial_limit)) {
-    to_keep <- colnames(interp_eez)
-
-    interp_eez <- interp_eez %>%
-      dplyr::mutate(tlon = lon,
-                    tlat = lat) %>%
-      st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
-      st_transform(crs = 3035)
-
-    interp_eez <- interp_eez[st_intersects(interp_eez, spatial_limit %>%
-                                             st_transform(crs = 3035), sparse = F), ] %>%
-      st_drop_geometry() %>%
-      dplyr::select(all_of(to_keep))
-
-    rm(to_keep)
-  }
+  # if (!is.na(spatial_limit)) {
+  #   to_keep <- colnames(interp_eez)
+  #
+  #   interp_eez <- interp_eez %>%
+  #     dplyr::mutate(tlon = lon,
+  #                   tlat = lat) %>%
+  #     st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
+  #     st_transform(crs = 3035)
+  #
+  #   interp_eez <- interp_eez[st_intersects(interp_eez, spatial_limit %>%
+  #                                            st_transform(crs = 3035), sparse = F), ] %>%
+  #     st_drop_geometry() %>%
+  #     dplyr::select(all_of(to_keep))
+  #
+  #   rm(to_keep)
+  # }
 
   ais_data <- ais_data %>%
     dplyr::filter(!(ais_data$id_ais_data_initial %in% unique(interp_eez$id_ais_data_initial))) %>%
@@ -364,33 +367,33 @@ AISinterpolate_all <- function(ais_data,
 
   rm(interp_eez)
 
-  if (on_Land_analysis)  {
-    ######### to check on land,
-    ais_data <- ais_data %>%
-      dplyr::mutate(tlon = lon,
-                    tlat = lat) %>%
-      st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
-      st_transform(crs = 3035) %>%
-      dplyr::mutate(on_Land = c(ifelse(st_intersects(., land_sf_polygon %>%
-                                                       st_transform(crs = 3035), sparse = F) == F, F, T))) %>%
-      st_drop_geometry()
-
-    ais_data <- ais_data %>%
-      group_by(mmsi) %>%
-      dplyr::mutate(sum_distance_mmsi_on_Land = sum(distance_travelled[on_Land == T], na.rm = T),
-             total_distance_mmsi = sum(distance_travelled, na.rm = T),
-             sum_time_mmsi_on_Land = sum(time_travelled[on_Land == T], na.rm = T),
-             total_time_mmsi = sum(time_travelled, na.rm = T)) %>%
-      ungroup() %>%
-      group_by(mmsi, id_mmsi_point_initial) %>%
-      dplyr::mutate(sum_distance_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
-             sum_time_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(time_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
-             sum_distance_interp_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[interpolated == T], na.rm = T), NA),
-             sum_time_interp_for_initial_points = ifelse(any(interpolated), sum(time_travelled[interpolated == T], na.rm = T), NA),
-             perc_distance_interp_for_initial_points = dist_interp_idd_on_Land / dist_interp_idd,
-             perc_time_interp_for_initial_points = time_interp_idd_on_Land / time_interp_idd) %>%
-      ungroup()
-  }
+  # if (on_Land_analysis)  {
+  #   ######### to check on land,
+  #   ais_data <- ais_data %>%
+  #     dplyr::mutate(tlon = lon,
+  #                   tlat = lat) %>%
+  #     st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
+  #     st_transform(crs = 3035) %>%
+  #     dplyr::mutate(on_Land = c(ifelse(st_intersects(., land_sf_polygon %>%
+  #                                                      st_transform(crs = 3035), sparse = F) == F, F, T))) %>%
+  #     st_drop_geometry()
+  #
+  #   ais_data <- ais_data %>%
+  #     group_by(mmsi) %>%
+  #     dplyr::mutate(sum_distance_mmsi_on_Land = sum(distance_travelled[on_Land == T], na.rm = T),
+  #            total_distance_mmsi = sum(distance_travelled, na.rm = T),
+  #            sum_time_mmsi_on_Land = sum(time_travelled[on_Land == T], na.rm = T),
+  #            total_time_mmsi = sum(time_travelled, na.rm = T)) %>%
+  #     ungroup() %>%
+  #     group_by(mmsi, id_mmsi_point_initial) %>%
+  #     dplyr::mutate(sum_distance_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
+  #            sum_time_interp_on_Land_for_initial_points = ifelse(any(interpolated), sum(time_travelled[on_Land == T & interpolated == T], na.rm = T), NA),
+  #            sum_distance_interp_for_initial_points = ifelse(any(interpolated), sum(distance_travelled[interpolated == T], na.rm = T), NA),
+  #            sum_time_interp_for_initial_points = ifelse(any(interpolated), sum(time_travelled[interpolated == T], na.rm = T), NA),
+  #            perc_distance_interp_for_initial_points = dist_interp_idd_on_Land / dist_interp_idd,
+  #            perc_time_interp_for_initial_points = time_interp_idd_on_Land / time_interp_idd) %>%
+  #     ungroup()
+  # }
 
   if ("id_mmsi_point_initial_real" %in% colnames(ais_data)) {
     ais_data <- ais_data %>%

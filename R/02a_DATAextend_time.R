@@ -15,10 +15,10 @@
 #'
 #' @examples # to add
 DATAextend_time <- function(data,
-                             max_time_diff = 1 * 60 * 60,
-                             t_gap = 30,
-                             accelerate = T,
-                             average_at = 30) {
+                            max_time_diff = 1 * 60 * 60,
+                            t_gap = 30,
+                            accelerate = T,
+                            average_at = 30) {
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -33,7 +33,7 @@ DATAextend_time <- function(data,
     list_times <- seq(min(data$timestamp, na.rm = T) - (max_time_diff + t_gap), max(data$timestamp, na.rm = T) + t_gap, by = average_at)
 
     ref <- data %>%
-      group_by(timestamp) %>%
+      dplyr::group_by(timestamp) %>%
       dplyr::mutate(timestamp_AIS_to_extract = list_times[which.min(abs(list_times - unique(timestamp)))],
                     diffTime_AIS_extraction_effort = timestamp_AIS_to_extract - unique(timestamp)) %>%
       ungroup()
@@ -60,7 +60,7 @@ DATAextend_time <- function(data,
     if (t_gap < 0 | max_time_diff < 0) {
       stop("t_gap or max_time_diff lower than 0")
     } else if (max_time_diff > 0 & t_gap > 0) {
-      data <- map_dfr(.x = unique(c(seq(0, max_time_diff, t_gap), max_time_diff)), .f = function(t) {
+      data <- purrr::map_dfr(.x = unique(c(seq(0, max_time_diff, t_gap), max_time_diff)), .f = function(t) {
         return(data %>%
                  dplyr::mutate(timestamp_AIS_to_extract = timestamp - t,
                                diffTime_AIS_extraction_effort = -t))
@@ -73,7 +73,7 @@ DATAextend_time <- function(data,
   }
 
   data <- data %>%
-    distinct() %>%
+    dplyr::distinct() %>%
     dplyr::arrange(timestamp_AIS_to_extract) %>%
     dplyr::mutate(datetime_AIS_to_extract = lubridate::as_datetime(timestamp_AIS_to_extract))
 
