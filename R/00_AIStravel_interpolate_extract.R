@@ -227,7 +227,7 @@ AIStravel_interpolate_extract <- function(data,
                                   QUIET = QUIET,
                                   file_AISinterlate_at = file_AISinterlate_at,
                                   overwrite = overwrite,
-                                  average_mmsi_at = average_mmsi_at,
+                                  # average_mmsi_at = average_mmsi_at,
                                   data = (eff_d %>%
                                             dplyr::select(timestamp, lon, lat, X, Y) %>%
                                             dplyr::distinct()),
