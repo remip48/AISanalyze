@@ -1,12 +1,27 @@
 #' Estimate vessel type and vessel length
 #'
-#' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data.
+#' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data. Use the length and type occurring the most to estimate the probable real values, and weight more the lines having complete data than partial data information. The shiptypes should be checked before hand to merge the same shiptypes entered as different names.
 #'
-#' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param ais_data AIS data. Must contain the columns shiptype, length and mmsi (Maritime mobile service identity). The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param threshold_length threshold (meters) above which the length is considered as unrealistic (and set as NA).
-#' @param weight_complete_data weigth for lines having both the information on length and on the type: complete lines are supposed to be more reliable (10 by default for the weight).
+#' @param weight_complete_data weigth for lines having both the information on length and on type: complete lines are supposed to be more reliable (10 by default for the weight).
 #'
-#' @return
+#' @return A data frame with one MMSI by row, and containing the columns:
+#' npoint: total number of AIS receptions for this MMSI.
+#' npoint_all_lengths: number of AIS reception having a value in the column length for this MMSI.
+#' npoint_all_lengths_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column length for this MMSI.
+#' all_lengths: all the values of length found in the AIS data for this MMSI.
+#' n_length: number of values of length found in the AIS data for this MMSI.
+#' length: estimated length of the MMSI, based on the weighted number of points of each length. The length having the greatest score is considered as the real length.
+#' npoint_length: number of AIS reception having the value "length" (estimated real length) for this MMSI.
+#' npoint_length_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "length" (estimated real length) for this MMSI.
+#' npoint_all_type: number of AIS reception having a value in the column shiptype for this MMSI.
+#' npoint_all_type_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column shiptype for this MMSI.
+#' all_types: all the values of shiptype found in the AIS data for this MMSI.
+#' n_type: number of values of shiptype found in the AIS data for this MMSI.
+#' type: estimated shiptype of the MMSI, based on the weighted number of points of each shiptype. The shiptype having the greatest score is considered as the real shiptype
+#' npoint_type: number of AIS reception having the value "type" (estimated real shiptype) for this MMSI.
+#' npoint_type_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "type" (estimated real shiptype) for this MMSI.
 #' @export
 #'
 #' @examples
