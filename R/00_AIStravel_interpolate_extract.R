@@ -255,7 +255,7 @@ AIStravel_interpolate_extract <- function(data,
     if (save_AISinterlate_at & (!file.exists(file_AISinterlate_at) | overwrite)) {
       saveRDS(ais_data, file = file_AISinterlate_at)
     }
-    cat("\n______________________________________________________________________\n")
+    # cat("\n______________________________________________________________________\n")
 
   }
 

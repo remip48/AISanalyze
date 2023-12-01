@@ -242,8 +242,11 @@ AIScorrect_speed <- function(ais_data,
       dplyr::select(-real_high_speed)
   }
 
+  filt <- unique(c(init_cols, "speed_kmh_corrected", "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed"))
+  filt <- filt[filt %in% colnames(ais_data)]
+
   ais_data <- ais_data %>%
-    dplyr::select(dplyr::all_of(unique(c(init_cols, "speed_kmh_corrected", "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed"))))
+    dplyr::select(dplyr::all_of(filt))
 
   return(ais_data)
 }
