@@ -155,6 +155,7 @@ AIStravel_interpolate_extract <- function(data,
     return(eff_temp)
   })
 
+  rm(dates_ais)
   rm(data)
 
   eff_d <- eff_d %>%
@@ -263,7 +264,7 @@ AIStravel_interpolate_extract <- function(data,
   ## for 1 deg of difference, maximum distance of 111 km on the planet, minimum distance of 9.7
 
   if (run_AISextract_perHour) {
-    ais_data_ref <- ais_data
+    # ais_data_ref <- ais_data
 
     ais_data <- ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + average_at +
                                                                                                     average_mmsi_at/2)) &
@@ -368,6 +369,7 @@ AIStravel_interpolate_extract <- function(data,
       registerDoParallel(cl)
 
       daily_ais <- foreach(h = tot,
+                           .export = ls(),
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "sf", "stringr")
       ) %dopar% {
         if (!QUIET) {
@@ -444,7 +446,7 @@ AIStravel_interpolate_extract <- function(data,
       daily_ais <- purrr::map_dfr(daily_ais, function(d) {return(d)})
     }
 
-    rm(ais_data_ref)
+    # rm(ais_data_ref)
   } else {
     daily_ais <- ais_data
   }
@@ -452,7 +454,7 @@ AIStravel_interpolate_extract <- function(data,
   # rm(d_max)
   rm(ais_data)
   rm(eff_d)
-  rm(dates_ais)
+  # rm(dates_ais)
 
   gc()
   cat("\n                                DONE                                  \n")

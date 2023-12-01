@@ -175,6 +175,7 @@ AISinterpolate_at <- function(data,
 
     cat(length(lines), "data removed for STATION, i.e.", length(unique(to_remove$mmsi)), "stations\n")
     rm(to_remove)
+    rm(lines)
   }
   if (filter_high_speed) {
     lines <- which(ais_data$high_speed)
@@ -191,6 +192,7 @@ AISinterpolate_at <- function(data,
     }
     cat(length(lines), "data removed for HIGH SPEED, i.e.", length(unique(to_remove$mmsi)), "high speed engine\n")
     rm(to_remove)
+    rm(lines)
   }
 
   gc()
@@ -283,35 +285,44 @@ AISinterpolate_at <- function(data,
           !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))  {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
+        ais_datah <- ais_data
+
+        if (time_stop != Inf) {
+          ais_datah <- ais_datah[ais_datah$timestamp >= (min(to_run) - (time_stop + average_mmsi_at)) &
+                                   ais_datah$timestamp <= (max(to_run) + (time_stop + average_mmsi_at)), ]
+        }
+        if (radius != Inf) {
+          datah <- data[data$timestamp %in% to_run, ]
+
+          if (!(all(c("X", "Y") %in% colnames(datah)))) {
+            if (!("sf" %in% class(datah))) {
+              datah <- datah %>%
+                dplyr::select(c("lon", "lat")) %>%
+                dplyr::distinct() %>%
+                sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+            }
+            if (st_crs(datah)$input != "EPSG:3035") {
+              datah <- datah %>%
+                sf::st_transform(crs = 3035)
+            }
+
+            datah <- datah %>%
+              sf::st_coordinates() %>%
+              as.data.frame()
+          }
+
+          ais_datah <- ais_datah[ais_datah$X >= (min(datah$X, na.rm = T) - radius) & ais_datah$X <= (max(datah$X, na.rm = T) + radius) &
+                                   ais_datah$Y >= (min(datah$Y, na.rm = T) - radius) & ais_datah$Y <= (max(datah$Y, na.rm = T) + radius), ]
+        }
+
         out <- purrr::map_dfr(to_run, function(t) {
           if (!QUIET) {
             utils::setTxtProgressBar(pb, match(t, all_to_run))
           }
 
-          if (radius != Inf) {
-            data_coords <- data[data$timestamp == t, ]
-
-            if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
-              if (!("sf" %in% class(data_coords))) {
-                data_coords <- data_coords %>%
-                  dplyr::select(c("lon", "lat")) %>%
-                  dplyr::distinct() %>%
-                  sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
-              }
-              if (st_crs(data_coords)$input != "EPSG:3035") {
-                data_coords <- data_coords %>%
-                  sf::st_transform(crs = 3035)
-              }
-
-              data_coords <- data_coords %>%
-                sf::st_coordinates() %>%
-                as.data.frame()
-            }
-          }
-
           done <- unique(ais_ok$mmsi[ais_ok$timestamp %in% (t-raverage_mmsi_at):(t+raverage_mmsi_at)])
 
-          temp <- ais_data
+          temp <- ais_datah
 
           if (length(done) > 0) {
             temp <- temp[!(temp$mmsi %in% done), ]
@@ -321,6 +332,25 @@ AISinterpolate_at <- function(data,
                            temp$timestamp <= (t + (time_stop + average_mmsi_at)), ]
           }
           if (radius != Inf) {
+            data_coords <- datah[datah$timestamp == t, ]
+
+            # if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
+            #   if (!("sf" %in% class(data_coords))) {
+            #     data_coords <- data_coords %>%
+            #       dplyr::select(c("lon", "lat")) %>%
+            #       dplyr::distinct() %>%
+            #       sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+            #   }
+            #   if (st_crs(data_coords)$input != "EPSG:3035") {
+            #     data_coords <- data_coords %>%
+            #       sf::st_transform(crs = 3035)
+            #   }
+            #
+            #   data_coords <- data_coords %>%
+            #     sf::st_coordinates() %>%
+            #     as.data.frame()
+            # }
+
             temp <- temp[temp$X >= (min(data_coords$X, na.rm = T) - radius) & temp$X <= (max(data_coords$X, na.rm = T) + radius) &
                            temp$Y >= (min(data_coords$Y, na.rm = T) - radius) & temp$Y <= (max(data_coords$Y, na.rm = T) + radius), ]
             rm(data_coords)
@@ -502,6 +532,7 @@ AISinterpolate_at <- function(data,
       } else {
         cat("\nLOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
         out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        utils::setTxtProgressBar(pb, match(dplyr::last(to_run), all_to_run))
       }
 
       return(out)
@@ -519,8 +550,40 @@ AISinterpolate_at <- function(data,
           !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds")))) {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
+        ais_datah <- ais_data
+
+        if (time_stop != Inf) {
+          ais_datah <- ais_datah[ais_datah$timestamp >= (min(to_run) - (time_stop + average_mmsi_at)) &
+                                   ais_datah$timestamp <= (max(to_run) + (time_stop + average_mmsi_at)), ]
+        }
+        if (radius != Inf) {
+          datah <- data[data$timestamp %in% to_run, ]
+
+          if (!(all(c("X", "Y") %in% colnames(datah)))) {
+            if (!("sf" %in% class(datah))) {
+              datah <- datah %>%
+                dplyr::select(c("lon", "lat")) %>%
+                dplyr::distinct() %>%
+                sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+            }
+            if (st_crs(datah)$input != "EPSG:3035") {
+              datah <- datah %>%
+                sf::st_transform(crs = 3035)
+            }
+
+            datah <- datah %>%
+              sf::st_coordinates() %>%
+              as.data.frame()
+          }
+
+          ais_datah <- ais_datah[ais_datah$X >= (min(datah$X, na.rm = T) - radius) & ais_datah$X <= (max(datah$X, na.rm = T) + radius) &
+                                   ais_datah$Y >= (min(datah$Y, na.rm = T) - radius) & ais_datah$Y <= (max(datah$Y, na.rm = T) + radius), ]
+        }
+
         out <- foreach::foreach(t = to_run,
-                       .packages = c("dplyr","tidyverse", "sf")
+                                .export = ls()[!(ls() %in% c("data", "ais_data"))],
+                                .noexport = c("data", "ais_data"),
+                                .packages = c("dplyr","tidyverse", "sf")
         ) %dopar% {
           if (!QUIET) {
             # setTxtProgressBar(pb, match(t, timestamp_to_interpolate))
@@ -529,30 +592,9 @@ AISinterpolate_at <- function(data,
 
           }
 
-          if (radius != Inf) {
-            data_coords <- data[data$timestamp == t, ]
-
-            if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
-              if (!("sf" %in% class(data_coords))) {
-                data_coords <- data_coords %>%
-                  dplyr::select(c("lon", "lat")) %>%
-                  dplyr::distinct() %>%
-                  sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
-              }
-              if (st_crs(data_coords)$input != "EPSG:3035") {
-                data_coords <- data_coords %>%
-                  sf::st_transform(crs = 3035)
-              }
-
-              data_coords <- data_coords %>%
-                sf::st_coordinates() %>%
-                as.data.frame()
-            }
-          }
-
           done <- unique(ais_ok$mmsi[ais_ok$timestamp %in% (t-raverage_mmsi_at):(t+raverage_mmsi_at)])
 
-          temp <- ais_data
+          temp <- ais_datah
 
           if (length(done) > 0) {
             temp <- temp[!(temp$mmsi %in% done), ]
@@ -562,6 +604,25 @@ AISinterpolate_at <- function(data,
                            temp$timestamp <= (t + (time_stop + average_mmsi_at)), ]
           }
           if (radius != Inf) {
+            data_coords <- datah[datah$timestamp == t, ]
+
+            # if (!(all(c("X", "Y") %in% colnames(data_coords)))) {
+            #   if (!("sf" %in% class(data_coords))) {
+            #     data_coords <- data_coords %>%
+            #       dplyr::select(c("lon", "lat")) %>%
+            #       dplyr::distinct() %>%
+            #       sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+            #   }
+            #   if (st_crs(data_coords)$input != "EPSG:3035") {
+            #     data_coords <- data_coords %>%
+            #       sf::st_transform(crs = 3035)
+            #   }
+            #
+            #   data_coords <- data_coords %>%
+            #     sf::st_coordinates() %>%
+            #     as.data.frame()
+            # }
+
             temp <- temp[temp$X >= (min(data_coords$X, na.rm = T) - radius) & temp$X <= (max(data_coords$X, na.rm = T) + radius) &
                            temp$Y >= (min(data_coords$Y, na.rm = T) - radius) & temp$Y <= (max(data_coords$Y, na.rm = T) + radius), ]
             rm(data_coords)
