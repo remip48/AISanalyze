@@ -444,7 +444,7 @@ AIStravel_interpolate_extract <- function(data,
 
             cat("\nLOAD FILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
 
-            ais_on_effort <- readRDS(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            ais_on_effort <- readRDS(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
             return(ais_on_effort)
           } else {
             return(NULL)
