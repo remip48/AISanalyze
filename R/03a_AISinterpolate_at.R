@@ -5,6 +5,7 @@
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
+#' @param load_existing_files if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "_hour_", hour_processed, ".rds).
 #' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)
 #' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
 #' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
@@ -42,9 +43,10 @@
 AISinterpolate_at <- function(data,
                               ais_data,
                               mmsi_time_to_order = T,
+                              load_existing_files = F,
                               save_AISinterlate_at = T,
                               overwrite = F,
-                              file_AISinterlate_at = "AISinterpolate_at.rds",
+                              file_AISinterlate_at = "AISinterpolate_at",
                               radius = 200000,
                               time_stop = 5*60*60,
                               correct_speed = T,
@@ -281,8 +283,8 @@ AISinterpolate_at <- function(data,
 
     ais_data <- purrr::map_dfr(hour_to_run, function(hh) {
 
-      if (overwrite |
-          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))))  {
+      if (overwrite | !load_existing_files |
+          !(file.exists(paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))))  {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         ais_datah <- ais_data
@@ -523,15 +525,15 @@ AISinterpolate_at <- function(data,
           }
         })
 
-        if (save_AISinterlate_at) {
-          saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
-          cat("\nFILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
+        if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, "_hour_", hh, ".rds")) | overwrite)) {
+          saveRDS(out, paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))
+          cat("\nFILE", paste0(file_AISinterlate_at, "_hour_", hh, ".rds"), "SAVED\n")
         }
 
         gc()
       } else {
-        cat("\nLOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
-        out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        cat("\nLOAD FILE", paste0(file_AISinterlate_at, "_hour_", hh, ".rds"), "\n")
+        out <- readRDS(paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))
         utils::setTxtProgressBar(pb, match(dplyr::last(to_run), all_to_run))
       }
 
@@ -546,8 +548,8 @@ AISinterpolate_at <- function(data,
 
     ais_data <- purrr::map_dfr(hour_to_run, function(hh) {
 
-      if (overwrite |
-          !(file.exists(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds")))) {
+      if (overwrite | !load_existing_files |
+          !(file.exists(paste0(file_AISinterlate_at, "_hour_", hh, ".rds")))) {
         to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
 
         ais_datah <- ais_data
@@ -797,15 +799,15 @@ AISinterpolate_at <- function(data,
 
         out <- purrr::map_dfr(out, function(d) {return(d)})
 
-        if (save_AISinterlate_at) {
-          saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
-          cat("\nFILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
+        if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, "_hour_", hh, ".rds")) | overwrite)) {
+          saveRDS(out, paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))
+          cat("\nFILE", paste0(file_AISinterlate_at, "_hour_", hh, ".rds"), "SAVED\n")
         }
 
         gc()
       } else {
-        cat("\nLOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
-        out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
+        cat("\nLOAD FILE", paste0(file_AISinterlate_at, "_hour_", hh, ".rds"), "\n")
+        out <- readRDS(paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))
       }
 
       return(out)

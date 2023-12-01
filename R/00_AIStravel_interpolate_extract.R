@@ -8,6 +8,7 @@
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param search_into_radius_m radius (kilometer) where the MMSIs are extracted and returned.
+#' @param load_existing_files if TRUE, load the existing files (saved during previous runs) of AIStravel, AISinterpolate_at and AISextract when running the functions.
 #' @param run_AIStravel if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.
 #' @param save_AIStravel if results from AIStravel must be saved (only if run_AIStravel = T).
 #' @param file_AIStravel if save_AIStravel = TRUE, is the file name where AIStravel output is saved. Must not contain file format: the files are written as .rds.
@@ -41,6 +42,7 @@
 #' @param nb_cores number of cores to used with doParallel.
 #' @param outfile file to print the logs if parallelize = T.
 #' @param QUIET if TRUE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
+#' @param load_existing_files
 #'
 #' @return return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
 #' The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
@@ -71,12 +73,13 @@ AIStravel_interpolate_extract <- function(data,
                                           search_into_radius_m = 50000,
                                           run_AIStravel = T,
                                           save_AIStravel = T,
-                                          file_AIStravel = "AIStravel.rds",
+                                          file_AIStravel = "AIStravel",
+                                          load_existing_files = F,
                                           overwrite = F,
                                           time_stop = 5*60*60,
                                           run_AISinterpolate_at = T,
                                           save_AISinterlate_at = T,
-                                          file_AISinterlate_at = "AISinterpolate_at.rds",
+                                          file_AISinterlate_at = "AISinterpolate_at",
                                           correct_speed = T,
                                           threshold_speed_to_correct = 100,
                                           threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 0], na.rm = T) +
@@ -97,7 +100,7 @@ AIStravel_interpolate_extract <- function(data,
                                           threshold_high_speed = 110,
                                           run_AISextract_perHour = T,
                                           save_AISextract_perHour = T,
-                                          file_AISextract_perHour = "AISextract.rds",
+                                          file_AISextract_perHour = "AISextract",
                                           return_merged_all_extracted = T,
                                           parallelize = F,
                                           nb_cores = NA,
@@ -191,20 +194,25 @@ AIStravel_interpolate_extract <- function(data,
   if (run_AIStravel) {
     cat("Estimating speed, distance and time travelled by MMSI\n")
 
-    ais_data <- AIStravel(ais_data = ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
-                                                ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
-                          time_stop = time_stop,
-                          mmsi_time_to_order = mmsi_time_to_order,
-                          return_sf = F,
-                          return_3035_coords = T)
+    if (load_existing_files & file.exists(file = paste0(file_AIStravel, ".rds")) & !overwrite) {
+      ais_data <- readRDS(file = paste0(file_AIStravel, ".rds"))
+    }
+    else {
+      ais_data <- AIStravel(ais_data = ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
+                                                  ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
+                            time_stop = time_stop,
+                            mmsi_time_to_order = mmsi_time_to_order,
+                            return_sf = F,
+                            return_3035_coords = T)
 
-    ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
+      ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
 
-    if (save_AIStravel) {
-      saveRDS(ais_data, file = file_AIStravel)
+      if (save_AIStravel & (!file.exists(paste0(file_AIStravel, ".rds")) | overwrite)) {
+        saveRDS(ais_data, file = paste0(file_AIStravel, ".rds"))
+      }
     }
 
-    cat("______________________________________________________________________\n")
+    cat("\n______________________________________________________________________\n\n")
   }
 
   if (run_AISinterpolate_at) {
@@ -223,9 +231,14 @@ AIStravel_interpolate_extract <- function(data,
     #   }
     # }
 
+    if (load_existing_files & !overwrite & file.exists(file = paste0(file_AISinterlate_at, ".rds"))) {
+      ais_data <- readRDS(paste0(file_AISinterlate_at, ".rds"))
+    }
+
     ais_data <- AISinterpolate_at(ais_data = ais_data,
                                   mmsi_time_to_order = F,
                                   QUIET = QUIET,
+                                  load_existing_files = load_existing_files,
                                   file_AISinterlate_at = file_AISinterlate_at,
                                   overwrite = overwrite,
                                   # average_mmsi_at = average_mmsi_at,
@@ -253,10 +266,10 @@ AIStravel_interpolate_extract <- function(data,
                                   nb_cores = nb_cores,
                                   outfile = outfile)
 
-    if (save_AISinterlate_at & (!file.exists(file_AISinterlate_at) | overwrite)) {
-      saveRDS(ais_data, file = file_AISinterlate_at)
+    if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, ".rds")) | overwrite)) {
+      saveRDS(ais_data, file = paste0(file_AISinterlate_at, ".rds"))
     }
-    cat("\n______________________________________________________________________\n")
+    cat("\n\n______________________________________________________________________\n\n")
 
   }
 
@@ -303,7 +316,7 @@ AIStravel_interpolate_extract <- function(data,
           dplyr::filter(dayhour == h)
 
         if (overwrite |
-            !(file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds")))) {
+            !(file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds")))) {
 
           hourly_mmsi <- ais_data[ais_data$timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at - average_mmsi_at/2) &
                                     ais_data$timestamp < (max(eff_h$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2) &
@@ -334,8 +347,8 @@ AIStravel_interpolate_extract <- function(data,
 
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
-                    file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            cat("\nFILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
+                    file = paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            cat("\nFILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
 
           rm(eff_h)
@@ -350,11 +363,11 @@ AIStravel_interpolate_extract <- function(data,
         } else {
 
           if (return_merged_all_extracted &
-              file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
+              file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
 
-            cat("\nLOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
+            cat("\nLOAD FILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
 
-            ais_on_effort <- readRDS(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            ais_on_effort <- readRDS(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
             return(ais_on_effort)
           } else {
             return(NULL)
@@ -381,7 +394,7 @@ AIStravel_interpolate_extract <- function(data,
           dplyr::filter(dayhour == h)
 
         if (overwrite |
-            !(file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds")))) {
+            !(file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds")))) {
 
           hourly_mmsi <- ais_data[ais_data$timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at - average_mmsi_at/2) &
                                     ais_data$timestamp < (max(eff_h$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2) &
@@ -412,8 +425,8 @@ AIStravel_interpolate_extract <- function(data,
 
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
-                    file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            cat("\nFILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
+                    file = paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            cat("\nFILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
 
           rm(eff_h)
@@ -427,11 +440,11 @@ AIStravel_interpolate_extract <- function(data,
         } else {
 
           if (return_merged_all_extracted &
-              file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
+              file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
 
-            cat("\nLOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
+            cat("\nLOAD FILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
 
-            ais_on_effort <- readRDS(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
+            ais_on_effort <- readRDS(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
             return(ais_on_effort)
           } else {
             return(NULL)

@@ -131,7 +131,7 @@ AISextract <- function(data,
   })
 
   if (!("ais_timestamp" %in% colnames(time_ais))) {
-    cat("No AIS data for data processed between", min(time_ais$datetime_AIS_to_extract), "and", max(time_ais$datetime_AIS_to_extract), "\n")
+    cat("\nNo AIS data for data processed between", min(time_ais$datetime_AIS_to_extract), "and", max(time_ais$datetime_AIS_to_extract), "\n")
     time_ais <- time_ais %>%
       dplyr::mutate(ais_timestamp = NA)
   }
