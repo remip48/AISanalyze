@@ -255,7 +255,7 @@ AIStravel_interpolate_extract <- function(data,
     if (save_AISinterlate_at & (!file.exists(file_AISinterlate_at) | overwrite)) {
       saveRDS(ais_data, file = file_AISinterlate_at)
     }
-    # cat("\n______________________________________________________________________\n")
+    cat("\n______________________________________________________________________\n")
 
   }
 
@@ -334,7 +334,7 @@ AIStravel_interpolate_extract <- function(data,
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
                     file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
+            cat("\nFILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
 
           rm(eff_h)
@@ -351,7 +351,7 @@ AIStravel_interpolate_extract <- function(data,
           if (return_merged_all_extracted &
               file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
 
-            cat("LOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
+            cat("\nLOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
 
             ais_on_effort <- readRDS(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
             return(ais_on_effort)
@@ -411,7 +411,7 @@ AIStravel_interpolate_extract <- function(data,
           if (save_AISextract_perHour) {
             saveRDS(ais_on_effort,
                     file = paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            cat("FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
+            cat("\nFILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
           }
 
           rm(eff_h)
@@ -427,7 +427,7 @@ AIStravel_interpolate_extract <- function(data,
           if (return_merged_all_extracted &
               file.exists(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
 
-            cat("LOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
+            cat("\nLOAD FILE", paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
 
             ais_on_effort <- readRDS(paste0(str_remove_all(file_AISextract_perHour, ".rds"), "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
             return(ais_on_effort)

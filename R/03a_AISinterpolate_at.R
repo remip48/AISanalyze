@@ -375,7 +375,7 @@ AISinterpolate_at <- function(data,
                               tlat = prec$lat)
 
               if (any(interp$tmmsi != interp$mmsi)) {
-                cat("CHECK THE CODE FOR tmmsi == mmsi\n")
+                cat("\nCHECK THE CODE FOR tmmsi == mmsi\n")
                 interp <- interp %>%
                   dplyr::filter(tmmsi == mmsi)
               }
@@ -495,12 +495,12 @@ AISinterpolate_at <- function(data,
 
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
-          cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
+          cat("\nFILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
         }
 
         gc()
       } else {
-        cat("LOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
+        cat("\nLOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
         out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
       }
 
@@ -616,7 +616,7 @@ AISinterpolate_at <- function(data,
                               tlat = prec$lat)
 
               if (any(interp$tmmsi != interp$mmsi)) {
-                cat("CHECK THE CODE FOR tmmsi == mmsi\n")
+                cat("\nCHECK THE CODE FOR tmmsi == mmsi\n")
                 interp <- interp %>%
                   dplyr::filter(tmmsi == mmsi)
               }
@@ -738,12 +738,12 @@ AISinterpolate_at <- function(data,
 
         if (save_AISinterlate_at) {
           saveRDS(out, paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
-          cat("FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
+          cat("\nFILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "SAVED\n")
         }
 
         gc()
       } else {
-        cat("LOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
+        cat("\nLOAD FILE", paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"), "\n")
         out <- readRDS(paste0(str_remove_all(file_AISinterlate_at, ".rds"), "_", hh, ".rds"))
       }
 
