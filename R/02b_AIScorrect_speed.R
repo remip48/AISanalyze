@@ -24,13 +24,17 @@
 #' @examples
 AIScorrect_speed <- function(ais_data,
                              mmsi_time_to_order = T,
-                             correct_high_speed_craft = F,
                              threshold_speed_to_correct = 100,
                              threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 0], na.rm = T) +
                                                                                               sd(speed_kmh[speed_kmh > 0 & speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)])*2.5 + 15))},
                              time_stop = 5*60*60,
                              nb_iteration = 1,
-                             nb_iteration_successive_strange = 10
+                             nb_iteration_successive_strange = 10,
+                             correct_high_speed_craft = F,
+                             quantile_station = 0.975,
+                             threshold_distance_station = 10,
+                             quantile_high_speed = 0.97,
+                             threshold_high_speed = 110
                              ) {
 
   init_cols <- colnames(ais_data)
