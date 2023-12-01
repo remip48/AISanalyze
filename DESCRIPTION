@@ -17,8 +17,7 @@ Depends:
     stats (>= 4.2.1),
     utils (>= 4.2.1),
     stringr (>= 1.5.0),
-    doParallel (>= 1.0.17),
-    magrittr (>= 2.0.3)
+    doParallel (>= 1.0.17)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
