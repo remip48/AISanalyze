@@ -201,17 +201,24 @@ AISinterpolate_at <- function(data,
 
   ais_data <- ais_data %>%
     dplyr::group_by(mmsi) %>%
+    dplyr::mutate(id_mmsi_point_initiali = id_mmsi_point_initial,
+                  id_mmsi_point_initial = 1:n()) %>%
+    ungroup()
+
+  ais_data <- ais_data %>%
+    dplyr::group_by(mmsi) %>%
     dplyr::filter(id_mmsi_point_initial %in% ifelse(any(inside_temp),
-                                                    dplyr::first(id_mmsi_point_initial[inside_temp]) - 1,
+                                                    id_mmsi_point_initial[max(2, dplyr::first(which(inside_temp))) - 1],
                                                     ifelse(any(before_temp),
-                                                           dplyr::last(which(before_temp)),
+                                                           id_mmsi_point_initial[dplyr::last(which(before_temp))],
                                                            1)):ifelse(any(inside_temp),
-                                                                      dplyr::last(id_mmsi_point_initial[inside_temp]) + 1,
+                                                                      id_mmsi_point_initial[min(n() - 1, dplyr::last(which(inside_temp))) + 1],
                                                                       ifelse(any(after_temp),
-                                                                             dplyr::first(which(after_temp)),
+                                                                             id_mmsi_point_initial[dplyr::first(which(after_temp))],
                                                                              n()))) %>%
-    ungroup() %>%
-    dplyr::select(!c("inside_temp", "before_temp", "after_temp"))
+    dplyr::ungroup() %>%
+    dplyr::mutate(id_mmsi_point_initial = id_mmsi_point_initiali) %>%
+    dplyr::select(!c("inside_temp", "before_temp", "after_temp", "id_mmsi_point_initiali"))
 
   if (mmsi_time_to_order) {
     ais_data <- ais_data %>%
@@ -432,16 +439,16 @@ AISinterpolate_at <- function(data,
               #               by = "id_ais_data_initial") %>%
               #     dplyr::mutate(id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = ".")))
               # } else {
-                interp_eez <- interp %>%
-                  dplyr::mutate(interpolated = T,
-                                time_travelled = t - ttimestamp,
-                                distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
-                                lon = tlon + (lon - tlon) * time_travelled / (timestamp - ttimestamp),
-                                lat = tlat + (lat - tlat) * time_travelled / (timestamp - ttimestamp),
-                                timestamp = t,
-                                id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = "."))
-                  ) %>%
-                  dplyr::select(-c("tlon", "tlat", "tmmsi", "ttimestamp")) ## , "X", "Y"
+              interp_eez <- interp %>%
+                dplyr::mutate(interpolated = T,
+                              time_travelled = t - ttimestamp,
+                              distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
+                              lon = tlon + (lon - tlon) * time_travelled / (timestamp - ttimestamp),
+                              lat = tlat + (lat - tlat) * time_travelled / (timestamp - ttimestamp),
+                              timestamp = t,
+                              id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = "."))
+                ) %>%
+                dplyr::select(-c("tlon", "tlat", "tmmsi", "ttimestamp")) ## , "X", "Y"
               # }
 
               rm(to_interp)
@@ -509,8 +516,8 @@ AISinterpolate_at <- function(data,
                               Y = coords_ais[,2])
 
               out <- purrr::map_dfr(list(out_ok,
-                                  interp_eez),
-                             function(d) {return(d)}) %>%
+                                         interp_eez),
+                                    function(d) {return(d)}) %>%
                 dplyr::select(-"difftimestamp")
 
               return(out)
@@ -704,16 +711,16 @@ AISinterpolate_at <- function(data,
               #               by = "id_ais_data_initial") %>%
               #     dplyr::mutate(id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = ".")))
               # } else {
-                interp_eez <- interp %>%
-                  dplyr::mutate(interpolated = T,
-                                time_travelled = t - ttimestamp,
-                                distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
-                                lon = tlon + (lon - tlon) * time_travelled / (timestamp - ttimestamp),
-                                lat = tlat + (lat - tlat) * time_travelled / (timestamp - ttimestamp),
-                                timestamp = t,
-                                id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = "."))
-                  ) %>%
-                  dplyr::select(-c("tlon", "tlat", "tmmsi", "ttimestamp")) ## , "X", "Y"
+              interp_eez <- interp %>%
+                dplyr::mutate(interpolated = T,
+                              time_travelled = t - ttimestamp,
+                              distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
+                              lon = tlon + (lon - tlon) * time_travelled / (timestamp - ttimestamp),
+                              lat = tlat + (lat - tlat) * time_travelled / (timestamp - ttimestamp),
+                              timestamp = t,
+                              id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = "."))
+                ) %>%
+                dplyr::select(-c("tlon", "tlat", "tmmsi", "ttimestamp")) ## , "X", "Y"
               # }
 
               rm(to_interp)
@@ -781,8 +788,8 @@ AISinterpolate_at <- function(data,
                               Y = coords_ais[,2])
 
               out <- purrr::map_dfr(list(out_ok,
-                                  interp_eez),
-                             function(d) {return(d)}) %>%
+                                         interp_eez),
+                                    function(d) {return(d)}) %>%
                 dplyr::select(-"difftimestamp")
 
               return(out)
@@ -821,9 +828,9 @@ AISinterpolate_at <- function(data,
   # rm(cols)
 
   out <- purrr::map_dfr(list(ais_ok,
-                      ais_data %>%
-                        dplyr::distinct()),
-                 function(d) {return(d)})
+                             ais_data %>%
+                               dplyr::distinct()),
+                        function(d) {return(d)})
 
   # if (return_all) {
   #   out <- purrr::map_dfr(list(out,
