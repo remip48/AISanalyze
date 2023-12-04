@@ -117,8 +117,8 @@ AIStravel_interpolate_extract <- function(data,
   # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
   # param interpolate_station if FALSE, do not interpolate the positions of the stations.
   # param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
-  interpolate_station <- !filter_station
-  interpolate_high_speed <- !filter_high_speed
+  # interpolate_station <- !filter_station
+  # interpolate_high_speed <- !filter_high_speed
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -218,7 +218,7 @@ AIStravel_interpolate_extract <- function(data,
   }
 
   if (run_AISinterpolate_at) {
-    cat("Interpolating MMSI positions for data times\n")
+    cat("Interpolating MMSI positions for data timestamps\n")
 
     # if (any(!is.na(spatial_limit))) {
     #   if (st_crs(spatial_limit)$input != "EPSG:3035") {
@@ -238,7 +238,7 @@ AIStravel_interpolate_extract <- function(data,
     }
 
     ais_data <- AISinterpolate_at(ais_data = ais_data,
-                                  mmsi_time_to_order = F,
+                                  mmsi_time_to_order = ifelse(run_AIStravel, F, mmsi_time_to_order),
                                   QUIET = QUIET,
                                   load_existing_files = load_existing_files,
                                   file_AISinterlate_at = file_AISinterlate_at,
@@ -302,7 +302,7 @@ AIStravel_interpolate_extract <- function(data,
 
     tot <- unique(eff_d$dayhour)
 
-    cat("Extracting MMSI positions for data lon/lat\n")
+    cat("\nExtracting MMSI positions for data locations\n")
 
     if (!parallelize) {
       if(!QUIET) {
@@ -384,9 +384,10 @@ AIStravel_interpolate_extract <- function(data,
       registerDoParallel(cl)
 
       daily_ais <- foreach(h = tot,
-                           # .export = unique(c(ls(), "tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
-                           #                    "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour", "return_merged_all_extracted"
-                           #                    )),
+                           .export = unique(c("tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
+                                              "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour",
+                                              "return_merged_all_extracted"
+                                              )),
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "sf", "stringr")
       ) %dopar% {
         if (!QUIET) {

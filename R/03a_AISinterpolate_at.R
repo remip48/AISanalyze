@@ -79,6 +79,8 @@ AISinterpolate_at <- function(data,
   # param interpolate_station if FALSE, do not interpolate the positions of the stations.
   # param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
   # interpolate_station <- ifelse()
+  # interpolate_station <- !filter_station
+  # interpolate_high_speed <- !filter_high_speed
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -274,12 +276,12 @@ AISinterpolate_at <- function(data,
   #   }
   # }
 
-  if (!interpolate_station) {
-    list_station <- ais_data$mmsi[ais_data$station]
-  }
-  if (!interpolate_high_speed) {
-    list_high_speed <- ais_data$mmsi[ais_data$high_speed]
-  }
+  # if (!interpolate_station) {
+  #   list_station <- ais_data$mmsi[ais_data$station]
+  # }
+  # if (!interpolate_high_speed) {
+  #   list_high_speed <- ais_data$mmsi[ais_data$high_speed]
+  # }
 
   if (!parallelize) {
     all_to_run <- to_run
@@ -393,12 +395,12 @@ AISinterpolate_at <- function(data,
             out_ok <- to_interp %>%
               dplyr::filter(mmsi %in% names(n_point)[n_point == 1])
 
-            if (!interpolate_station) {
-              m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
-            }
-            if (!interpolate_high_speed) {
-              m_to_interp <- m_to_interp[!(m_to_interp %in% list_high_speed)]
-            }
+            # if (!interpolate_station) {
+            #   m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
+            # }
+            # if (!interpolate_high_speed) {
+            #   m_to_interp <- m_to_interp[!(m_to_interp %in% list_high_speed)]
+            # }
 
             if (length(m_to_interp) > 0) {
               prec <- inf[inf$mmsi %in% m_to_interp, ]
@@ -590,13 +592,15 @@ AISinterpolate_at <- function(data,
                                    ais_datah$Y >= (min(datah$Y, na.rm = T) - radius) & ais_datah$Y <= (max(datah$Y, na.rm = T) + radius), ]
         }
 
-        # to_export <- unique(c(ls(),  na.omit(c("QUIET", "datah", "ais_ok", "raverage_mmsi_at", "all_to_run",
-        #                                        "ais_datah", "file_AISinterlate_at", "radius", "time_stop", "average_mmsi_at",
-        #                                        "hh", ifelse(!interpolate_station, "list_station", NA), ifelse(!interpolate_high_speed, "list_high_speed", NA),
-        #                                        "interpolate_station", "interpolate_high_speed"))))
+        to_export <- unique(na.omit(c("QUIET", "datah", "ais_ok", "raverage_mmsi_at", "all_to_run",
+                                      "ais_datah", "file_AISinterlate_at", "radius", "time_stop", "average_mmsi_at",
+                                      "hh"
+                                      # ifelse(!interpolate_station, "list_station", NA), ifelse(!interpolate_high_speed, "list_high_speed", NA),
+                                      # "interpolate_station", "interpolate_high_speed"
+                                      )))
 
         out <- foreach::foreach(t = to_run,
-                                # .export = to_export,
+                                .export = to_export,
                                 .noexport = c("data", "ais_data"),
                                 .packages = c("dplyr","tidyverse", "sf")
         ) %dopar% {
@@ -670,12 +674,12 @@ AISinterpolate_at <- function(data,
             out_ok <- to_interp %>%
               dplyr::filter(mmsi %in% names(n_point)[n_point == 1])
 
-            if (!interpolate_station) {
-              m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
-            }
-            if (!interpolate_high_speed) {
-              m_to_interp <- m_to_interp[!(m_to_interp %in% list_high_speed)]
-            }
+            # if (!interpolate_station) {
+            #   m_to_interp <- m_to_interp[!(m_to_interp %in% list_station)]
+            # }
+            # if (!interpolate_high_speed) {
+            #   m_to_interp <- m_to_interp[!(m_to_interp %in% list_high_speed)]
+            # }
 
             if (length(m_to_interp) > 0) {
               prec <- inf[inf$mmsi %in% m_to_interp, ]
