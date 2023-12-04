@@ -235,42 +235,43 @@ AIStravel_interpolate_extract <- function(data,
 
     if (load_existing_files & !overwrite & file.exists(file = paste0(file_AISinterlate_at, ".rds"))) {
       ais_data <- readRDS(paste0(file_AISinterlate_at, ".rds"))
+    } else {
+      ais_data <- AISinterpolate_at(ais_data = ais_data,
+                                    mmsi_time_to_order = ifelse(run_AIStravel, F, mmsi_time_to_order),
+                                    QUIET = QUIET,
+                                    load_existing_files = load_existing_files,
+                                    file_AISinterlate_at = file_AISinterlate_at,
+                                    overwrite = overwrite,
+                                    # average_mmsi_at = average_mmsi_at,
+                                    data = (eff_d %>%
+                                              dplyr::select(timestamp, lon, lat, X, Y) %>%
+                                              dplyr::distinct()),
+                                    radius = radius,
+                                    quantile_station = quantile_station,
+                                    threshold_distance_station = threshold_distance_station,
+                                    quantile_high_speed = quantile_high_speed,
+                                    threshold_speed_to_correct = threshold_speed_to_correct,
+                                    threshold_high_speed = threshold_high_speed,
+                                    filter_station = filter_station,
+                                    # interpolate_station = interpolate_station,
+                                    filter_high_speed = filter_high_speed,
+                                    # interpolate_high_speed = interpolate_high_speed,
+                                    save_AISinterlate_at = save_AISinterlate_at,
+                                    time_stop = time_stop,
+                                    threshold_speed_to_correct_expr = threshold_speed_to_correct_expr,
+                                    # spatial_limit = spatial_limit,
+                                    # on_Land_analysis = on_Land_analysis,
+                                    # land_sf_polygon = land_sf_polygon,
+                                    # return_all = F,
+                                    parallelize = parallelize,
+                                    nb_cores = nb_cores,
+                                    outfile = outfile)
+
+      if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, ".rds")) | overwrite)) {
+        saveRDS(ais_data, file = paste0(file_AISinterlate_at, ".rds"))
+      }
     }
 
-    ais_data <- AISinterpolate_at(ais_data = ais_data,
-                                  mmsi_time_to_order = ifelse(run_AIStravel, F, mmsi_time_to_order),
-                                  QUIET = QUIET,
-                                  load_existing_files = load_existing_files,
-                                  file_AISinterlate_at = file_AISinterlate_at,
-                                  overwrite = overwrite,
-                                  # average_mmsi_at = average_mmsi_at,
-                                  data = (eff_d %>%
-                                            dplyr::select(timestamp, lon, lat, X, Y) %>%
-                                            dplyr::distinct()),
-                                  radius = radius,
-                                  quantile_station = quantile_station,
-                                  threshold_distance_station = threshold_distance_station,
-                                  quantile_high_speed = quantile_high_speed,
-                                  threshold_speed_to_correct = threshold_speed_to_correct,
-                                  threshold_high_speed = threshold_high_speed,
-                                  filter_station = filter_station,
-                                  # interpolate_station = interpolate_station,
-                                  filter_high_speed = filter_high_speed,
-                                  # interpolate_high_speed = interpolate_high_speed,
-                                  save_AISinterlate_at = save_AISinterlate_at,
-                                  time_stop = time_stop,
-                                  threshold_speed_to_correct_expr = threshold_speed_to_correct_expr,
-                                  # spatial_limit = spatial_limit,
-                                  # on_Land_analysis = on_Land_analysis,
-                                  # land_sf_polygon = land_sf_polygon,
-                                  # return_all = F,
-                                  parallelize = parallelize,
-                                  nb_cores = nb_cores,
-                                  outfile = outfile)
-
-    if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, ".rds")) | overwrite)) {
-      saveRDS(ais_data, file = paste0(file_AISinterlate_at, ".rds"))
-    }
     cat("\n\n______________________________________________________________________\n\n")
 
   }
