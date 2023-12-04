@@ -384,9 +384,9 @@ AIStravel_interpolate_extract <- function(data,
       registerDoParallel(cl)
 
       daily_ais <- foreach(h = tot,
-                           .export = unique(c(ls(), "tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
-                                              "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour", "return_merged_all_extracted"
-                                              )),
+                           # .export = unique(c(ls(), "tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
+                           #                    "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour", "return_merged_all_extracted"
+                           #                    )),
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "sf", "stringr")
       ) %dopar% {
         if (!QUIET) {

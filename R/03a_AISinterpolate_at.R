@@ -590,13 +590,13 @@ AISinterpolate_at <- function(data,
                                    ais_datah$Y >= (min(datah$Y, na.rm = T) - radius) & ais_datah$Y <= (max(datah$Y, na.rm = T) + radius), ]
         }
 
-        to_export <- unique(c(ls(),  na.omit(c("QUIET", "datah", "ais_ok", "raverage_mmsi_at", "all_to_run",
-                                               "ais_datah", "file_AISinterlate_at", "radius", "time_stop", "average_mmsi_at",
-                                               "hh", ifelse(!interpolate_station, "list_station", NA), ifelse(!interpolate_high_speed, "list_high_speed", NA),
-                                               "interpolate_station", "interpolate_high_speed"))))
+        # to_export <- unique(c(ls(),  na.omit(c("QUIET", "datah", "ais_ok", "raverage_mmsi_at", "all_to_run",
+        #                                        "ais_datah", "file_AISinterlate_at", "radius", "time_stop", "average_mmsi_at",
+        #                                        "hh", ifelse(!interpolate_station, "list_station", NA), ifelse(!interpolate_high_speed, "list_high_speed", NA),
+        #                                        "interpolate_station", "interpolate_high_speed"))))
 
         out <- foreach::foreach(t = to_run,
-                                .export = to_export,
+                                # .export = to_export,
                                 .noexport = c("data", "ais_data"),
                                 .packages = c("dplyr","tidyverse", "sf")
         ) %dopar% {
