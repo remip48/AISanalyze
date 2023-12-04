@@ -20,8 +20,6 @@
 #' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
 #' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
 #' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
-#' @param interpolate_station if FALSE, do not interpolate the positions of the stations.
-#' @param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
 #' @param parallelize if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)
 #' @param nb_cores number of cores to used with doParallel.
 #' @param outfile file to print the logs if parallelize = T.
@@ -60,8 +58,8 @@ AISinterpolate_at <- function(data,
                               threshold_distance_station = 10,
                               quantile_high_speed = 0.97,
                               threshold_high_speed = 110,
-                              interpolate_station = T,
-                              interpolate_high_speed = T,
+                              # interpolate_station = T,
+                              # interpolate_high_speed = T,
                               parallelize = F,
                               nb_cores = NA,
                               outfile = "log.txt",
@@ -78,6 +76,9 @@ AISinterpolate_at <- function(data,
   # param return_all if all AIS data must be returned, after ordering, correction, cleaning and interpolation, or only interpolated positions of the vessels at the time desired (smaller dataset).
   # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
   average_mmsi_at <- 0
+  # param interpolate_station if FALSE, do not interpolate the positions of the stations.
+  # param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
+  # interpolate_station <- ifelse()
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -589,8 +590,13 @@ AISinterpolate_at <- function(data,
                                    ais_datah$Y >= (min(datah$Y, na.rm = T) - radius) & ais_datah$Y <= (max(datah$Y, na.rm = T) + radius), ]
         }
 
+        to_export <- unique(c(ls(),  na.omit(c("QUIET", "datah", "ais_ok", "raverage_mmsi_at", "all_to_run",
+                                               "ais_datah", "file_AISinterlate_at", "radius", "time_stop", "average_mmsi_at",
+                                               "hh", ifelse(!interpolate_station, "list_station", NA), ifelse(!interpolate_high_speed, "list_high_speed", NA),
+                                               "interpolate_station", "interpolate_high_speed"))))
+
         out <- foreach::foreach(t = to_run,
-                                .export = ls()[!(ls() %in% c("data", "ais_data"))],
+                                .export = to_export,
                                 .noexport = c("data", "ais_data"),
                                 .packages = c("dplyr","tidyverse", "sf")
         ) %dopar% {

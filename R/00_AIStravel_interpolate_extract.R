@@ -27,8 +27,6 @@
 #' @param average_at if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).
 #' @param filter_station if TRUE, filter the stations out.
 #' @param filter_high_speed if TRUE, filter the aircraft out.
-#' @param interpolate_station if FALSE, do not interpolate the positions of the stations.
-#' @param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
 #' @param radius radius (kilometers) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
 #' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
 #' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
@@ -91,8 +89,8 @@ AIStravel_interpolate_extract <- function(data,
                                           average_at = 30,
                                           filter_station = T,
                                           filter_high_speed = T,
-                                          interpolate_station = T,
-                                          interpolate_high_speed = T,
+                                          # interpolate_station = T,
+                                          # interpolate_high_speed = T,
                                           radius = 200000,
                                           quantile_station = 0.975,
                                           threshold_distance_station = 10,
@@ -117,6 +115,10 @@ AIStravel_interpolate_extract <- function(data,
   # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
   average_mmsi_at <- 0
   # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
+  # param interpolate_station if FALSE, do not interpolate the positions of the stations.
+  # param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
+  interpolate_station <- !filter_station
+  interpolate_high_speed <- !filter_high_speed
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
@@ -382,7 +384,9 @@ AIStravel_interpolate_extract <- function(data,
       registerDoParallel(cl)
 
       daily_ais <- foreach(h = tot,
-                           .export = ls(),
+                           .export = unique(c(ls(), "tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
+                                              "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour", "return_merged_all_extracted"
+                                              )),
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "sf", "stringr")
       ) %dopar% {
         if (!QUIET) {
