@@ -139,13 +139,18 @@ AISinterpolate_at <- function(data,
                   after_temp = ifelse(timestamp > max(data$timestamp, na.rm = T), T, F))
 
   ais_data <- ais_data %>%
-    dplyr::group_by(mmsi) %>%
-    dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) <= threshold_distance_station, T, F),
-                  high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
-                  any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
-                  n_point_mmsi_initial_data = n(),
-                  id_mmsi_point_initial = 1:n()) %>%
-    ungroup()
+    AISidentify_stations_aircraft(ais_data = .,
+                                  quantile_station = quantile_station,
+                                  threshold_distance_station = threshold_distance_station,
+                                  quantile_high_speed = quantile_high_speed,
+                                  threshold_high_speed = threshold_high_speed)
+    # dplyr::group_by(mmsi) %>%
+    # dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) <= threshold_distance_station, T, F),
+    #               high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
+    #               any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
+    #               n_point_mmsi_initial_data = n(),
+    #               id_mmsi_point_initial = 1:n()) %>%
+    # ungroup()
 
   # if (return_all) {
   #   ais_data_ref <- ais_data %>%
@@ -243,7 +248,11 @@ AISinterpolate_at <- function(data,
                                  correct_high_speed_craft = F,
                                  threshold_speed_to_correct = threshold_speed_to_correct,
                                  threshold_speed_to_correct_expr = threshold_speed_to_correct_expr,
-                                 time_stop = time_stop)
+                                 time_stop = time_stop,
+                                 quantile_station = quantile_station,
+                                 threshold_distance_station = threshold_distance_station,
+                                 quantile_high_speed = quantile_high_speed,
+                                 threshold_high_speed = threshold_high_speed)
 
   }
 
