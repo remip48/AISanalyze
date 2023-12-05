@@ -1,6 +1,6 @@
 #' Estimate vessel type and vessel length
 #'
-#' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data. Use the length and type occurring the most to estimate the probable real values, and weight more the lines having complete data than partial data information. The shiptypes should be checked before hand to merge the same shiptypes entered as different names.
+#' Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS columns. Extract the length and shiptype occurring the most in the MMSI data as the probable real values, and give higher weight to lines with complete data than lines with partial data information. The shiptypes should be checked beforehand to merge the same shiptypes entered as different names. The results should be combined to other AIS data containing this MMSI to confirm the lengths and types returned: analysis showed that daily data are not sufficient to provide reliable values.
 #'
 #' @param ais_data AIS data. Must contain the columns shiptype, length and mmsi (Maritime mobile service identity). The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param threshold_length threshold (meters) above which the length is considered as unrealistic (and set as NA).

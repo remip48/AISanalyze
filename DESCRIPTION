@@ -1,10 +1,9 @@
 Package: AISanalyze
-Title: Analyze, treat and extract AIS data
-Version: 0.0.0.9000
+Title: Crrect, interpolate, extract and analyze AIS data
+Version: 1.0
 Author: "Rémi Pigeault"
 Maintainer: Rémi Pigeault <remi.pigeault@tiho-hannover.de>
-Description: calculation of distance, travel time, speed of vessels based on AIS data. Interpolate their positions and extract AIS/vessels for desired locations/times.
-    Planned build function plotting the AIS positions and gaps on spatial and temporal scales.
+Description: Estimate distance, time and speed of vessels between each AIS signal, correct GPS errors and delays, identify stations and aircraft, extract vessel length and vessel type by removing errors in AIS columns, interpolate vessel positions at the desired times, and extract vessel presence at desired times and locations (in a radius in kilometers). 
 License: MIT + file LICENSE
 Depends: 
     R(>= 4.2.0),
