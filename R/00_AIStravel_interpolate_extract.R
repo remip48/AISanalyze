@@ -389,7 +389,7 @@ AIStravel_interpolate_extract <- function(data,
                                               "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour",
                                               "return_merged_all_extracted"
                                               )),
-                           .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "sf", "stringr")
+                           .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "stringr")
       ) %dopar% {
         if (!QUIET) {
           # setTxtProgressBar(pb, match(h, tot))
