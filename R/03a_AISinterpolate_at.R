@@ -264,7 +264,7 @@ AISinterpolate_at <- function(data,
   ais_ok <- ais_data %>%
     dplyr::filter(timestamp %in% timestamp_averaged)
 
-  to_run <- na.omit(purrr::map_int(timestamp_to_interpolate, function(t) {
+  to_run <- na.omit(purrr::map_dbl(timestamp_to_interpolate, function(t) {
     done <- ais_ok$mmsi[ais_ok$timestamp %in% (t-raverage_mmsi_at):(t+raverage_mmsi_at)]
 
     return(ifelse(all(ais_data$mmsi %in% done), NA, t))
