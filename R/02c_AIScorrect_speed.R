@@ -121,11 +121,11 @@ AIScorrect_speed <- function(ais_data,
     dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                    threshold_speed_to_correct,
                                                    threshold_strange_speed)) %>%
-    filter((speed_kmh > threshold_speed_to_correct |
-              speed_kmh > threshold_strange_speed) &
-             (time_travelled < time_stop &
-                !(high_speed) &
-                !(station)))
+    dplyr::filter((speed_kmh > threshold_speed_to_correct |
+                     speed_kmh > threshold_strange_speed) &
+                    (time_travelled < time_stop &
+                       !(high_speed) &
+                       !(station)))
 
   # thresh <- unique(strange_speed$threshold_strange_speed)
 
@@ -241,11 +241,11 @@ AIScorrect_speed <- function(ais_data,
       dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                      threshold_speed_to_correct,
                                                      threshold_strange_speed)) %>%
-      filter((speed_kmh > threshold_speed_to_correct |
-                speed_kmh > threshold_strange_speed) &
-               (time_travelled < time_stop &
-                  !(high_speed) &
-                  !(station)))
+      dplyr::filter((speed_kmh > threshold_speed_to_correct |
+                       speed_kmh > threshold_strange_speed) &
+                      (time_travelled < time_stop &
+                         !(high_speed) &
+                         !(station)))
 
     # thresh <- unique(strange_speed$threshold_strange_speed)
 
