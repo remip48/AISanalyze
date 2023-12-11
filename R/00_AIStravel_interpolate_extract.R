@@ -247,6 +247,7 @@ AIStravel_interpolate_extract <- function(data,
                                               dplyr::select(timestamp, lon, lat, X, Y) %>%
                                               dplyr::distinct()),
                                     radius = radius,
+                                    correct_speed = correct_speed,
                                     quantile_station = quantile_station,
                                     threshold_distance_station = threshold_distance_station,
                                     quantile_high_speed = quantile_high_speed,
