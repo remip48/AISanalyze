@@ -5,16 +5,22 @@ tags:
   - AIS data
   - vessel tracks
   - interpolation
+  - human activity
   - correction
-  - extraction
 authors:
   - name: Rémi Pigeault
     orcid: 0000-0003-2714-5122
     affiliation: 1
+  - name: Nadya C. Ramirez-Martinez
+    orcid: 0000-0003-0151-8787
+    affiliation: 1
+  - name: Anita Gilles
+    orcid: 0000-0001-7234-8645
+    affiliation: 1
 affiliations:
  - name: Institute for Terrestrial and Aquatic Wildlife Research, University of Veterinary Medicine Hannover, Foundation, Buesum, Germany
    index: 1
-date: 07 December 2012
+date: 08 January 2024
 bibliography: paper.bib
 ---
 
@@ -34,7 +40,7 @@ Human activities and impacts in the oceans continue to increase (Halpern et al.,
 
 # Acknowledgements
 
-We acknowledge contributions from Nadya C. Ramirez-Martinez, Andreas Ruser, Anita Gilles, Dominik Nachtsheim and Louise Moysan.
+We acknowledge contributions from Andreas Ruser, Dominik Nachtsheim and Louise Moysan. RP, NCRM and AG were partially supported by project CoastalFutures, funded by the German Federal Ministry of Education and Research (BMBF) under grant number 03F0911H. The responsibility for the content of this publication lies with the authors.
 
 # References
 
