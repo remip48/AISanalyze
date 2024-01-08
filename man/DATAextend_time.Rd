@@ -25,13 +25,12 @@ DATAextend_time(
 }
 \value{
 The data frame with the lines duplicated for each timestamps, from the data timestamps up to "max_time_diff" by steps of "t_gap". Contains the columns:
-timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
-diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
-datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
+\itemize{
+\item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
+\item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
+\item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
+}
 }
 \description{
 Extend timestamps of data to past timestamps, by duplicating the data lines (except timestamp, which goes from the timestamp of the data to "max_time_diff" seconds before, by steps of "t_gap"). Used in internal functions to investigate the AIS presence before the timestamp of the data.
-}
-\examples{
-# to add
 }

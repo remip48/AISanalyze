@@ -9,13 +9,12 @@
 #' @param average_at if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).
 #'
 #' @return The data frame with the lines duplicated for each timestamps, from the data timestamps up to "max_time_diff" by steps of "t_gap". Contains the columns:
-#' timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
-#' diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
-#' datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-
-#' @export
+#' \itemize{
+#' \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
+#' \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
+#' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
+#' }
 #'
-#' @examples # to add
 DATAextend_time <- function(data,
                             max_time_diff = 1 * 60 * 60,
                             t_gap = 30,

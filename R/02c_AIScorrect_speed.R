@@ -12,16 +12,14 @@
 #' @param nb_iteration_successive_strange number of iterations where GPS delays are looked backwards. 100 as default. Is the number of possible subsequent GPS lag.
 #'
 #' @return Return the AIS data with identified GPS error or GPS delay removed. The vessel speeds are corrected, as well as the distance and time travelled. Contains columns:
-#' speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
-#' time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
-#' distance_travelled: distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
-#' speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
-#' station: if the MMSI is a station or not.
-#' high_speed: if the MMSI is a high speed craft (used for aircraft) or not.
+#' \itemize{
+#' \item speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+#' \item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
+#' \item distance_travelled: distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
+#' \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
+#' \item station: if the MMSI is a station or not.
+#' \item high_speed: if the MMSI is a high speed craft (used for aircraft) or not.}
 
-#' @export
-#'
-#' @examples
 AIScorrect_speed <- function(ais_data,
                              mmsi_time_to_order = T,
                              threshold_speed_to_correct = 100,

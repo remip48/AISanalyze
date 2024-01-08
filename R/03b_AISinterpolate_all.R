@@ -19,21 +19,20 @@
 #' @param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
 #'
 #' @return return AIS data with the columns:
-#' id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
-#' station: if TRUE, the MMSI has been identified as a station.
-#' high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
-#' any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
-#' n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
-#' id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
-#' speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
-#' interpolated: if TRUE, this MMSI position has been interpolated.
-#' time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
-#' distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
-#' speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
+#' \itemize{
+#' \item id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
+#' \item station: if TRUE, the MMSI has been identified as a station.
+#' \item high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+#' \item any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+#' \item n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+#' \item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+#' \item speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+#' \item interpolated: if TRUE, this MMSI position has been interpolated.
+#' \item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
+#' \item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
+#' \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.}
 #'
-#' @export
-#'
-#' @examples # to add
+
 AISinterpolate_all <- function(ais_data,
                                mmsi_time_to_order = T,
                                t_gap = 30,

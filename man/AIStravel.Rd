@@ -25,14 +25,13 @@ AIStravel(
 }
 \value{
 return the AIS data with the distance, time travelled and the speed of the vessels since the last AIS reception. Contains the columns:
-time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
-distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
-speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
-X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
+\itemize{
+\item time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
+\item distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
+\item speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
+\item X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
+}
 }
 \description{
 Calcul the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
-}
-\examples{
-# to add
 }

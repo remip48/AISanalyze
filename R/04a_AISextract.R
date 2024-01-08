@@ -13,15 +13,14 @@
 #'
 #' @return return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
 #' The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
-#' distance_effort_ais_m: distance (meters) between the data location and the MMSI at this time (filled with NA if no MMSI).
-#' timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
-#' diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
-#' datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-#' diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"
+#' \itemize{
+#' \item distance_effort_ais_m: distance (meters) between the data location and the MMSI at this time (filled with NA if no MMSI).
+#' \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
+#' \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
+#' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
+#' \item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"}
 #'
-#' @export
-#'
-#' @examples # to add
+
 AISextract <- function(data,
                        ais_data,
                        search_into_radius_m = 50000,

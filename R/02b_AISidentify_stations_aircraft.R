@@ -7,15 +7,13 @@
 #' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
 #'
 #' @return the AIS data with the columns:
-#' station: if TRUE, the MMSI has been identified as a station.
-#' high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
-#' any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
-#' n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
-#' id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+#' \itemize{
+#' \item station: if TRUE, the MMSI has been identified as a station.
+#' \item high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+#' \item any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+#' \item n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+#' \item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.}
 
-#' @export
-#'
-#' @examples
 AISidentify_stations_aircraft <- function(ais_data,
                                           quantile_station = 0.975,
                                           threshold_distance_station = 10,

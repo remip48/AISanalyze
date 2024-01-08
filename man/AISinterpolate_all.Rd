@@ -13,8 +13,8 @@ AISinterpolate_all(
   threshold_speed_to_correct = 100,
   threshold_speed_to_correct_expr = function(speed_kmh) {
     
-    return((median(speed_kmh[speed_kmh > 0], na.rm = T) + sd(speed_kmh[speed_kmh > 0 &
-    speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)]) * 2.5 + 15))
+    return((median(speed_kmh[speed_kmh > 1], na.rm = T) + sd(speed_kmh[speed_kmh > 1 &
+    speed_kmh < quantile(speed_kmh[speed_kmh > 1], 0.75)]) * 5 + 15))
  },
   filter_station = T,
   filter_high_speed = T,
@@ -39,7 +39,7 @@ AISinterpolate_all(
 
 \item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
 
-\item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions.}
+\item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.}
 
 \item{filter_station}{if TRUE, filter the stations out.}
 
@@ -59,21 +59,19 @@ AISinterpolate_all(
 }
 \value{
 return AIS data with the columns:
-id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
-station: if TRUE, the MMSI has been identified as a station.
-high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
-any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
-n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
-id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
-speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
-interpolated: if TRUE, this MMSI position has been interpolated.
-time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
-distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
-speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
+\itemize{
+\item id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
+\item station: if TRUE, the MMSI has been identified as a station.
+\item high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+\item any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+\item n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+\item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+\item speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+\item interpolated: if TRUE, this MMSI position has been interpolated.
+\item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
+\item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
+\item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.}
 }
 \description{
 Interpolate all AIS data to have AIS positions at the desired interval of time, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
-}
-\examples{
-# to add
 }

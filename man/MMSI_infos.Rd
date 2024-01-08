@@ -15,22 +15,23 @@ MMSI_infos(ais_data, threshold_length = 475, weight_complete_data = 10)
 }
 \value{
 A data frame with one MMSI by row, and containing the columns:
-npoint: total number of AIS receptions for this MMSI.
-npoint_all_lengths: number of AIS reception having a value in the column length for this MMSI.
-npoint_all_lengths_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column length for this MMSI.
-all_lengths: all the values of length found in the AIS data for this MMSI.
-n_length: number of values of length found in the AIS data for this MMSI.
-length: estimated length of the MMSI, based on the weighted number of points of each length. The length having the greatest score is considered as the real length.
-npoint_length: number of AIS reception having the value "length" (estimated real length) for this MMSI.
-npoint_length_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "length" (estimated real length) for this MMSI.
-npoint_all_type: number of AIS reception having a value in the column shiptype for this MMSI.
-npoint_all_type_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column shiptype for this MMSI.
-all_types: all the values of shiptype found in the AIS data for this MMSI.
-n_type: number of values of shiptype found in the AIS data for this MMSI.
-type: estimated shiptype of the MMSI, based on the weighted number of points of each shiptype. The shiptype having the greatest score is considered as the real shiptype
-npoint_type: number of AIS reception having the value "type" (estimated real shiptype) for this MMSI.
-npoint_type_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "type" (estimated real shiptype) for this MMSI.
+\itemize{
+\item npoint: total number of AIS receptions for this MMSI.
+\item npoint_all_lengths: number of AIS reception having a value in the column length for this MMSI.
+\item npoint_all_lengths_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column length for this MMSI.
+\item all_lengths: all the values of length found in the AIS data for this MMSI.
+\item n_length: number of values of length found in the AIS data for this MMSI.
+\item length: estimated length of the MMSI, based on the weighted number of points of each length. The length having the greatest score is considered as the real length.
+\item npoint_length: number of AIS reception having the value "length" (estimated real length) for this MMSI.
+\item npoint_length_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "length" (estimated real length) for this MMSI.
+\item npoint_all_type: number of AIS reception having a value in the column shiptype for this MMSI.
+\item npoint_all_type_weighted: number of AIS reception (weighted by "weight_complete_data") having a value in the column shiptype for this MMSI.
+\item all_types: all the values of shiptype found in the AIS data for this MMSI.
+\item n_type: number of values of shiptype found in the AIS data for this MMSI.
+\item type: estimated shiptype of the MMSI, based on the weighted number of points of each shiptype. The shiptype having the greatest score is considered as the real shiptype
+\item npoint_type: number of AIS reception having the value "type" (estimated real shiptype) for this MMSI.
+\item npoint_type_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "type" (estimated real shiptype) for this MMSI.}
 }
 \description{
-Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS data. Use the length and type occurring the most to estimate the probable real values, and weight more the lines having complete data than partial data information. The shiptypes should be checked before hand to merge the same shiptypes entered as different names.
+Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS columns. Extract the length and shiptype occurring the most in the MMSI data as the probable real values, and give higher weight to lines with complete data than lines with partial data information. The shiptypes should be checked beforehand to merge the same shiptypes entered as different names. The results should be combined to other AIS data containing this MMSI to confirm the lengths and types returned: analysis showed that daily data are not sufficient to provide reliable values.
 }

@@ -8,17 +8,18 @@ AISinterpolate_at(
   data,
   ais_data,
   mmsi_time_to_order = T,
+  load_existing_files = F,
   save_AISinterlate_at = T,
   overwrite = F,
-  file_AISinterlate_at = "AISinterpolate_at.rds",
+  file_AISinterlate_at = "AISinterpolate_at",
   radius = 2e+05,
   time_stop = 5 * 60 * 60,
   correct_speed = T,
   threshold_speed_to_correct = 100,
   threshold_speed_to_correct_expr = function(speed_kmh) {
     
-    return((median(speed_kmh[speed_kmh > 0], na.rm = T) + sd(speed_kmh[speed_kmh > 0 &
-    speed_kmh < quantile(speed_kmh, 0.75, na.rm = T)]) * 2.5 + 15))
+    return((median(speed_kmh[speed_kmh > 1], na.rm = T) + sd(speed_kmh[speed_kmh > 1 &
+    speed_kmh < quantile(speed_kmh[speed_kmh > 1], 0.75)]) * 5 + 15))
  },
   filter_station = T,
   filter_high_speed = T,
@@ -26,8 +27,6 @@ AISinterpolate_at(
   threshold_distance_station = 10,
   quantile_high_speed = 0.97,
   threshold_high_speed = 110,
-  interpolate_station = T,
-  interpolate_high_speed = T,
   parallelize = F,
   nb_cores = NA,
   outfile = "log.txt",
@@ -40,6 +39,8 @@ AISinterpolate_at(
 \item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
 \item{mmsi_time_to_order}{if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.}
+
+\item{load_existing_files}{if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "\emph{hour}", hour_processed, ".rds).}
 
 \item{save_AISinterlate_at}{if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)}
 
@@ -55,7 +56,7 @@ AISinterpolate_at(
 
 \item{threshold_speed_to_correct}{threshold (km/h) above which speeds are considered as unrealistic and due to a GPS error or delay.}
 
-\item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions.}
+\item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.}
 
 \item{filter_station}{if TRUE, filter the stations out.}
 
@@ -69,10 +70,6 @@ AISinterpolate_at(
 
 \item{threshold_high_speed}{Threshold of speed (km/h) used to assess if the MMSI is an aircraft.}
 
-\item{interpolate_station}{if FALSE, do not interpolate the positions of the stations.}
-
-\item{interpolate_high_speed}{if FALSE, do not interpolate the positions of the aircrafts.}
-
 \item{parallelize}{if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)}
 
 \item{nb_cores}{number of cores to used with doParallel.}
@@ -83,18 +80,16 @@ AISinterpolate_at(
 }
 \value{
 return AIS data at the timestamps desired, interpolated (or not). Contains the columns:
-id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
-station: if TRUE, the MMSI has been identified as a station.
-high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
-any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
-n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
-id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
-speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
-interpolated: if TRUE, this MMSI position has been interpolated.
+\itemize{
+\item id_ais_data_initial: identifier of the row in the ordered, corrected and cleaned ais data. Used for internal computation. For interpolated positions, id_ais_data_initial is the same than the next real existing AIS data.
+\item station: if TRUE, the MMSI has been identified as a station.
+\item high_speed: if TRUE, the MMSI has been identified as an high speed craft (specially used for aircraft).
+\item any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
+\item n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
+\item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
+\item speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
+\item interpolated: if TRUE, this MMSI position has been interpolated.}
 }
 \description{
 Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long.
-}
-\examples{
-# to add
 }
