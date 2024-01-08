@@ -9,13 +9,19 @@
 #' @param return_3035_coords if TRUE, return the ETRS3035 coordinates as X and Y columns in the output.
 #'
 #' @return return the AIS data with the distance, time travelled and the speed of the vessels since the last AIS reception. Contains the columns:
-#' time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
-#' distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
-#' speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
-#' X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
-#' @export
+#' \itemize{
+#' \item time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
+#' \item distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
+#' \item speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
+#' \item X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
+#' }
 #'
-#' @examples # to add
+#' @examples
+#' AIStravel(ais_data,
+#'time_stop = 5*60*60,
+#'mmsi_time_to_order = T,
+#'return_sf = F,
+#'return_3035_coords = F)
 
 AIStravel <- function(ais_data,
                       time_stop = 5*60*60,
