@@ -15,6 +15,14 @@
 #' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
 #' }
 #'
+#' @examples
+#' \dontrun{
+#' DATAextend_time(data,
+#' max_time_diff = 1 * 60 * 60,
+#' t_gap = 30,
+#' accelerate = T,
+#' average_at = 30)}
+
 DATAextend_time <- function(data,
                             max_time_diff = 1 * 60 * 60,
                             t_gap = 30,

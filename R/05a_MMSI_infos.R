@@ -23,9 +23,14 @@
 #' \item type: estimated shiptype of the MMSI, based on the weighted number of points of each shiptype. The shiptype having the greatest score is considered as the real shiptype
 #' \item npoint_type: number of AIS reception having the value "type" (estimated real shiptype) for this MMSI.
 #' \item npoint_type_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "type" (estimated real shiptype) for this MMSI.}
-#
+#'
+#' @examples
+#' \dontrun{
+#' MMSI_infos(ais_data,
+#' threshold_length = 475,
+#' weight_complete_data = 10)}
 
-MMSI_infos <- function(ais_data, ## need one column length, one shiptype, and one date
+MMSI_infos <- function(ais_data,
                        threshold_length = 475,
                        weight_complete_data = 10) {
 

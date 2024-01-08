@@ -35,3 +35,9 @@ A data frame with one MMSI by row, and containing the columns:
 \description{
 Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS columns. Extract the length and shiptype occurring the most in the MMSI data as the probable real values, and give higher weight to lines with complete data than lines with partial data information. The shiptypes should be checked beforehand to merge the same shiptypes entered as different names. The results should be combined to other AIS data containing this MMSI to confirm the lengths and types returned: analysis showed that daily data are not sufficient to provide reliable values.
 }
+\examples{
+\dontrun{
+MMSI_infos(ais_data,
+threshold_length = 475,
+weight_complete_data = 10)}
+}

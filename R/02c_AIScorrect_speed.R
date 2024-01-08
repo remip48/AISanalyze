@@ -19,6 +19,13 @@
 #' \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.
 #' \item station: if the MMSI is a station or not.
 #' \item high_speed: if the MMSI is a high speed craft (used for aircraft) or not.}
+#'
+#' @examples
+#' \dontrun{
+#' AIScorrect_speed(ais_data,
+#' mmsi_time_to_order = T,
+#' threshold_speed_to_correct = 100,
+#' time_stop = 5*60*60)}
 
 AIScorrect_speed <- function(ais_data,
                              mmsi_time_to_order = T,

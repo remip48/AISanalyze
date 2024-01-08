@@ -53,3 +53,10 @@ Return the AIS data with identified GPS error or GPS delay removed. The vessel s
 \description{
 Correct the errors due to GPS delays or errors and leading to erroneous speeds (km/h), distance or time travelled by MMSI (vessel). The corrections are made according to different input parameters. Other important parameters are used in the function to detect GPS errors, and are not in the parameters of the function for simplicity. However these can be added on request for more flexibility in the filters
 }
+\examples{
+\dontrun{
+AIScorrect_speed(ais_data,
+mmsi_time_to_order = T,
+threshold_speed_to_correct = 100,
+time_stop = 5*60*60)}
+}

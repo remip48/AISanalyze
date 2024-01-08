@@ -75,3 +75,16 @@ return AIS data with the columns:
 \description{
 Interpolate all AIS data to have AIS positions at the desired interval of time, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
 }
+\examples{
+\dontrun{
+AISinterpolate_all(ais_data,
+mmsi_time_to_order = T,
+t_gap = 60,
+time_stop = 5 * 60 * 60,
+correct_speed = T,
+threshold_speed_to_correct = 100,
+filter_station = T,
+filter_high_speed = T,
+interpolate_station = F,
+interpolate_high_speed = F)}
+}

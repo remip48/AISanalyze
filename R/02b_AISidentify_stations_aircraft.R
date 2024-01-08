@@ -13,6 +13,10 @@
 #' \item any_NA_speed_kmh: if TRUE, at least one of the speeds of this MMSI has a speed as NA (so distance_travelled or time_travelled has a issue and the AIS data must be checked). Should not occur.
 #' \item n_point_mmsi_initial_data: number of point of the MMSI in the AIS data after have removed the points with inexisting longitude and latitude.
 #' \item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.}
+#'
+#' @examples
+#' \dontrun{
+#' AISidentify_stations_aircraft(ais_data)}
 
 AISidentify_stations_aircraft <- function(ais_data,
                                           quantile_station = 0.975,

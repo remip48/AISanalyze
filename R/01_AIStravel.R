@@ -15,6 +15,14 @@
 #' \item speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
 #' \item X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
 #' }
+#'
+#' @examples
+#' \dontrun{
+#' AIStravel(ais_data,
+#' time_stop = 5*60*60,
+#' mmsi_time_to_order = T,
+#' return_sf = F,
+#' return_3035_coords = F)}
 
 AIStravel <- function(ais_data,
                       time_stop = 5*60*60,

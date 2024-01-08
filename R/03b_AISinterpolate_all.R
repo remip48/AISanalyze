@@ -32,6 +32,18 @@
 #' \item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
 #' \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.}
 #'
+#' @examples
+#' \dontrun{
+#' AISinterpolate_all(ais_data,
+#' mmsi_time_to_order = T,
+#' t_gap = 60,
+#' time_stop = 5 * 60 * 60,
+#' correct_speed = T,
+#' threshold_speed_to_correct = 100,
+#' filter_station = T,
+#' filter_high_speed = T,
+#' interpolate_station = F,
+#' interpolate_high_speed = F)}
 
 AISinterpolate_all <- function(ais_data,
                                mmsi_time_to_order = T,

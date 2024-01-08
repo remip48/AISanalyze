@@ -45,3 +45,14 @@ The output dataframe contains the columns of the input data, the columns of the 
 \description{
 Extract the AIS position around the locations and at the time of the data
 }
+\examples{
+\dontrun{
+AISextract(data,
+ais_data,
+search_into_radius_m = 50000,
+duplicate_time = F,
+max_time_diff = 0,
+t_gap = 10*60,
+accelerate = F,
+average_at = 0)}
+}

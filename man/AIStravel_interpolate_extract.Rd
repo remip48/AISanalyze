@@ -147,3 +147,35 @@ The output dataframe contains the columns of the input data, the columns of the 
 Useful to run the complete process in a single function. A check of intermediate results is recommended, to adapt parameters if needed. Save the intermediate results during the processes. Results from the function MMSI_infos can be merge to this output to add information on vessel type and length.
 Advice : if AIS data and data to extract are large, and if the application allows it, run this function in a loop for each day to save memory for computation.
 }
+\examples{
+\dontrun{
+AIStravel_interpolate_extract(data,
+ais_data,
+mmsi_time_to_order = T,
+search_into_radius_m = 50000,
+run_AIStravel = T,
+save_AIStravel = T,
+file_AIStravel = "AIStravel",
+load_existing_files = T,
+overwrite = F,
+time_stop = 5*60*60,
+run_AISinterpolate_at = T,
+save_AISinterlate_at = T,
+file_AISinterlate_at = "AISinterpolate_at",
+correct_speed = T,
+threshold_speed_to_correct = 100,
+duplicate_time = F,
+max_time_diff = 00,
+t_gap = 10*60,
+accelerate = F,
+average_at = 0,
+filter_station = T,
+filter_high_speed = T,
+radius = 200000,
+run_AISextract_perHour = T,
+save_AISextract_perHour = T,
+file_AISextract_perHour = "AISextract",
+return_merged_all_extracted = T,
+parallelize = F,
+nb_cores = NA)}
+}

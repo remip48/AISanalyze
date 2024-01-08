@@ -61,6 +61,38 @@
 #' \item id_mmsi_point_initial: identifier for the MMSI point after ordering, correcting and cleaning.
 #' \item speed_kmh_corrected: if TRUE, the speed of the line has been corrected.
 #' \item interpolated: if TRUE, this MMSI position has been interpolated.}
+#'
+#' @examples
+#' \dontrun{
+#' AIStravel_interpolate_extract(data,
+#' ais_data,
+#' mmsi_time_to_order = T,
+#' search_into_radius_m = 50000,
+#' run_AIStravel = T,
+#' save_AIStravel = T,
+#' file_AIStravel = "AIStravel",
+#' load_existing_files = T,
+#' overwrite = F,
+#' time_stop = 5*60*60,
+#' run_AISinterpolate_at = T,
+#' save_AISinterlate_at = T,
+#' file_AISinterlate_at = "AISinterpolate_at",
+#' correct_speed = T,
+#' threshold_speed_to_correct = 100,
+#' duplicate_time = F,
+#' max_time_diff = 00,
+#' t_gap = 10*60,
+#' accelerate = F,
+#' average_at = 0,
+#' filter_station = T,
+#' filter_high_speed = T,
+#' radius = 200000,
+#' run_AISextract_perHour = T,
+#' save_AISextract_perHour = T,
+#' file_AISextract_perHour = "AISextract",
+#' return_merged_all_extracted = T,
+#' parallelize = F,
+#' nb_cores = NA)}
 
 AIStravel_interpolate_extract <- function(data,
                                           ais_data,

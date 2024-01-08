@@ -20,6 +20,16 @@
 #' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
 #' \item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"}
 #'
+#' @examples
+#' \dontrun{
+#' AISextract(data,
+#' ais_data,
+#' search_into_radius_m = 50000,
+#' duplicate_time = F,
+#' max_time_diff = 0,
+#' t_gap = 10*60,
+#' accelerate = F,
+#' average_at = 0)}
 
 AISextract <- function(data,
                        ais_data,

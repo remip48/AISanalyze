@@ -93,3 +93,20 @@ return AIS data at the timestamps desired, interpolated (or not). Contains the c
 \description{
 Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long.
 }
+\examples{
+\dontrun{
+AISinterpolate_at(data,
+ais_data,
+mmsi_time_to_order = T,
+load_existing_files = T,
+save_AISinterlate_at = T,
+overwrite = F,
+file_AISinterlate_at = "AISinterpolate_at",
+radius = 200000,
+time_stop = 5*60*60,
+correct_speed = T,
+threshold_speed_to_correct = 100,
+filter_station = T,
+filter_high_speed = T,
+parallelize = F)}
+}

@@ -34,3 +34,11 @@ The data frame with the lines duplicated for each timestamps, from the data time
 \description{
 Extend timestamps of data to past timestamps, by duplicating the data lines (except timestamp, which goes from the timestamp of the data to "max_time_diff" seconds before, by steps of "t_gap"). Used in internal functions to investigate the AIS presence before the timestamp of the data.
 }
+\examples{
+\dontrun{
+DATAextend_time(data,
+max_time_diff = 1 * 60 * 60,
+t_gap = 30,
+accelerate = T,
+average_at = 30)}
+}

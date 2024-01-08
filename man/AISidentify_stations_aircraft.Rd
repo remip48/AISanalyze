@@ -35,3 +35,7 @@ the AIS data with the columns:
 \description{
 Identify base-stations and high-speed craft (aircraft) among AIS data
 }
+\examples{
+\dontrun{
+AISidentify_stations_aircraft(ais_data)}
+}
