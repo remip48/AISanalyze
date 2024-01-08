@@ -34,6 +34,9 @@ Human activities and impacts in the oceans continue to increase (Halpern et al.,
 
 # Acknowledgements
 
-We acknowledge contributions from Nadya C. Ramirez-Martinez, Andreas Ruser, Anita Gilles and Dominik Nachtsheim.
+We acknowledge contributions from Nadya C. Ramirez-Martinez, Andreas Ruser, Anita Gilles, Dominik Nachtsheim and Louise Moysan.
 
 # References
+
+Halpern, B. S., Frazier, M., Potapenko, J., Casey, K. S., Koenig, K., Longo, C., Lowndes, J. S., Rockwood, R. C., Selig, E. R., Selkoe, K. A., & Walbridge, S. (2015). Spatial and temporal changes in cumulative human impacts on the world’s ocean. Nature Communications, 6, 7615. https://doi.org/10.1038/ncomms8615
+Halpern, B. S., Walbridge, S., Selkoe, K. a, Kappel, C. V, Micheli, F., D’Agrosa, C., Bruno, J. F., Casey, K. S., Ebert, C., Fox, H. E., Fujita, R., Heinemann, D., Lenihan, H. S., Madin, E. M. P., Perry, M. T., Selig, E. R., Spalding, M., Steneck, R., & Watson, R. (2008). A Global Map of Human Impact on Marine Ecosystems. Science, 319(5865), 948–952. https://doi.org/10.1126/science.1149345
