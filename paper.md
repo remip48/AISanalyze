@@ -1,5 +1,5 @@
 ---
-title: 'AISanalyze: an R-package to correct, interpolate and extract AIS data'
+title: 'AISanalyze: an R-package to correct, interpolate, and extract AIS data'
 tags:
   - R
   - AIS data
@@ -26,21 +26,21 @@ bibliography: paper.bib
 
 # Summary
 
-AISanalyze is an R-package developed to specifically correct, in the AIS data, the GPS errors and GPS delays, interpolate (linearly) the vessel positions at the desired times, and extract the locations and information of vessels in a radius around the desired locations/times. The advantage of this package is that the computation time is considerably reduced when performing all these operations, enabling results to be obtained in a few minutes to a few hours depending on the size of the AIS dataset and on the number of locations and times where AIS data are corrected, interpolated and extracted. Furthermore, this package identifies the base-stations and aircrafts from vessels, based on the distance and speed travelled, and allows to extract the information on the length and type of vessels from these AIS data (correcting the errors of length and type present in the AIS). The other advantage is its simplicity: we constructed an all-in-one function, which allows to:
-- calculate the distance, time and speed travelled by each vessel;
-- correct the GPS errors and GPS delays;
-- interpolate the vessel positions at the desired times;
-- extract the positions and information of vessels around the desired locations, at the desired times.
-
-A second function allows you to interpolate (linearly) all the AIS data at the desired temporal resolution, regardless of the locations. Finally, a last function extracts the length and type of boat per vessel, removing the errors in the AIS data. This information can later be joined to your interpolated/extracted AIS data.
+AISanalyze is an R-package developed to specifically correct GPS errors in AIS data, interpolate (linearly) the vessel positions at the desired times, and extract the locations and information of vessels around desired locations, at desired times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. Furthermore, this package identifies the vessels from the base stations and aircrafts in the AIS data, based on the distance and speed travelled, allowing to filter only the first if desired. It extracts information on vessel length and type as well, by excluding errors on vessel length and type originally present in the AIS data. First, an all-in-one function was constructed to analyze, correct, and extract AIS data around desired locations, therefore:
+- calculating the distance, time and speed travelled by each vessel;
+- identifying base stations and aircrafts in the AIS;
+- correcting GPS errors and GPS delays;
+- interpolating the vessel positions at the customized times;
+- extracting the vessel positions and their information around the desired locations, at the desired times.
+However, each function is available individually as well. Second, a further function allows to interpolate (linearly) all AIS data at the desired temporal resolution, regardless of the location. Finally, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
 
 # Statement of need
 
-Human activities and impacts in the oceans continue to increase (Halpern et al., 2008, 2015), and with them the maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel monitoring system) are the only sources of data on the positions of vessels in the ocean to date, in the absence of collected vessel observations. Studies on maritime traffic's impacts are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, errors of receptions and others. This leads to vessel tracks with erroneous positions, speeds, and information (e.g. wrong vessel length and type). Furthermore, the huge size of the AIS data makes any overview complex and very time-consuming. These two points highly limit the possibilities of research on the vessel tracks and densities, related either to the state of the ecosystems, to the abundance of the populations, or the avoidance of the animals to the vessels. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to their full potential and overcome their shortcomings. This R-package opens up a wide range of research possibilities, from studying the effects and distribution of maritime traffic to improving the AIS data treatment and shortcomings.
+Human activities and their impacts on the ocean and their ecosystem components continue to increase (Halpern et al., 2008, 2015), and with them the maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel Monitoring System) are the only sources of global data on vessel positions in real time to date. Studies on the impacts of maritime traffic are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, and errors of receptions. This leads to vessel tracks with erroneous positions, speeds, and information (e.g., wrong vessel length and type). Furthermore, the huge size of the AIS data makes any overview complex and highly time-consuming. These two points greatly limit the research possibilities related to vessel tracks and densities including a wider context. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to carry out these researches. AISanalyze opens up a wide range of research possibilities, from studying the effects and distribution of maritime traffic to improving the treatment and shortcomings of AIS data.
 
 # Acknowledgements
 
-We acknowledge contributions from Andreas Ruser, Dominik Nachtsheim and Louise Moysan. RP, NCRM and AG were partially supported by project CoastalFutures, funded by the German Federal Ministry of Education and Research (BMBF) under grant number 03F0911H. The responsibility for the content of this publication lies with the authors.
+We acknowledge contributions from Andreas Ruser, Daniel Alexander Schwarzkopf, Volker Matthias, Tobias Schaffeld, and Dominik Nachtsheim. We would like to thank the German Federal Maritime and Hydrographic Agency (BSH) for providing the AIS data that enabled us to build, check and use this package. This work was conducted in the framework of the CoastalFutures project, funded by the German Federal Ministry of Education and Research (BMBF) under grant number 03F0911H. The responsibility for the content of this publication lies with the authors.
 
 # References
 
