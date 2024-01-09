@@ -1,6 +1,6 @@
 #' Estimate distance, time and speed (km/h) travelled by vessels
 #'
-#' Calcul the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
+#' Calculate the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
