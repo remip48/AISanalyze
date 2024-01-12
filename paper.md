@@ -29,7 +29,7 @@ bibliography: paper.bib
 
 # Summary
 
-AISanalyze is an R-package developed to specifically correct GPS errors in AIS data, interpolate (linearly) the vessel positions at the desired times, and extract the locations and information of vessels around desired locations, at desired times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. Furthermore, this package identifies the vessels from the base stations and aircrafts in the AIS data, based on the distance and speed travelled, allowing to filter only the first if desired. It extracts information on vessel length and type as well, by excluding errors on vessel length and type originally present in the AIS data. First, an all-in-one function was constructed to analyze, correct, and extract AIS data around desired locations, therefore:
+AISanalyze is an R-package developed to specifically correct GPS errors in AIS data, linearly interpolate the vessel positions at the desired times, and extract the locations and information of vessels around desired locations, at desired times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. Furthermore, this package identifies the vessels from the base stations and aircrafts in the AIS data, based on the distance and speed travelled, allowing to filter only the first if desired. It extracts information on vessel length and type as well, by excluding errors on vessel length and type originally present in the AIS data. First, an all-in-one function was constructed to analyze, correct, and extract AIS data around desired locations, therefore:
 
 - calculating the distance, time and speed travelled by each vessel;
 
@@ -41,7 +41,7 @@ AISanalyze is an R-package developed to specifically correct GPS errors in AIS d
 
 - extracting the vessel positions and their information around the desired locations, at the desired times.
 
-However, each function is available individually as well. Second, a further function allows to interpolate (linearly) all AIS data at the desired temporal resolution, regardless of the location. Finally, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
+However, each function is available individually as well. Second, a further function allows to linearly interpolate all AIS data at the desired temporal resolution, regardless of the location. Finally, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
 
 # Statement of need
 
