@@ -55,8 +55,10 @@ Correct the errors due to GPS delays or errors and leading to erroneous speeds (
 }
 \examples{
 \dontrun{
+data("ais")
+
 AIScorrect_speed(ais_data,
-mmsi_time_to_order = T,
-threshold_speed_to_correct = 100,
-time_stop = 5*60*60)}
+                 mmsi_time_to_order = T,
+                 threshold_speed_to_correct = 100,
+                 time_stop = 5*60*60)}
 }

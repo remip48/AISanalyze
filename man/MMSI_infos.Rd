@@ -37,7 +37,9 @@ Collect information on the type and length of the vessels to identify the (proba
 }
 \examples{
 \dontrun{
+data("ais")
+
 MMSI_infos(ais_data,
-threshold_length = 475,
-weight_complete_data = 10)}
+           threshold_length = 475,
+           weight_complete_data = 10)}
 }

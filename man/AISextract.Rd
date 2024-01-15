@@ -47,12 +47,15 @@ Extract the AIS position around the locations and at the time of the data
 }
 \examples{
 \dontrun{
+data("ais")
+data("point_to_extract")
+
 AISextract(data,
-ais_data,
-search_into_radius_m = 50000,
-duplicate_time = F,
-max_time_diff = 0,
-t_gap = 10*60,
-accelerate = F,
-average_at = 0)}
+           ais_data,
+           search_into_radius_m = 50000,
+           duplicate_time = F,
+           max_time_diff = 0,
+           t_gap = 10*60,
+           accelerate = F,
+           average_at = 0)}
 }

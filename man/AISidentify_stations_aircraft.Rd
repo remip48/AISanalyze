@@ -37,5 +37,7 @@ Identify base-stations and high-speed craft (aircraft) among AIS data
 }
 \examples{
 \dontrun{
+data("ais")
+
 AISidentify_stations_aircraft(ais_data)}
 }

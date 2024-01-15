@@ -95,18 +95,21 @@ Interpolate AIS data at the desired times, after have corrected the GPS errors a
 }
 \examples{
 \dontrun{
+data("ais")
+data("point_to_extract")
+
 AISinterpolate_at(data,
-ais_data,
-mmsi_time_to_order = T,
-load_existing_files = T,
-save_AISinterlate_at = T,
-overwrite = F,
-file_AISinterlate_at = "AISinterpolate_at",
-radius = 200000,
-time_stop = 5*60*60,
-correct_speed = T,
-threshold_speed_to_correct = 100,
-filter_station = T,
-filter_high_speed = T,
-parallelize = F)}
+                  ais_data,
+                  mmsi_time_to_order = T,
+                  load_existing_files = T,
+                  save_AISinterlate_at = T,
+                  overwrite = F,
+                  file_AISinterlate_at = "AISinterpolate_at",
+                  radius = 200000,
+                  time_stop = 5*60*60,
+                  correct_speed = T,
+                  threshold_speed_to_correct = 100,
+                  filter_station = T,
+                  filter_high_speed = T,
+                  parallelize = F)}
 }

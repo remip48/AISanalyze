@@ -36,9 +36,11 @@ Extend timestamps of data to past timestamps, by duplicating the data lines (exc
 }
 \examples{
 \dontrun{
+data("point_to_extract")
+
 DATAextend_time(data,
-max_time_diff = 1 * 60 * 60,
-t_gap = 30,
-accelerate = T,
-average_at = 30)}
+                max_time_diff = 1 * 60 * 60,
+                t_gap = 30,
+                accelerate = T,
+                average_at = 30)}
 }
