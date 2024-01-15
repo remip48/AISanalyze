@@ -16,6 +16,8 @@
 #'
 #' @examples
 #' \dontrun{
+#' data("ais")
+#'
 #' AISidentify_stations_aircraft(ais_data)}
 
 AISidentify_stations_aircraft <- function(ais_data,

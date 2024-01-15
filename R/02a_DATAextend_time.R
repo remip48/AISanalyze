@@ -17,17 +17,38 @@
 #'
 #' @examples
 #' \dontrun{
+#' data("point_to_extract")
+#'
 #' DATAextend_time(data,
-#' max_time_diff = 1 * 60 * 60,
-#' t_gap = 30,
-#' accelerate = T,
-#' average_at = 30)}
+#'                 max_time_diff = 1 * 60 * 60,
+#'                 t_gap = 30,
+#'                 accelerate = T,
+#'                 average_at = 30)}
 
 DATAextend_time <- function(data,
                             max_time_diff = 1 * 60 * 60,
                             t_gap = 30,
                             accelerate = T,
                             average_at = 30) {
+
+  if (!is.numeric(ais_data$timestamp)) {
+    stop("timestamp must be numeric in ais_data")
+  }
+  if (!is.numeric(max_time_diff)) {
+    stop("max_time_diff must be numeric")
+  }
+  if (!is.numeric(t_gap)) {
+    stop("t_gap must be numeric")
+  }
+  if (!is.logical(accelerate)) {
+    stop("accelerate must be numeric")
+  }
+  if (!is.logical(return_3035_coords)) {
+    stop("return_3035_coords must be numeric")
+  }
+  if (!is.numeric(average_at)) {
+    stop("average_at must be numeric")
+  }
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
