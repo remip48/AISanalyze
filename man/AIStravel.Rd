@@ -33,13 +33,8 @@ return the AIS data with the distance, time travelled and the speed of the vesse
 }
 }
 \description{
-Calcul the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
+Calculate the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
 }
 \examples{
-\dontrun{
-AIStravel(ais_data,
-time_stop = 5*60*60,
-mmsi_time_to_order = T,
-return_sf = F,
-return_3035_coords = F)}
+\dontrun{examples/AIStravel.R}
 }

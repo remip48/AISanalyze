@@ -16,13 +16,7 @@
 #' \item X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' AIStravel(ais_data,
-#' time_stop = 5*60*60,
-#' mmsi_time_to_order = T,
-#' return_sf = F,
-#' return_3035_coords = F)}
+#' @examples \dontrun{examples/AIStravel.R}
 
 AIStravel <- function(ais_data,
                       time_stop = 5*60*60,
@@ -30,6 +24,25 @@ AIStravel <- function(ais_data,
                       return_sf = F,
                       return_3035_coords = F
 ) {
+
+  if (!is.numeric(ais_data$timestamp)) {
+    stop("timestamp must be numeric in ais_data")
+  }
+  if (!is.numeric(ais_data$lon)) {
+    stop("lon must be numeric in ais_data")
+  }
+  if (!is.numeric(ais_data$lat)) {
+    stop("lat must be numeric in ais_data")
+  }
+  if (!is.numeric(time_stop)) {
+    stop("time_stop must be numeric")
+  }
+  if (!is.logical(return_sf)) {
+    stop("return_sf must be numeric")
+  }
+  if (!is.logical(return_3035_coords)) {
+    stop("return_3035_coords must be numeric")
+  }
 
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
