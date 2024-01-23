@@ -55,6 +55,7 @@
 #'                   filter_station = T,
 #'                   filter_high_speed = T,
 #'                   parallelize = F)}
+#' @export
 
 AISinterpolate_at <- function(data,
                               ais_data,

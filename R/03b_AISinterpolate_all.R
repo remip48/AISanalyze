@@ -46,6 +46,7 @@
 #'                   filter_high_speed = T,
 #'                   interpolate_station = F,
 #'                   interpolate_high_speed = F)}
+#' @export
 
 AISinterpolate_all <- function(ais_data,
                                mmsi_time_to_order = T,

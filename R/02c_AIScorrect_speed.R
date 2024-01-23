@@ -28,6 +28,7 @@
 #'                  mmsi_time_to_order = T,
 #'                  threshold_speed_to_correct = 100,
 #'                  time_stop = 5*60*60)}
+#' @export
 
 AIScorrect_speed <- function(ais_data,
                              mmsi_time_to_order = T,

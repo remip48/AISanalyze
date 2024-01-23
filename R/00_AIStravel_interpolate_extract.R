@@ -96,6 +96,7 @@
 #'                               return_merged_all_extracted = T,
 #'                               parallelize = F,
 #'                               nb_cores = NA)}
+#' @export
 
 AIStravel_interpolate_extract <- function(data,
                                           ais_data,

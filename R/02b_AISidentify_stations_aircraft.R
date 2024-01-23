@@ -19,6 +19,7 @@
 #' data("ais")
 #'
 #' AISidentify_stations_aircraft(ais_data)}
+#' @export
 
 AISidentify_stations_aircraft <- function(ais_data,
                                           quantile_station = 0.975,

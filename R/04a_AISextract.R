@@ -33,6 +33,7 @@
 #'            t_gap = 10*60,
 #'            accelerate = F,
 #'            average_at = 0)}
+#' @export
 
 AISextract <- function(data,
                        ais_data,

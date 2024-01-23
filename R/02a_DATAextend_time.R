@@ -24,6 +24,7 @@
 #'                 t_gap = 30,
 #'                 accelerate = T,
 #'                 average_at = 30)}
+#' @export
 
 DATAextend_time <- function(data,
                             max_time_diff = 1 * 60 * 60,

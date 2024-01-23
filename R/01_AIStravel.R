@@ -25,6 +25,7 @@
 #'           mmsi_time_to_order = T,
 #'           return_sf = F,
 #'           return_3035_coords = F)}
+#' @export
 
 AIStravel <- function(ais_data,
                       time_stop = 5*60*60,
