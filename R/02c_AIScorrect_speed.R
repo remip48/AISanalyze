@@ -34,7 +34,7 @@
 #'             return_sf = F,
 #'             return_3035_coords = F)
 #'
-#' AIScorrect_speed(ais_data,
+#' AIScorrect_speed(ais_data = ais,
 #'                  mmsi_time_to_order = T,
 #'                  threshold_speed_to_correct = 100,
 #'                  time_stop = 5*60*60)}

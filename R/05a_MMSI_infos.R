@@ -28,7 +28,7 @@
 #' \dontrun{
 #' data("ais")
 #'
-#' MMSI_infos(ais_data,
+#' MMSI_infos(ais_data = ais,
 #'            threshold_length = 475,
 #'            weight_complete_data = 10)}
 #' @export

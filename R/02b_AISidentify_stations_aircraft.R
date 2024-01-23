@@ -18,7 +18,12 @@
 #' \dontrun{
 #' data("ais")
 #'
-#' AISidentify_stations_aircraft(ais_data)}
+#' library(dplyr)
+#' library(lubridate)
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime)))
+
+#' AISidentify_stations_aircraft(ais_data = ais)}
 #' @export
 
 AISidentify_stations_aircraft <- function(ais_data,

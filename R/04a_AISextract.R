@@ -51,7 +51,7 @@
 #'                   filter_high_speed = T,
 #'                   parallelize = F)
 #'
-#'#' AISextract(data = point_to_extract,
+#' AISextract(data = point_to_extract,
 #'            ais_data = ais,
 #'            search_into_radius_m = 50000,
 #'            duplicate_time = F,
@@ -82,6 +82,59 @@ AISextract <- function(data,
 
   ais_data <- ais_data[ais_data$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at)) &
                            ais_data$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at), ]
+
+  if (!(all(c("ais_X", "ais_Y") %in% colnames(ais_data)))) {
+    if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
+      if (!("sf" %in% class(ais_data))) {
+        ais_data <- ais_data %>%
+          dplyr::mutate(tlon = lon,
+                        tlat = lat) %>%
+          st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+      }
+      if (st_crs(ais_data)$input != "EPSG:3035") {
+        ais_data <- ais_data %>%
+          st_transform(crs = 3035)
+      }
+
+      coords_eff <- ais_data %>%
+        st_coordinates() %>%
+        as.data.frame()
+
+      ais_data <- ais_data %>%
+        st_drop_geometry() %>%
+        dplyr::mutate(X = coords_eff[,1],
+                      Y = coords_eff[,2])
+
+      rm(coords_eff)
+    } else {
+      ais_data <- ais_data %>%
+        mutate(ais_X = X, ais_Y = Y)
+    }
+  }
+
+  if (!(all(c("X", "Y") %in% colnames(data)))) {
+    if (!("sf" %in% class(data))) {
+      data <- data %>%
+        dplyr::mutate(tlon = lon,
+                      tlat = lat) %>%
+        st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+    }
+    if (st_crs(data)$input != "EPSG:3035") {
+      data <- data %>%
+        st_transform(crs = 3035)
+    }
+
+    coords_eff <- data %>%
+      st_coordinates() %>%
+      as.data.frame()
+
+    data <- data %>%
+      st_drop_geometry() %>%
+      dplyr::mutate(X = coords_eff[,1],
+                    Y = coords_eff[,2])
+
+    rm(coords_eff)
+  }
 
   if (duplicate_time) {
     data <- DATAextend_time(data = data, accelerate = accelerate, max_time_diff = max_time_diff, t_gap = t_gap, average_at = average_at)
@@ -126,9 +179,9 @@ AISextract <- function(data,
     eff_dt <- data[data$timestamp_AIS_to_extract == dt,]
 
     mmsi_ref <- ais_data[ais_data$timestamp > (dt - t_gap - average_at) &
-                            ais_data$timestamp < (dt + t_gap + average_at) &
-                            ais_data$ais_X >= (min(eff_dt$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
-                            ais_data$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
+                           ais_data$timestamp < (dt + t_gap + average_at) &
+                           ais_data$ais_X >= (min(eff_dt$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
+                           ais_data$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
 
     if (nrow(mmsi_ref) > 1) {
       mmsi_ref <- mmsi_ref %>%
