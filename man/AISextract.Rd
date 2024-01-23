@@ -76,7 +76,7 @@ ais <- ais \%>\%
                   filter_high_speed = T,
                   parallelize = F)
 
-#' AISextract(data = point_to_extract,
+AISextract(data = point_to_extract,
            ais_data = ais,
            search_into_radius_m = 50000,
            duplicate_time = F,

@@ -39,5 +39,9 @@ Identify base-stations and high-speed craft (aircraft) among AIS data
 \dontrun{
 data("ais")
 
-AISidentify_stations_aircraft(ais_data)}
+library(dplyr)
+library(lubridate)
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime)))
+AISidentify_stations_aircraft(ais_data = ais)}
 }

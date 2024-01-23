@@ -159,8 +159,8 @@ point_to_extract <- point_to_extract \%>\%
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime)))
 
-AIStravel_interpolate_extract(data,
-                              ais_data,
+AIStravel_interpolate_extract(data = point_to_extract,
+                              ais_data = ais,
                               mmsi_time_to_order = T,
                               search_into_radius_m = 50000,
                               run_AIStravel = T,
