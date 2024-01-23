@@ -24,6 +24,16 @@
 #' \dontrun{
 #' data("ais")
 #'
+#' library(dplyr)
+#' library(lubridate)
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#'   AIStravel(ais_data = .,
+#'             time_stop = 5*60*60,
+#'             mmsi_time_to_order = T,
+#'             return_sf = F,
+#'             return_3035_coords = F)
+#'
 #' AIScorrect_speed(ais_data,
 #'                  mmsi_time_to_order = T,
 #'                  threshold_speed_to_correct = 100,
@@ -40,7 +50,7 @@ AIScorrect_speed <- function(ais_data,
                              nb_iteration_successive_strange = 100,
                              correct_high_speed_craft = F,
                              quantile_station = 0.975,
-                             threshold_distance_station = 10,
+                             threshold_distance_station = 1,
                              quantile_high_speed = 0.97,
                              threshold_high_speed = 110
 ) {

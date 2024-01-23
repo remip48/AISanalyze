@@ -35,7 +35,7 @@ AIStravel_interpolate_extract(
   filter_high_speed = T,
   radius = 2e+05,
   quantile_station = 0.975,
-  threshold_distance_station = 10,
+  threshold_distance_station = 1,
   quantile_high_speed = 0.97,
   threshold_high_speed = 110,
   run_AISextract_perHour = T,
@@ -151,6 +151,13 @@ Advice : if AIS data and data to extract are large, and if the application allow
 \dontrun{
 data("ais")
 data("point_to_extract")
+
+library(dplyr)
+library(lubridate)
+point_to_extract <- point_to_extract \%>\%
+  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime)))
 
 AIStravel_interpolate_extract(data,
                               ais_data,

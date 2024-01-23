@@ -20,6 +20,11 @@
 #' \dontrun{
 #' data("ais")
 #'
+#' library(dplyr)
+#' library(lubridate)
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime)))
+#'
 #' AIStravel(ais_data = ais,
 #'           time_stop = 5*60*60,
 #'           mmsi_time_to_order = T,

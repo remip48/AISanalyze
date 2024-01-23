@@ -19,7 +19,12 @@
 #' \dontrun{
 #' data("point_to_extract")
 #'
-#' DATAextend_time(data,
+#' library(dplyr)
+#' library(lubridate)
+#' point_to_extract <- point_to_extract %>%
+#'   mutate(timestamp = as.numeric(ymd_hm(datetime)))
+#'
+#' DATAextend_time(data = point_to_extract,
 #'                 max_time_diff = 1 * 60 * 60,
 #'                 t_gap = 30,
 #'                 accelerate = T,
@@ -32,8 +37,8 @@ DATAextend_time <- function(data,
                             accelerate = T,
                             average_at = 30) {
 
-  if (!is.numeric(ais_data$timestamp)) {
-    stop("timestamp must be numeric in ais_data")
+  if (!is.numeric(data$timestamp)) {
+    stop("timestamp must be numeric in data")
   }
   if (!is.numeric(max_time_diff)) {
     stop("max_time_diff must be numeric")
@@ -43,9 +48,6 @@ DATAextend_time <- function(data,
   }
   if (!is.logical(accelerate)) {
     stop("accelerate must be numeric")
-  }
-  if (!is.logical(return_3035_coords)) {
-    stop("return_3035_coords must be numeric")
   }
   if (!is.numeric(average_at)) {
     stop("average_at must be numeric")

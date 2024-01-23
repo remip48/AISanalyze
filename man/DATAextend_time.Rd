@@ -38,7 +38,12 @@ Extend timestamps of data to past timestamps, by duplicating the data lines (exc
 \dontrun{
 data("point_to_extract")
 
-DATAextend_time(data,
+library(dplyr)
+library(lubridate)
+point_to_extract <- point_to_extract \%>\%
+  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+
+DATAextend_time(data = point_to_extract,
                 max_time_diff = 1 * 60 * 60,
                 t_gap = 30,
                 accelerate = T,

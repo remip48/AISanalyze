@@ -24,7 +24,7 @@ AISinterpolate_at(
   filter_station = T,
   filter_high_speed = T,
   quantile_station = 0.975,
-  threshold_distance_station = 10,
+  threshold_distance_station = 1,
   quantile_high_speed = 0.97,
   threshold_high_speed = 110,
   parallelize = F,
@@ -98,8 +98,20 @@ Interpolate AIS data at the desired times, after have corrected the GPS errors a
 data("ais")
 data("point_to_extract")
 
-AISinterpolate_at(data,
-                  ais_data,
+library(dplyr)
+library(lubridate)
+point_to_extract <- point_to_extract \%>\%
+  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
+  AIStravel(ais_data = .,
+            time_stop = 5*60*60,
+            mmsi_time_to_order = T,
+            return_sf = F,
+            return_3035_coords = F)
+
+AISinterpolate_at(data = point_to_extract,
+                  ais_data = ais,
                   mmsi_time_to_order = T,
                   load_existing_files = T,
                   save_AISinterlate_at = T,

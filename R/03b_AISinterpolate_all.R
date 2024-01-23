@@ -36,7 +36,17 @@
 #' \dontrun{
 #' data("ais")
 #'
-#' AISinterpolate_all(ais_data,
+#' library(dplyr)
+#' library(lubridate)
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#'   AIStravel(ais_data = .,
+#'             time_stop = 5*60*60,
+#'             mmsi_time_to_order = T,
+#'             return_sf = F,
+#'             return_3035_coords = F)
+#'
+#' AISinterpolate_all(ais_data = ais,
 #'                   mmsi_time_to_order = T,
 #'                   t_gap = 60,
 #'                   time_stop = 5 * 60 * 60,
@@ -59,7 +69,7 @@ AISinterpolate_all <- function(ais_data,
                                filter_station = T,
                                filter_high_speed = T,
                                quantile_station = 0.975,
-                               threshold_distance_station = 10,
+                               threshold_distance_station = 1,
                                quantile_high_speed = 0.97,
                                threshold_high_speed = 110,
                                interpolate_station = F,

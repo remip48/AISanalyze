@@ -50,8 +50,34 @@ Extract the AIS position around the locations and at the time of the data
 data("ais")
 data("point_to_extract")
 
-AISextract(data,
-           ais_data,
+library(dplyr)
+library(lubridate)
+point_to_extract <- point_to_extract \%>\%
+  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
+  AIStravel(ais_data = .,
+            time_stop = 5*60*60,
+            mmsi_time_to_order = T,
+            return_sf = F,
+            return_3035_coords = F) \%>\%
+  AISinterpolate_at(data = point_to_extract,
+                  ais_data = .,
+                  mmsi_time_to_order = T,
+                  load_existing_files = T,
+                  save_AISinterlate_at = T,
+                  overwrite = F,
+                  file_AISinterlate_at = "AISinterpolate_at",
+                  radius = 200000,
+                  time_stop = 5*60*60,
+                  correct_speed = T,
+                  threshold_speed_to_correct = 100,
+                  filter_station = T,
+                  filter_high_speed = T,
+                  parallelize = F)
+
+#' AISextract(data = point_to_extract,
+           ais_data = ais,
            search_into_radius_m = 50000,
            duplicate_time = F,
            max_time_diff = 0,

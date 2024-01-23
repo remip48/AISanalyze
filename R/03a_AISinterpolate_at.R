@@ -41,8 +41,20 @@
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' AISinterpolate_at(data,
-#'                   ais_data,
+#' library(dplyr)
+#' library(lubridate)
+#' point_to_extract <- point_to_extract %>%
+#'   mutate(timestamp = as.numeric(ymd_hm(datetime)))
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#'   AIStravel(ais_data = .,
+#'             time_stop = 5*60*60,
+#'             mmsi_time_to_order = T,
+#'             return_sf = F,
+#'             return_3035_coords = F)
+#'
+#' AISinterpolate_at(data = point_to_extract,
+#'                   ais_data = ais,
 #'                   mmsi_time_to_order = T,
 #'                   load_existing_files = T,
 #'                   save_AISinterlate_at = T,
@@ -74,7 +86,7 @@ AISinterpolate_at <- function(data,
                               filter_station = T,
                               filter_high_speed = T,
                               quantile_station = 0.975,
-                              threshold_distance_station = 10,
+                              threshold_distance_station = 1,
                               quantile_high_speed = 0.97,
                               threshold_high_speed = 110,
                               # interpolate_station = T,
@@ -140,6 +152,29 @@ AISinterpolate_at <- function(data,
 
     rm(coords_AIS)
   }
+  if (!(all(c("X", "Y") %in% colnames(data)))) {
+    if (!("sf" %in% class(data))) {
+      data <- data %>%
+        dplyr::mutate(tlon = lon,
+                      tlat = lat) %>%
+        st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+    }
+    if (st_crs(data)$input != "EPSG:3035") {
+      data <- data %>%
+        st_transform(crs = 3035)
+    }
+
+    coords_eff <- data %>%
+      st_coordinates() %>%
+      as.data.frame()
+
+    data <- data %>%
+      st_drop_geometry() %>%
+      dplyr::mutate(X = coords_eff[,1],
+                    Y = coords_eff[,2])
+
+    rm(coords_eff)
+  }
 
   ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
 
@@ -178,12 +213,22 @@ AISinterpolate_at <- function(data,
   # }
 
   if (radius != Inf) {
-    ais_data <- ais_data[ais_data$X >= (min(data$X, na.rm = T) - radius) & ais_data$X <= (max(data$X, na.rm = T) + radius) &
-                           ais_data$Y >= (min(data$Y, na.rm = T) - radius) & ais_data$Y <= (max(data$Y, na.rm = T) + radius), ]
+    far <- which(ais_data$X >= (min(data$X, na.rm = T) - radius) & ais_data$X <= (max(data$X, na.rm = T) + radius) &
+                   ais_data$Y >= (min(data$Y, na.rm = T) - radius) & ais_data$Y <= (max(data$Y, na.rm = T) + radius))
+
+    if (length(far) > 0) {
+      ais_data <- ais_data[far, ]
+    }
+    rm(far)
   }
   if (time_stop != Inf) {
-    ais_data <- ais_data[ais_data$timestamp >= (min(timestamp_to_interpolate) - (time_stop + average_mmsi_at)) &
-                           ais_data$timestamp <= (max(timestamp_to_interpolate) + (time_stop + average_mmsi_at)), ]
+    long <- ais_data$timestamp >= (min(timestamp_to_interpolate) - (time_stop + average_mmsi_at)) &
+      ais_data$timestamp <= (max(timestamp_to_interpolate) + (time_stop + average_mmsi_at))
+
+    if (length(long) > 0) {
+      ais_data <- ais_data[long, ]
+    }
+    rm(long)
   }
 
   gc()

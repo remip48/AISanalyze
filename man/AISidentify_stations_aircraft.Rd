@@ -7,7 +7,7 @@
 AISidentify_stations_aircraft(
   ais_data,
   quantile_station = 0.975,
-  threshold_distance_station = 10,
+  threshold_distance_station = 1,
   quantile_high_speed = 0.97,
   threshold_high_speed = 110
 )
