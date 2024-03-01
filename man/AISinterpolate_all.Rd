@@ -73,7 +73,7 @@ return AIS data with the columns:
 \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.}
 }
 \description{
-Interpolate all AIS data to have AIS positions at the desired interval of time, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
+Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
 }
 \examples{
 \dontrun{

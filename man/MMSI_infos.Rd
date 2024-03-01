@@ -2,19 +2,25 @@
 % Please edit documentation in R/05a_MMSI_infos.R
 \name{MMSI_infos}
 \alias{MMSI_infos}
-\title{Estimate vessel type and vessel length}
+\title{Estimate vessel type, length, width, draught, imo and name}
 \usage{
-MMSI_infos(ais_data, threshold_length = 475, weight_complete_data = 10)
+MMSI_infos(
+  ais_data,
+  threshold_length = 475,
+  threshold_draught = NA,
+  threshold_width = NA,
+  weight_complete_data = 10
+)
 }
 \arguments{
-\item{ais_data}{AIS data. Must contain the columns shiptype, length and mmsi (Maritime mobile service identity). The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
+\item{ais_data}{AIS data. Must contain the columns shiptype, length, width, draught, imo and name and mmsi (Maritime mobile service identity). The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
 \item{threshold_length}{threshold (meters) above which the length is considered as unrealistic (and set as NA).}
 
 \item{weight_complete_data}{weigth for lines having both the information on length and on type: complete lines are supposed to be more reliable (10 by default for the weight).}
 }
 \value{
-A data frame with one MMSI by row, and containing the columns:
+A list with dataframes "values_obtained" and summary. This last present the statistics of analysis per MMSI, and contains the columns:
 \itemize{
 \item npoint: total number of AIS receptions for this MMSI.
 \item npoint_all_lengths: number of AIS reception having a value in the column length for this MMSI.
@@ -31,9 +37,11 @@ A data frame with one MMSI by row, and containing the columns:
 \item type: estimated shiptype of the MMSI, based on the weighted number of points of each shiptype. The shiptype having the greatest score is considered as the real shiptype
 \item npoint_type: number of AIS reception having the value "type" (estimated real shiptype) for this MMSI.
 \item npoint_type_weighted: number of AIS reception (weighted by "weight_complete_data") having the value "type" (estimated real shiptype) for this MMSI.}
+
+The same columns are present with the "width", "draught", "imo", "name" replacing "length" of "type" in the column name.
 }
 \description{
-Collect information on the type and length of the vessels to identify the (probable) real type and length, among the errors usually present in the AIS columns. Extract the length and shiptype occurring the most in the MMSI data as the probable real values, and give higher weight to lines with complete data than lines with partial data information. The shiptypes should be checked beforehand to merge the same shiptypes entered as different names. The results should be combined to other AIS data containing this MMSI to confirm the lengths and types returned: analysis showed that daily data are not sufficient to provide reliable values.
+Collect information on the type, length, width, draught, imo and name of the vessels to identify the (probable) real values, among the errors usually present in the AIS columns. Extract the length, shiptype, width, draught, imo and name occurring the most in the MMSI data as the probable real values, and give higher weight to lines with complete data than lines with partial data information. The shiptypes should be checked beforehand to merge the same shiptypes entered as different names. The results should be combined to other AIS data containing this MMSI to confirm returned information returned: analysis showed that daily data are not sufficient to provide reliable values.
 }
 \examples{
 \dontrun{
