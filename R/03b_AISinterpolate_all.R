@@ -1,6 +1,6 @@
 #' Interpolate all AIS data at the desired interval of time.
 #'
-#' Interpolate all AIS data to have AIS positions at the desired interval of time, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
+#' Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
@@ -78,6 +78,35 @@ AISinterpolate_all <- function(ais_data,
                                # on_Land_analysis = F,
                                # land_sf_polygon = NA
                                ){
+
+  list_num <- c("mmsi_time_to_order", "correct_speed", "filter_station", "filter_high_speed", "interpolate_station", "interpolate_high_speed")
+  if (any(!do.call("c", map(list(mmsi_time_to_order, correct_speed, filter_station, filter_high_speed, interpolate_station, interpolate_high_speed),
+                            is.logical)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(mmsi_time_to_order, correct_speed, filter_station, filter_high_speed, interpolate_station, interpolate_high_speed),
+                                                       is.logical)))],
+                      collapse = ", "),
+                " must be logical"))
+  }
+  rm(list_num)
+
+  list_num <- c("ais_data$timestamp",
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$X", "ais_data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$Y", "ais_data$lat"),
+                "t_gap", "time_stop", "threshold_speed_to_correct", "quantile_station", "threshold_distance_station", "quantile_high_speed", "threshold_high_speed")
+  if (any(!do.call("c", map(list(ais_data$timestamp,
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                 t_gap, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                            is.numeric)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(ais_data$timestamp,
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                                            t_gap, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                                                       is.numeric)))],
+                      collapse = ", "),
+                " must be numeric"))
+  }
+  rm(list_num)
 
   # param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
   # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.

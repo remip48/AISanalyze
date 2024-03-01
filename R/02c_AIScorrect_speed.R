@@ -55,6 +55,38 @@ AIScorrect_speed <- function(ais_data,
                              threshold_high_speed = 110
 ) {
 
+  list_num <- c("mmsi_time_to_order", "correct_high_speed_craft")
+  if (any(!do.call("c", map(list(mmsi_time_to_order, correct_high_speed_craft),
+                            is.logical)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(mmsi_time_to_order, correct_high_speed_craft),
+                                                       is.logical)))],
+                      collapse = ", "),
+                " must be logical"))
+  }
+  rm(list_num)
+
+  list_num <- c("ais_data$timestamp",
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$X", "ais_data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$Y", "ais_data$lat"),
+                "time_stop", "threshold_speed_to_correct", "quantile_station", "threshold_distance_station", "quantile_high_speed", "threshold_high_speed",
+                "nb_iteration", "nb_iteration_successive_strange")
+  if (any(!do.call("c", map(list(ais_data$timestamp,
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                 time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed,
+                                 nb_iteration, nb_iteration_successive_strange),
+                            is.numeric)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(ais_data$timestamp,
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                                            time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed,
+                                                            nb_iteration, nb_iteration_successive_strange),
+                                                       is.numeric)))],
+                      collapse = ", "),
+                " must be numeric"))
+  }
+  rm(list_num)
+
   init_cols <- colnames(ais_data)
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {

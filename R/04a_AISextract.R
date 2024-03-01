@@ -71,6 +71,47 @@ AISextract <- function(data,
                        average_at = 0
 ) {
 
+  list_num <- c("duplicate_time", "accelerate")
+  if (any(!do.call("c", map(list(duplicate_time, accelerate),
+                            is.logical)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(duplicate_time, accelerate),
+                                                       is.logical)))],
+                      collapse = ", "),
+                " must be logical"))
+  }
+  rm(list_num)
+
+  list_num <- c("ais_data$timestamp",
+                ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), "ais_data$ais_X",
+                       ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$X", "ais_data$lon")),
+                ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), "ais_data$ais_Y",
+                       ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$Y", "ais_data$lat")),
+                ifelse(all(c("X", "Y") %in% colnames(data)), "data$X", "data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(data)), "data$Y", "data$lat"),
+                "t_gap", "time_stop", "threshold_speed_to_correct", "quantile_station", "threshold_distance_station", "quantile_high_speed", "threshold_high_speed")
+  if (any(!do.call("c", map(list(ais_data$timestamp,
+                                 ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), ais_data$ais_X,
+                                        ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon)),
+                                 ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), ais_data$ais_Y,
+                                        ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat)),
+                                 ifelse(all(c("X", "Y") %in% colnames(data)), data$X, data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(data)), data$Y, data$lat),
+                                 t_gap, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                            is.numeric)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(ais_data$timestamp,
+                                                            ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), ais_data$ais_X,
+                                                                   ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon)),
+                                                            ifelse(all(c("ais_X", "ais_Y") %in% colnames(ais_data)), ais_data$ais_Y,
+                                                                   ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat)),
+                                                            ifelse(all(c("X", "Y") %in% colnames(data)), data$X, data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(data)), data$Y, data$lat),
+                                                            t_gap, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                                                       is.numeric)))],
+                      collapse = ", "),
+                " must be numeric"))
+  }
+  rm(list_num)
+
   # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
   # inst <- which(!(pack %in% installed.packages()[,1]))
   #

@@ -32,6 +32,25 @@ AISidentify_stations_aircraft <- function(ais_data,
                                           quantile_high_speed = 0.97,
                                           threshold_high_speed = 110) {
 
+  list_num <- c("ais_data$timestamp",
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$X", "ais_data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$Y", "ais_data$lat"),
+                "quantile_station", "threshold_distance_station", "quantile_high_speed", "threshold_high_speed")
+  if (any(!do.call("c", map(list(ais_data$timestamp,
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                 quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                            is.numeric)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(ais_data$timestamp,
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                                            quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                                                       is.numeric)))],
+                      collapse = ", "),
+                " must be numeric"))
+  }
+  rm(list_num)
+
   init_cols <- colnames(ais_data)
 
   if (!(all(c("X", "Y") %in% colnames(ais_data)))) {

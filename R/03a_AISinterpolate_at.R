@@ -101,6 +101,59 @@ AISinterpolate_at <- function(data,
                               # return_all = F ## issue with id_ais_initial_data, that an column with initial values must be created and taken back at the end to identify duplicates from interpolated.
 ){
 
+  if (!is.logical(mmsi_time_to_order)) {
+    stop("mmsi_time_to_order must be logical")
+  }
+  if (!is.logical(load_existing_files)) {
+    stop("load_existing_files must be logical")
+  }
+  if (!is.logical(save_AISinterlate_at)) {
+    stop("save_AISinterlate_at must be logical")
+  }
+  if (!is.logical(overwrite)) {
+    stop("overwrite must be logical")
+  }
+  if (!is.logical(correct_speed)) {
+    stop("correct_speed must be logical")
+  }
+  if (!is.logical(filter_station)) {
+    stop("filter_station must be logical")
+  }
+  if (!is.logical(filter_high_speed)) {
+    stop("filter_high_speed must be logical")
+  }
+  if (!is.logical(parallelize)) {
+    stop("parallelize must be logical")
+  }
+  if (!is.logical(QUIET)) {
+    stop("QUIET must be logical")
+  }
+
+  list_num <- c("data$timestamp", "ais_data$timestamp",
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$X", "ais_data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(ais_data)), "ais_data$Y", "ais_data$lat"),
+                ifelse(all(c("X", "Y") %in% colnames(data)), "data$X", "data$lon"),
+                ifelse(all(c("X", "Y") %in% colnames(data)), "data$Y", "data$lat"),
+                "radius", "time_stop", "threshold_speed_to_correct", "quantile_station", "threshold_distance_station", "quantile_high_speed", "threshold_high_speed")
+  if (any(!do.call("c", map(list(data$timestamp, ais_data$timestamp,
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                 ifelse(all(c("X", "Y") %in% colnames(data)), data$X, data$lon),
+                                 ifelse(all(c("X", "Y") %in% colnames(data)), data$Y, data$lat),
+                                 radius, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                           is.numeric)))) {
+    stop(paste0(paste(list_num[which(!do.call("c", map(list(data$timestamp, ais_data$timestamp,
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
+                                                            ifelse(all(c("X", "Y") %in% colnames(data)), data$X, data$lon),
+                                                            ifelse(all(c("X", "Y") %in% colnames(data)), data$Y, data$lat),
+                                                            radius, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
+                                                       is.numeric)))],
+                      collapse = ", "),
+                " must be numeric in data"))
+  }
+  rm(list_num)
+
   # param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
   # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
   # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
