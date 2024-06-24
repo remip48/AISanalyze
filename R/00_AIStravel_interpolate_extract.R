@@ -39,7 +39,7 @@
 #' @param parallelize if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)
 #' @param nb_cores number of cores to used with doParallel.
 #' @param outfile file to print the logs if parallelize = T.
-#' @param QUIET if TRUE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
+#' @param QUIET if FALSE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
 #'
 #' @return return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
 #' The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
