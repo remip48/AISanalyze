@@ -971,9 +971,9 @@ AISinterpolate_at <- function(data,
     # rm(cols)
 
     out <- purrr::map_dfr(list(ais_ok,
-                               ais_data %>%
-                                 dplyr::distinct()),
-                          function(d) {return(d)})
+                               ais_data),
+                          function(d) {return(d)}) %>%
+      dplyr::distinct()
 
     # if (return_all) {
     #   out <- purrr::map_dfr(list(out,

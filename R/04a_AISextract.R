@@ -122,7 +122,7 @@ AISextract <- function(data,
   # lapply(pack, library, character.only = TRUE)
 
   ais_data <- ais_data[ais_data$timestamp > (min(data$timestamp, na.rm = T) - (max_time_diff + t_gap + average_at)) &
-                           ais_data$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at), ]
+                         ais_data$timestamp < (max(data$timestamp, na.rm = T) + t_gap + average_at), ]
 
   if (!(all(c("ais_X", "ais_Y") %in% colnames(ais_data)))) {
     if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
@@ -149,8 +149,23 @@ AISextract <- function(data,
       rm(coords_eff)
     } else {
       ais_data <- ais_data %>%
-        mutate(ais_X = X, ais_Y = Y)
+        dplyr::rename(ais_X = X, ais_Y = Y)
     }
+  }
+
+  colnam <- colnames(ais_data)
+  if (any(colnam[!(colnam %in% c("timestamp", "mmsi"))] %in% c(colnames(data)))) {
+    colnames(ais_data)[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))] <- paste0("ais_", colnam[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))])
+    cat("\n", paste0("'", paste(colnam[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "),
+                     "'"),
+        "columns in AIS data renamed as",
+        paste0("'", paste(colnames(ais_data)[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"), "\n")
+  }
+  rm(colnam)
+
+  if (any(colnames(data) == "mmsi")) {
+    colnames(data)[colnames(data) == "mmsi"] <- "initial_mmsi"
+    cat("\nmmsi column in dataframe renamed as 'initial_mmsi'")
   }
 
   if (!(all(c("X", "Y") %in% colnames(data)))) {
@@ -187,7 +202,7 @@ AISextract <- function(data,
   } else {
     data <- data %>%
       dplyr::mutate(timestamp_AIS_to_extract = timestamp,
-             diffTime_AIS_extraction_effort = 0)
+                    diffTime_AIS_extraction_effort = 0)
   }
 
   data <- data %>%
