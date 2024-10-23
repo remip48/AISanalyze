@@ -144,7 +144,8 @@ AISextract <- function(data,
       ais_data <- ais_data %>%
         st_drop_geometry() %>%
         dplyr::mutate(X = coords_eff[,1],
-                      Y = coords_eff[,2])
+                      Y = coords_eff[,2]) %>%
+        dplyr::rename(ais_X = X, ais_Y = Y)
 
       rm(coords_eff)
     } else {
@@ -202,7 +203,8 @@ AISextract <- function(data,
   } else {
     data <- data %>%
       dplyr::mutate(timestamp_AIS_to_extract = timestamp,
-                    diffTime_AIS_extraction_effort = 0)
+                    diffTime_AIS_extraction_effort = 0,
+                    datetime_AIS_to_extract = as.character(lubridate::as_datetime(timestamp_AIS_to_extract)))
   }
 
   data <- data %>%
