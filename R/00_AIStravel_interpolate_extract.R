@@ -6,39 +6,39 @@
 #'
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
-#' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
-#' @param search_into_radius_m radius (kilometer) where the MMSIs are extracted and returned.
-#' @param load_existing_files if TRUE, load the existing files (saved during previous runs) of AIStravel, AISinterpolate_at and AISextract when running the functions.
-#' @param run_AIStravel if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.
-#' @param save_AIStravel if results from AIStravel must be saved (only if run_AIStravel = T).
-#' @param file_AIStravel if save_AIStravel = TRUE, is the file name where AIStravel output is saved. Must not contain file format: the files are written as .rds.
-#' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
-#' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
-#' @param run_AISinterpolate_at if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.
-#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T)
-#' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
 #' @param correct_speed if TRUE, GPS errors and GPS delays are identified and removed from AIS data. Vessel speeds, distance and time travelled are corrected. Usually necessary.
-#' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
-#' @param threshold_speed_to_correct_expr expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.
+#' @param run_AIStravel if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.
+#' @param run_AISinterpolate_at if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.
+#' @param run_AISextract_perHour if the AIS data must be extract for the locations & times of the data (ran with AISextract), up to "max_time_diff" number of seconds before the data timestamps by steps of "t_gap".
+#' @param filter_station if TRUE, filter the stations out.
+#' @param filter_high_speed if TRUE, filter the aircraft out.
+#' @param search_into_radius_m radius (kilometer) where the MMSIs are extracted and returned.
 #' @param duplicate_time if TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.
 #' @param max_time_diff if duplicate_time = TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.
 #' @param t_gap see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction (otherwise other AIS data are filtered out).
 #' @param accelerate if TRUE, data timestamps are averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.
 #' @param average_at if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).
-#' @param filter_station if TRUE, filter the stations out.
-#' @param filter_high_speed if TRUE, filter the aircraft out.
-#' @param radius radius (kilometers) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
+#' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
+#' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
+#' @param radius radius (meters) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
+#' @param parallelize if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)
+#' @param nb_cores number of cores to used with doParallel.
+#' @param outfile file to print the logs if parallelize = T.
+#' @param save_AIStravel if results from AIStravel must be saved (only if run_AIStravel = T).
+#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T)
+#' @param save_AISextract_perHour if results from AISextract must be saved, (only if run_AISextract_perHour = T).
+#' @param file_AIStravel if save_AIStravel = TRUE, is the file name where AIStravel output is saved. Must not contain file format: the files are written as .rds.
+#' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
+#' @param file_AISextract_perHour if save_AISextract_perHour = TRUE, is the file name where hourly extracted AIS data along data of interest are saved. Must not contain file format: the files are written as .rds.
+#' @param load_existing_files if TRUE, load the existing files (saved during previous runs) of AIStravel, AISinterpolate_at and AISextract when running the functions.
+#' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
+#' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
+#' @param threshold_speed_to_correct_expr expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.
 #' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
 #' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
 #' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
 #' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
-#' @param run_AISextract_perHour if the AIS data must be extract for the locations & times of the data (ran with AISextract), up to "max_time_diff" number of seconds before the data timestamps by steps of "t_gap".
-#' @param save_AISextract_perHour if results from AISextract must be saved, (only if run_AISextract_perHour = T).
-#' @param file_AISextract_perHour if save_AISextract_perHour = TRUE, is the file name where hourly extracted AIS data along data of interest are saved. Must not contain file format: the files are written as .rds.
 #' @param return_merged_all_extracted if TRUE, return the output (from AISextract, AISinterpolate_at, or AIStravel by order of process). Otherwise, return NULL. Usefull if the results are saved during the process and the output is not necessary (set it as FALSE and decrease the memory used).
-#' @param parallelize if TRUE, parallelize with "doParallel" package the processes (required powerful computer if large AIS dataset and data timestamps to process.)
-#' @param nb_cores number of cores to used with doParallel.
-#' @param outfile file to print the logs if parallelize = T.
 #' @param QUIET if FALSE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.
 #'
 #' @return return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
@@ -48,7 +48,7 @@
 #' \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
 #' \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
 #' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-#' \item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"
+#' \item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from diffTime_AIS_extraction_effort due to the parameter "average_at" (that average the timestamp to extract).
 #' \item hour_AIS_to_extract: hour of timestamp_AIS_to_extract
 #' \item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
 #' \item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
