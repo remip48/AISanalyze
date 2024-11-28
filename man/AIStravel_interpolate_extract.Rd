@@ -95,7 +95,7 @@ AIStravel_interpolate_extract(
 
 \item{filter_high_speed}{if TRUE, filter the aircraft out.}
 
-\item{radius}{radius (kilometers) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).}
+\item{radius}{radius (meters) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).}
 
 \item{quantile_station}{Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
 
@@ -119,7 +119,7 @@ AIStravel_interpolate_extract(
 
 \item{outfile}{file to print the logs if parallelize = T.}
 
-\item{QUIET}{if TRUE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.}
+\item{QUIET}{if FALSE, print the iterations: either in the console if parallelize = F, or in the file "outfile" if parallelize = T.}
 }
 \value{
 return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
@@ -129,7 +129,7 @@ The output dataframe contains the columns of the input data, the columns of the 
 \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
 \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
 \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-\item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"
+\item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from diffTime_AIS_extraction_effort due to the parameter "average_at" (that average the timestamp to extract).
 \item hour_AIS_to_extract: hour of timestamp_AIS_to_extract
 \item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
 \item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).

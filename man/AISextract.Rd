@@ -40,7 +40,7 @@ The output dataframe contains the columns of the input data, the columns of the 
 \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
 \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
 \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-\item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from the difference between the timestamp of the extraction and the real data timestamp (diffTime_AIS_extraction_effort) due to the parameter "average_at" & "t_gap"}
+\item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from diffTime_AIS_extraction_effort due to the parameter "average_at" (that average the timestamp to extract).
 }
 \description{
 Extract the AIS position around the locations and at the time of the data
