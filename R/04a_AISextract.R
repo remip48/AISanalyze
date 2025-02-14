@@ -246,6 +246,7 @@ AISextract <- function(data,
         dplyr::mutate(idd_ais = 1:n())
 
       mmsi_eff <- mmsi_ref %>%
+        as.data.frame() %>%
         group_by(mmsi) %>%
         dplyr::reframe(point = which.min(abs(timestamp - dt)),
                        # across(colnames(ais_data)[colnames(ais_data) != "mmsi"], ~ which_point(.x, point))
@@ -256,6 +257,7 @@ AISextract <- function(data,
         )
 
       out <- eff_dt %>%
+        as.data.frame() %>%
         group_by(idd_effort) %>%
         dplyr::reframe(#across(colnames(eff_dt)[colnames(eff_dt) != "idd_effort"], ~ return_columns(.x)),
           mmsi_eff %>%
