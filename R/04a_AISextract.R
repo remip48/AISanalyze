@@ -33,7 +33,7 @@
 #' ais <- ais %>%
 #'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
 #'   AIStravel(ais_data = .,
-#'             time_stop = 5*60*60,
+#'             time_stop = 5*3600,
 #'             mmsi_time_to_order = T,
 #'             return_sf = F,
 #'             return_3035_coords = F) %>%
@@ -45,7 +45,7 @@
 #'                   overwrite = F,
 #'                   file_AISinterlate_at = "AISinterpolate_at",
 #'                   radius = 200000,
-#'                   time_stop = 5*60*60,
+#'                   time_stop = 5*3600,
 #'                   correct_speed = T,
 #'                   threshold_speed_to_correct = 100,
 #'                   filter_station = T,

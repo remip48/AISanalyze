@@ -6,6 +6,7 @@
 \usage{
 AISinterpolate_all(
   ais_data,
+  crs_meters = 3035,
   mmsi_time_to_order = T,
   t_gap = 30,
   time_stop = 5 * 60 * 60,
@@ -28,6 +29,8 @@ AISinterpolate_all(
 }
 \arguments{
 \item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
+
+\item{crs_meters}{projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).}
 
 \item{mmsi_time_to_order}{if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.}
 

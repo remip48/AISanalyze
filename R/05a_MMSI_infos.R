@@ -4,6 +4,8 @@
 #'
 #' @param ais_data AIS data. Must contain the columns shiptype, length, width, draught, imo and name and mmsi (Maritime mobile service identity). The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param threshold_length threshold (meters) above which the length is considered as unrealistic (and set as NA).
+#' @param threshold_draught threshold (meters) above which the draught is considered as unrealistic (and set as NA). Default: none.
+#' @param threshold_width threshold (meters) above which the width is considered as unrealistic (and set as NA). Default: none.
 #' @param weight_complete_data weigth for lines having both the information on length and on type: complete lines are supposed to be more reliable (10 by default for the weight).
 #'
 #' @return A list with dataframes "values_obtained" and summary. This last present the statistics of analysis per MMSI, and contains the columns:

@@ -26,6 +26,7 @@ AIStravel_interpolate_extract(
     return((median(speed_kmh[speed_kmh > 1], na.rm = T) + sd(speed_kmh[speed_kmh > 1 &
     speed_kmh < quantile(speed_kmh[speed_kmh > 1], 0.75)]) * 5 + 15))
  },
+  crs_meters = 3035,
   duplicate_time = T,
   max_time_diff = 1 * 60 * 60,
   t_gap = 2 * 60,
@@ -80,6 +81,8 @@ AIStravel_interpolate_extract(
 \item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
 
 \item{threshold_speed_to_correct_expr}{expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.}
+
+\item{crs_meters}{projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).}
 
 \item{duplicate_time}{if TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.}
 

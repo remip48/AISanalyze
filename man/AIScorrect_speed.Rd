@@ -6,6 +6,7 @@
 \usage{
 AIScorrect_speed(
   ais_data,
+  crs_meters = 3035,
   mmsi_time_to_order = T,
   threshold_speed_to_correct = 100,
   threshold_speed_to_correct_expr = function(speed_kmh) {
@@ -26,6 +27,8 @@ AIScorrect_speed(
 \arguments{
 \item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
+\item{crs_meters}{projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).}
+
 \item{mmsi_time_to_order}{if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.}
 
 \item{threshold_speed_to_correct}{speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T}
@@ -39,6 +42,14 @@ AIScorrect_speed(
 \item{nb_iteration_successive_strange}{number of iterations where GPS delays are looked backwards. 100 as default. Is the number of possible subsequent GPS lag.}
 
 \item{correct_high_speed_craft}{if speeds from high speed craft (specially used for aircraft) must be corrected as well.}
+
+\item{quantile_station}{Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.}
+
+\item{threshold_distance_station}{Threshold of distance (meters) used to assess if the MMSI is a station.}
+
+\item{quantile_high_speed}{Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.}
+
+\item{threshold_high_speed}{Threshold of speed (km/h) used to assess if the MMSI is an aircraft.}
 }
 \value{
 Return the AIS data with identified GPS error or GPS delay removed. The vessel speeds are corrected, as well as the distance and time travelled. Contains columns:

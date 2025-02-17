@@ -17,6 +17,10 @@ MMSI_infos(
 
 \item{threshold_length}{threshold (meters) above which the length is considered as unrealistic (and set as NA).}
 
+\item{threshold_draught}{threshold (meters) above which the draught is considered as unrealistic (and set as NA). Default: none.}
+
+\item{threshold_width}{threshold (meters) above which the width is considered as unrealistic (and set as NA). Default: none.}
+
 \item{weight_complete_data}{weigth for lines having both the information on length and on type: complete lines are supposed to be more reliable (10 by default for the weight).}
 }
 \value{

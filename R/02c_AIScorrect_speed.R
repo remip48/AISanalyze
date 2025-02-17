@@ -9,6 +9,10 @@
 #' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
 #' @param threshold_speed_to_correct_expr expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.
 #' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
+#' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
+#' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
+#' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
+#' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
 #' @param nb_iteration number of iteration re-estimating the GPS errors. Low number (10 as default) is prefered in case GPS error is inherent and can not be deleted: in this case, the script will continue to delete points until nb_iteration is reached.
 #' @param nb_iteration_successive_strange number of iterations where GPS delays are looked backwards. 100 as default. Is the number of possible subsequent GPS lag.
 #'

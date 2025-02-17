@@ -6,6 +6,7 @@
 \usage{
 AISextract(
   data,
+  crs_meters = 3035,
   ais_data,
   search_into_radius_m = 50000,
   duplicate_time = F,
@@ -17,6 +18,8 @@ AISextract(
 }
 \arguments{
 \item{data}{Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.}
+
+\item{crs_meters}{projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).}
 
 \item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
 
@@ -57,7 +60,7 @@ point_to_extract <- point_to_extract \%>\%
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
   AIStravel(ais_data = .,
-            time_stop = 5*60*60,
+            time_stop = 5*3600,
             mmsi_time_to_order = T,
             return_sf = F,
             return_3035_coords = F) \%>\%
@@ -69,7 +72,7 @@ ais <- ais \%>\%
                   overwrite = F,
                   file_AISinterlate_at = "AISinterpolate_at",
                   radius = 200000,
-                  time_stop = 5*60*60,
+                  time_stop = 5*3600,
                   correct_speed = T,
                   threshold_speed_to_correct = 100,
                   filter_station = T,
