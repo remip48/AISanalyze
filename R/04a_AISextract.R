@@ -3,6 +3,7 @@
 #' Extract the AIS position around the locations and at the time of the data
 #'
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param search_into_radius_m radius (kilometer) where the MMSIs are extracted and returned.
 #' @param duplicate_time if TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.
@@ -62,6 +63,7 @@
 #' @export
 
 AISextract <- function(data,
+                       crs_meters = 3035,
                        ais_data,
                        search_into_radius_m = 50000,
                        duplicate_time = F,
@@ -132,10 +134,10 @@ AISextract <- function(data,
                         tlat = lat) %>%
           st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
       }
-      if (st_crs(ais_data)$input != "EPSG:3035") {
+      # if (st_crs(ais_data)$input != "EPSG:3035") {
         ais_data <- ais_data %>%
-          st_transform(crs = 3035)
-      }
+          st_transform(crs = crs_meters)
+      # }
 
       coords_eff <- ais_data %>%
         st_coordinates() %>%
@@ -176,10 +178,10 @@ AISextract <- function(data,
                       tlat = lat) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(data)$input != "EPSG:3035") {
+    # if (st_crs(data)$input != "EPSG:3035") {
       data <- data %>%
-        st_transform(crs = 3035)
-    }
+        st_transform(crs = crs_meters)
+    # }
 
     coords_eff <- data %>%
       st_coordinates() %>%

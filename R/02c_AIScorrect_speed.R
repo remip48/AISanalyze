@@ -3,6 +3,7 @@
 #' Correct the errors due to GPS delays or errors and leading to erroneous speeds (km/h), distance or time travelled by MMSI (vessel). The corrections are made according to different input parameters. Other important parameters are used in the function to detect GPS errors, and are not in the parameters of the function for simplicity. However these can be added on request for more flexibility in the filters
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param correct_high_speed_craft if speeds from high speed craft (specially used for aircraft) must be corrected as well.
 #' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
@@ -41,6 +42,7 @@
 #' @export
 
 AIScorrect_speed <- function(ais_data,
+                             crs_meters = 3035,
                              mmsi_time_to_order = T,
                              threshold_speed_to_correct = 100,
                              threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 1], na.rm = T) +
@@ -96,10 +98,10 @@ AIScorrect_speed <- function(ais_data,
                       tlat = lat) %>%
         sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(ais_data)$input != "EPSG:3035") {
+    # if (st_crs(ais_data)$input != "EPSG:3035") {
       ais_data <- ais_data %>%
-        sf::st_transform(crs = 3035)
-    }
+        sf::st_transform(crs = crs_meters)
+    # }
 
     coords_AIS <- ais_data %>%
       sf::st_coordinates() %>%
@@ -128,6 +130,7 @@ AIScorrect_speed <- function(ais_data,
 
   if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
     ais_data <- AIStravel(ais_data = ais_data,
+                          crs_meters = crs_meters,
                           time_stop = time_stop,
                           mmsi_time_to_order = F,
                           return_sf = F,

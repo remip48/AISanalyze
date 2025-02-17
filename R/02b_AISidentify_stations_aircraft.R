@@ -1,6 +1,7 @@
 #' Identify base-stations and high-speed craft (aircraft) among AIS data
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
 #' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
 #' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
@@ -27,6 +28,7 @@
 #' @export
 
 AISidentify_stations_aircraft <- function(ais_data,
+                                          crs_meters = 3035,
                                           quantile_station = 0.975,
                                           threshold_distance_station = 1,
                                           quantile_high_speed = 0.97,
@@ -60,10 +62,10 @@ AISidentify_stations_aircraft <- function(ais_data,
                       tlat = lat) %>%
         sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(ais_data)$input != "EPSG:3035") {
+    # if (st_crs(ais_data)$input != "EPSG:3035") {
       ais_data <- ais_data %>%
-        sf::st_transform(crs = 3035)
-    }
+        sf::st_transform(crs = crs_meters)
+    # }
 
     coords_AIS <- ais_data %>%
       sf::st_coordinates() %>%
@@ -81,6 +83,7 @@ AISidentify_stations_aircraft <- function(ais_data,
 
   if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
     ais_data <- AIStravel(ais_data = ais_data,
+                          crs_meters = crs_meters,
                           time_stop = Inf,
                           mmsi_time_to_order = T,
                           return_sf = F,

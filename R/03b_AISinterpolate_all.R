@@ -3,6 +3,7 @@
 #' Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param t_gap see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction (otherwise other AIS data are filtered out).
 #' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
@@ -59,6 +60,7 @@
 #' @export
 
 AISinterpolate_all <- function(ais_data,
+                               crs_meters = 3035,
                                mmsi_time_to_order = T,
                                t_gap = 30,
                                time_stop = 5 * 60 * 60,
@@ -129,10 +131,10 @@ AISinterpolate_all <- function(ais_data,
                       tlat = lat) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(ais_data)$input != "EPSG:3035") {
+    # if (st_crs(ais_data)$input != "EPSG:3035") {
       ais_data <- ais_data %>%
-        st_transform(crs = 3035)
-    }
+        st_transform(crs = crs_meters)
+    # }
 
     coords_AIS <- ais_data %>%
       st_coordinates() %>%
@@ -208,6 +210,7 @@ AISinterpolate_all <- function(ais_data,
     cat("   --> Correct speeds\n")
 
     ais_data <- AIScorrect_speed(ais_data = ais_data,
+                                 crs_meters = crs_meters,
                                  mmsi_time_to_order = F,
                                  correct_high_speed_craft = F,
                                  threshold_speed_to_correct = threshold_speed_to_correct,

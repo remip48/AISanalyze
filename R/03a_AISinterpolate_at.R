@@ -4,6 +4,7 @@
 #'
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param load_existing_files if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "_hour_", hour_processed, ".rds).
 #' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)
@@ -71,6 +72,7 @@
 
 AISinterpolate_at <- function(data,
                               ais_data,
+                              crs_meters = 3035,
                               mmsi_time_to_order = T,
                               load_existing_files = F,
                               save_AISinterlate_at = T,
@@ -189,10 +191,10 @@ AISinterpolate_at <- function(data,
                       tlat = lat) %>%
         sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(ais_data)$input != "EPSG:3035") {
+    # if (st_crs(ais_data)$input != "EPSG:3035") {
       ais_data <- ais_data %>%
-        sf::st_transform(crs = 3035)
-    }
+        sf::st_transform(crs = crs_meters)
+    # }
 
     coords_AIS <- ais_data %>%
       sf::st_coordinates() %>%
@@ -212,10 +214,10 @@ AISinterpolate_at <- function(data,
                       tlat = lat) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(data)$input != "EPSG:3035") {
+    # if (st_crs(data)$input != "EPSG:3035") {
       data <- data %>%
-        st_transform(crs = 3035)
-    }
+        st_transform(crs = crs_meters)
+    # }
 
     coords_eff <- data %>%
       st_coordinates() %>%
@@ -362,6 +364,7 @@ AISinterpolate_at <- function(data,
       cat("   --> Correct speeds\n")
 
       ais_data <- AIScorrect_speed(ais_data = ais_data,
+                                   crs_meters = crs_meters,
                                    mmsi_time_to_order = F,
                                    correct_high_speed_craft = F,
                                    threshold_speed_to_correct = threshold_speed_to_correct,
@@ -446,10 +449,10 @@ AISinterpolate_at <- function(data,
                   dplyr::distinct() %>%
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
               }
-              if (st_crs(datah)$input != "EPSG:3035") {
+              # if (st_crs(datah)$input != "EPSG:3035") {
                 datah <- datah %>%
-                  sf::st_transform(crs = 3035)
-              }
+                  sf::st_transform(crs = crs_meters)
+              # }
 
               datah <- datah %>%
                 sf::st_coordinates() %>%
@@ -595,7 +598,7 @@ AISinterpolate_at <- function(data,
                   dplyr::mutate(tlon = lon,
                                 tlat = lat) %>%
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
-                  sf::st_transform(crs = 3035)
+                  sf::st_transform(crs = crs_meters)
 
                 # if (!is.na(spatial_limit)) {
                 #   to_keep <- colnames(interp_eez)
@@ -711,10 +714,10 @@ AISinterpolate_at <- function(data,
                   dplyr::distinct() %>%
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
               }
-              if (st_crs(datah)$input != "EPSG:3035") {
+              # if (st_crs(datah)$input != "EPSG:3035") {
                 datah <- datah %>%
-                  sf::st_transform(crs = 3035)
-              }
+                  sf::st_transform(crs = crs_meters)
+              # }
 
               datah <- datah %>%
                 sf::st_coordinates() %>%
@@ -874,7 +877,7 @@ AISinterpolate_at <- function(data,
                   dplyr::mutate(tlon = lon,
                                 tlat = lat) %>%
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326) %>%
-                  sf::st_transform(crs = 3035)
+                  sf::st_transform(crs = crs_meters)
 
                 # if (!is.na(spatial_limit)) {
                 #   to_keep <- colnames(interp_eez)

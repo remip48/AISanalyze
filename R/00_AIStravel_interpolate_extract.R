@@ -6,6 +6,7 @@
 #'
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
+#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param correct_speed if TRUE, GPS errors and GPS delays are identified and removed from AIS data. Vessel speeds, distance and time travelled are corrected. Usually necessary.
 #' @param run_AIStravel if the AIS data must be ran with AIStravel function firstly or not. If already processed with AIStravel, probably not.
 #' @param run_AISinterpolate_at if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.
@@ -122,6 +123,7 @@ AIStravel_interpolate_extract <- function(data,
                                           threshold_speed_to_correct = 100,
                                           threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 1], na.rm = T) +
                                                                                                            sd(speed_kmh[speed_kmh > 1 & speed_kmh < quantile(speed_kmh[speed_kmh > 1], .75)]) * 5 + 15))},
+                                          crs_meters = 3035,
                                           duplicate_time = T,
                                           max_time_diff = 1 * 60 * 60,
                                           t_gap = 2*60,
@@ -215,10 +217,10 @@ AIStravel_interpolate_extract <- function(data,
                       tlat = lat) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    if (st_crs(eff_d)$input != "EPSG:3035") {
+    # if (st_crs(eff_d)$input != "EPSG:3035") {
       eff_d <- eff_d %>%
-        st_transform(crs = 3035)
-    }
+        st_transform(crs = crs_meters)
+    # }
 
     coords_eff <- eff_d %>%
       st_coordinates() %>%
@@ -243,6 +245,7 @@ AIStravel_interpolate_extract <- function(data,
       ais_data <- AIStravel(ais_data = ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
                                                   ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
                             time_stop = time_stop,
+                            crs_meters = crs_meters,
                             mmsi_time_to_order = mmsi_time_to_order,
                             return_sf = F,
                             return_3035_coords = T)
@@ -263,13 +266,13 @@ AIStravel_interpolate_extract <- function(data,
     # if (any(!is.na(spatial_limit))) {
     #   if (st_crs(spatial_limit)$input != "EPSG:3035") {
     #     spatial_limit <- spatial_limit %>%
-    #       st_transform(crs = 3035)
+    #       st_transform(crs = crs_meters)
     #   }
     # }
     # if (any(!is.na(land_sf_polygon))) {
     #   if (st_crs(land_sf_polygon)$input != "EPSG:3035") {
     #     land_sf_polygon <- land_sf_polygon %>%
-    #       st_transform(crs = 3035)
+    #       st_transform(crs = crs_meters)
     #   }
     # }
 
@@ -277,6 +280,7 @@ AIStravel_interpolate_extract <- function(data,
       ais_data <- readRDS(paste0(file_AISinterlate_at, ".rds"))
     } else {
       ais_data <- AISinterpolate_at(ais_data = ais_data,
+                                    crs_meters = crs_meters,
                                     mmsi_time_to_order = ifelse(run_AIStravel, F, mmsi_time_to_order),
                                     QUIET = QUIET,
                                     load_existing_files = load_existing_files,
@@ -370,6 +374,7 @@ AIStravel_interpolate_extract <- function(data,
                           ais_lat = lat)
 
           ais_on_effort <- AISextract(data = eff_h,
+                                      crs_meters = crs_meters,
                                       ais_data = hourly_mmsi,
                                       search_into_radius_m = search_into_radius_m,
                                       max_time_diff = 0,
@@ -428,7 +433,7 @@ AIStravel_interpolate_extract <- function(data,
       daily_ais <- foreach(h = tot,
                            .export = unique(c("tot", "QUIET", "eff_d", "overwrite", "file_AISextract_perHour", "ais_data",
                                               "average_at", "average_mmsi_at", "t_gap", "search_into_radius_m", "save_AISextract_perHour",
-                                              "return_merged_all_extracted"
+                                              "return_merged_all_extracted", "crs_meters"
                                               )),
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "stringr")
       ) %dopar% {
@@ -451,6 +456,7 @@ AIStravel_interpolate_extract <- function(data,
                         ais_lat = lat)
 
           ais_on_effort <- AISextract(data = eff_h,
+                                      crs_meters = crs_meters,
                                       ais_data = hourly_mmsi,
                                       search_into_radius_m = search_into_radius_m,
                                       max_time_diff = 0,
