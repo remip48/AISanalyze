@@ -47,7 +47,7 @@ MMSI_infos <- function(ais_data,
   weight_complete_data <- ifelse(is.na(weight_complete_data) | is.nan(weight_complete_data) | is.null(weight_complete_data),
                                  1, weight_complete_data)
 
-  temp <- ais %>%
+  temp <- ais_data %>%
     dplyr::mutate(shiptype = ifelse(str_remove_all(shiptype, " ") == "", NA, shiptype)) %>%
     group_by(mmsi, shiptype, length, width, draught, imo, name) %>%
     dplyr::summarise(n = n()) %>%
