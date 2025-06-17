@@ -15,8 +15,8 @@ AIScorrect_speed(
     speed_kmh < quantile(speed_kmh[speed_kmh > 1], 0.75)]) * 5 + 15))
  },
   time_stop = 5 * 60 * 60,
-  nb_iteration = 10,
-  nb_iteration_successive_strange = 100,
+  nb_iteration = 1,
+  nb_iteration_successive_strange = 1,
   correct_high_speed_craft = F,
   quantile_station = 0.975,
   threshold_distance_station = 1,
@@ -37,9 +37,9 @@ AIScorrect_speed(
 
 \item{time_stop}{number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.}
 
-\item{nb_iteration}{number of iteration re-estimating the GPS errors. Low number (10 as default) is prefered in case GPS error is inherent and can not be deleted: in this case, the script will continue to delete points until nb_iteration is reached.}
+\item{nb_iteration}{number of iteration re-estimating the GPS errors. Low number (1 as default) is prefered in case GPS error is inherent and can not be deleted: in this case, the script will continue to delete points until nb_iteration is reached.}
 
-\item{nb_iteration_successive_strange}{number of iterations where GPS delays are looked backwards. 100 as default. Is the number of possible subsequent GPS lag.}
+\item{nb_iteration_successive_strange}{number of iterations where GPS delays are looked backwards. 1 as default. Is the number of possible subsequent GPS lag.}
 
 \item{correct_high_speed_craft}{if speeds from high speed craft (specially used for aircraft) must be corrected as well.}
 
