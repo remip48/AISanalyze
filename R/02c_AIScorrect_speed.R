@@ -13,8 +13,8 @@
 #' @param threshold_distance_station Threshold of distance (meters) used to assess if the MMSI is a station.
 #' @param quantile_high_speed Quantile (0 to 1) of speed, by mmsi, which is compared to threshold_high_speed to assess if the MMSI is a aircraft or not: if above threshold_high_speed, MMSI is considered as a station. We used 0.97 to prevent misinterpretations from GPS errors.
 #' @param threshold_high_speed Threshold of speed (km/h) used to assess if the MMSI is an aircraft.
-#' @param nb_iteration number of iteration re-estimating the GPS errors. Low number (10 as default) is prefered in case GPS error is inherent and can not be deleted: in this case, the script will continue to delete points until nb_iteration is reached.
-#' @param nb_iteration_successive_strange number of iterations where GPS delays are looked backwards. 100 as default. Is the number of possible subsequent GPS lag.
+#' @param nb_iteration number of iteration re-estimating the GPS errors. Low number (1 as default) is prefered in case GPS error is inherent and can not be deleted: in this case, the script will continue to delete points until nb_iteration is reached.
+#' @param nb_iteration_successive_strange number of iterations where GPS delays are looked backwards. 1 as default. Is the number of possible subsequent GPS lag.
 #'
 #' @return Return the AIS data with identified GPS error or GPS delay removed. The vessel speeds are corrected, as well as the distance and time travelled. Contains columns:
 #' \itemize{
