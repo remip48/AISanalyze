@@ -76,7 +76,7 @@ return AIS data with the columns:
 \item speed_kmh: speed (km/h) of the vessels since the last reception or interpolation of an AIS signal.}
 }
 \description{
-Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
+Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft. Contrary to AISinterpolate_all, you do not interpolate at desired times but instead, you select here the maximal interval of time that can occur in the AIS data between each AIS signal. If any interval is higher in the input data, an AIS data is interpolated at time_1 + maximum interval.
 }
 \examples{
 \dontrun{

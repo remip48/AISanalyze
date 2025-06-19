@@ -72,7 +72,7 @@ AIStravel_interpolate_extract(
 
 \item{run_AISinterpolate_at}{if the AIS data must be ran with AISinterpolate_at function firstly or not. If already processed with AISinterpolate_at, probably not.}
 
-\item{save_AISinterlate_at}{if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T)}
+\item{save_AISinterlate_at}{if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.}
 
 \item{file_AISinterlate_at}{if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.}
 

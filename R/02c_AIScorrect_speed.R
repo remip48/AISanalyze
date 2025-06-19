@@ -166,6 +166,11 @@ AIScorrect_speed <- function(ais_data,
   #   # filter(id_mmsi_point_initial %in% 18700:19000) %>%
   #   mutate(id_mmsi_point_initial = 1:n())
 
+  ais_data <- ais_data %>%
+    group_by(mmsi) %>%
+    dplyr::mutate(last_row = 1:n(),
+                  last_row = ifelse(last_row == n(), T, F)) %>%
+    ungroup()
 
   # threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 1], na.rm = T) +
   #                                                                  sd(speed_kmh[speed_kmh > 1 & speed_kmh < quantile(speed_kmh[speed_kmh > 1], .75)]) * 5 + 15))}
@@ -174,7 +179,7 @@ AIScorrect_speed <- function(ais_data,
     dplyr::group_by(mmsi) %>%
     dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)) %>%
     dplyr::ungroup() %>%
-    dplyr::filter(id_mmsi_point_initial != 1) %>%
+    dplyr::filter(id_mmsi_point_initial != 1 & !last_row) %>%
     dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                    threshold_speed_to_correct,
                                                    threshold_strange_speed)) %>%
@@ -206,6 +211,7 @@ AIScorrect_speed <- function(ais_data,
                                                     !(ais_data$station) &
                                                     # ais_data$time_travelled < 600 &
                                                     ais_data$id_mmsi_point_initial != 1 &
+                                                    !ais_data$last_row &
                                                     ((ais_data$distance_travelled <= 1 & ais_data$time_travelled > 60) |
                                                        ais_data$distance_travelled == 0)])
 
@@ -270,9 +276,20 @@ AIScorrect_speed <- function(ais_data,
     to_correct <- to_correct %>%
       dplyr::mutate(tmmsi = c("initial", mmsi_prev)) %>%
       dplyr::mutate(time_travelled = timestamp - c(dplyr::first(timestamp), timestamp[-n()]),
-                    time_travelled = ifelse(time_travelled > time_stop | mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)), 0, time_travelled),
-                    distance_travelled = ifelse(time_travelled == 0, 0, c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2))),
-                    speed_kmh = ifelse(time_travelled == 0, 0, c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1])))
+                    time_travelled = ifelse(time_travelled > time_stop,
+                                            0,
+                                            ifelse(mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)),
+                                                   NA,
+                                                   time_travelled)),
+                    distance_travelled = ifelse(is.na(time_travelled), 0,
+                                                ifelse(time_travelled == 0,
+                                                       0,
+                                                       c(0, sqrt((X[-n()] - X[-1])^2 + (Y[-n()] - Y[-1])^2)))),
+                    speed_kmh = ifelse(is.na(time_travelled),
+                                       NA,
+                                       ifelse(time_travelled == 0,
+                                              0,
+                                              c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))))
       ) %>%
       dplyr::select(-c("tmmsi"))
 
@@ -294,7 +311,7 @@ AIScorrect_speed <- function(ais_data,
       dplyr::group_by(mmsi) %>%
       dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)) %>%
       dplyr::ungroup() %>%
-      dplyr::filter(id_mmsi_point_initial != 1) %>%
+      dplyr::filter(id_mmsi_point_initial != 1 & !last_row) %>%
       dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                      threshold_speed_to_correct,
                                                      threshold_strange_speed)) %>%
@@ -324,7 +341,8 @@ AIScorrect_speed <- function(ais_data,
                                                       !(ais_data$station) &
                                                       # ais_data$time_travelled < 600 &
                                                       ais_data$id_mmsi_point_initial != 1 &
-                                                      ((ais_data$distance_travelled <= 1 & ais_data$time_travelled > 60) |
+                                                      !ais_data$last_row &
+                                                      (#(ais_data$distance_travelled <= 1 & ais_data$time_travelled > 60) |
                                                          ais_data$distance_travelled == 0)])
 
     strange_speed <- sort(unique(c(strange_speed, short_time)))

@@ -45,7 +45,7 @@ AISinterpolate_at(
 
 \item{load_existing_files}{if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "\emph{hour}", hour_processed, ".rds).}
 
-\item{save_AISinterlate_at}{if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)}
+\item{save_AISinterlate_at}{if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.}
 
 \item{overwrite}{if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.}
 
@@ -94,7 +94,7 @@ return AIS data at the timestamps desired, interpolated (or not). Contains the c
 \item interpolated: if TRUE, this MMSI position has been interpolated.}
 }
 \description{
-Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long.
+Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long. Contrary to AISinterpolate_at, you can here select what times to interpolate.
 }
 \examples{
 \dontrun{
