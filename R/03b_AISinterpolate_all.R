@@ -1,6 +1,6 @@
 #' Interpolate all AIS data at the desired interval of time.
 #'
-#' Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft
+#' Interpolate all AIS data at desired interval of time (but keep initial AIS data, so time interval are not equalized), after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft. Contrary to AISinterpolate_all, you do not interpolate at desired times but instead, you select here the maximal interval of time that can occur in the AIS data between each AIS signal. If any interval is higher in the input data, an AIS data is interpolated at time_1 + maximum interval.
 #'
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
@@ -444,8 +444,19 @@ AISinterpolate_all <- function(ais_data,
     dplyr::filter(!(ais_data$id_ais_data_initial %in% unique(interp_eez$id_ais_data_initial))) %>%
     dplyr::mutate(diffTime_interpolation = t_gap,
                   interpolated = F) %>%
-    rbind(interp_eez) %>%
-    dplyr::arrange(mmsi, timestamp) %>%
+    rbind(interp_eez)
+
+  ais_data <- AIStravel(ais_data = ais_data %>%
+                     dplyr::select(-c(time_travelled, distance_travelled, speed_kmh)),
+                   crs_meters = crs_meters,
+                   time_stop = time_stop,
+                   mmsi_time_to_order = T,
+                   return_3035_coords = ifelse("X" %in% colnames(ais_data) & "Y" %in% colnames(ais_data),
+                                               T,
+                                               F))
+
+  ais_data <- ais_data %>%
+    # dplyr::arrange(mmsi, timestamp) %>%
     group_by(mmsi) %>%
     dplyr::mutate(n_point_mmsi_final_data = n(),
                   id_mmsi_point_interp = 1:n(),

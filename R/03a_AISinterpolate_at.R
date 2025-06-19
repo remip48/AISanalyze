@@ -1,13 +1,13 @@
 #' Interpolate AIS data at the desired times.
 #'
-#' Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long.
+#' Interpolate AIS data at the desired times, after have corrected the GPS errors and delays (correcting the speed, distance and time travelled by the vessels), identified (and filter or not) the stations and aircraft, with possible time approximation if the computation time is too long. Contrary to AISinterpolate_at, you can here select what times to interpolate.
 #'
 #' @param data Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.
 #' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
 #' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param load_existing_files if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "_hour_", hour_processed, ".rds).
-#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T)
+#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.
 #' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
 #' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
 #' @param radius radius (meters) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
@@ -143,7 +143,7 @@ AISinterpolate_at <- function(data,
                                  ifelse(all(c("X", "Y") %in% colnames(data)), data$X, data$lon),
                                  ifelse(all(c("X", "Y") %in% colnames(data)), data$Y, data$lat),
                                  radius, time_stop, threshold_speed_to_correct, quantile_station, threshold_distance_station, quantile_high_speed, threshold_high_speed),
-                           is.numeric)))) {
+                            is.numeric)))) {
     stop(paste0(paste(list_num[which(!do.call("c", map(list(data$timestamp, ais_data$timestamp,
                                                             ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$X, ais_data$lon),
                                                             ifelse(all(c("X", "Y") %in% colnames(ais_data)), ais_data$Y, ais_data$lat),
@@ -192,8 +192,8 @@ AISinterpolate_at <- function(data,
         sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
     # if (st_crs(ais_data)$input != "EPSG:3035") {
-      ais_data <- ais_data %>%
-        sf::st_transform(crs = crs_meters)
+    ais_data <- ais_data %>%
+      sf::st_transform(crs = crs_meters)
     # }
 
     coords_AIS <- ais_data %>%
@@ -215,8 +215,8 @@ AISinterpolate_at <- function(data,
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
     # if (st_crs(data)$input != "EPSG:3035") {
-      data <- data %>%
-        st_transform(crs = crs_meters)
+    data <- data %>%
+      st_transform(crs = crs_meters)
     # }
 
     coords_eff <- data %>%
@@ -253,13 +253,13 @@ AISinterpolate_at <- function(data,
                                   threshold_distance_station = threshold_distance_station,
                                   quantile_high_speed = quantile_high_speed,
                                   threshold_high_speed = threshold_high_speed)
-    # dplyr::group_by(mmsi) %>%
-    # dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) <= threshold_distance_station, T, F),
-    #               high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
-    #               any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
-    #               n_point_mmsi_initial_data = n(),
-    #               id_mmsi_point_initial = 1:n()) %>%
-    # ungroup()
+  # dplyr::group_by(mmsi) %>%
+  # dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) <= threshold_distance_station, T, F),
+  #               high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
+  #               any_NA_speed_kmh = ifelse(any(is.na(speed_kmh)), T, F),
+  #               n_point_mmsi_initial_data = n(),
+  #               id_mmsi_point_initial = 1:n()) %>%
+  # ungroup()
 
   # if (return_all) {
   #   ais_data_ref <- ais_data %>%
@@ -450,8 +450,8 @@ AISinterpolate_at <- function(data,
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
               }
               # if (st_crs(datah)$input != "EPSG:3035") {
-                datah <- datah %>%
-                  sf::st_transform(crs = crs_meters)
+              datah <- datah %>%
+                sf::st_transform(crs = crs_meters)
               # }
 
               datah <- datah %>%
@@ -578,6 +578,8 @@ AISinterpolate_at <- function(data,
                 #               by = "id_ais_data_initial") %>%
                 #     dplyr::mutate(id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = ".")))
                 # } else {
+                # maxt <- all_to_run[all_to_run < t]
+
                 interp_eez <- interp %>%
                   dplyr::mutate(interpolated = T,
                                 time_travelled = t - ttimestamp,
@@ -715,8 +717,8 @@ AISinterpolate_at <- function(data,
                   sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
               }
               # if (st_crs(datah)$input != "EPSG:3035") {
-                datah <- datah %>%
-                  sf::st_transform(crs = crs_meters)
+              datah <- datah %>%
+                sf::st_transform(crs = crs_meters)
               # }
 
               datah <- datah %>%
@@ -857,6 +859,8 @@ AISinterpolate_at <- function(data,
                 #               by = "id_ais_data_initial") %>%
                 #     dplyr::mutate(id_ais_data_initial = as.numeric(paste(id_ais_data_initial, "1", sep = ".")))
                 # } else {
+                # maxt <- all_to_run[all_to_run < t]
+
                 interp_eez <- interp %>%
                   dplyr::mutate(interpolated = T,
                                 time_travelled = t - ttimestamp,
@@ -984,8 +988,16 @@ AISinterpolate_at <- function(data,
     #                         dplyr::filter(!(id_ais_data_initial %in% out$id_ais_data_initial))), function(x) {return(x)})
     # }
 
-    out <- out  %>%
-      dplyr::arrange(mmsi, timestamp)
+    # out <- out  %>%
+    #   dplyr::arrange(mmsi, timestamp)
+    out <- AIStravel(ais_data = out %>%
+                       dplyr::select(-c(time_travelled, distance_travelled, speed_kmh)),
+                     crs_meters = crs_meters,
+                     time_stop = time_stop,
+                     mmsi_time_to_order = T,
+                     return_3035_coords = ifelse("X" %in% colnames(out) & "Y" %in% colnames(out),
+                                                 T,
+                                                 F))
 
     if (!("interpolated") %in% colnames(out)) {
       out <- out %>%

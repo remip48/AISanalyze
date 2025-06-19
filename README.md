@@ -176,7 +176,11 @@ progressively write the results during the process, avoiding to spend
 extra time if the function crashes in reason of large computation
 requirements. With the appropriate set of parameters, the function can
 be simply re-run to load the saved results and to continue at the step
-it stopped. To do this, you have the function parameters:
+it stopped. Please do not used the files from **save_AISinterlate_at**
+outside of the function as they are not complete: they need to be loaded
+by the function **AISinterpolate_at** (or
+**AIStravel_interpolate_extract**) to be completed. To do this, you have
+the function parameters:
 
 -   **Overwrite**: if TRUE, the function runs all the steps and
     overwrite the existing files.
@@ -196,7 +200,9 @@ it stopped. To do this, you have the function parameters:
     these names can contain the folder path where you want to save the
     results). If **load_existing_files** = TRUE, the function try to
     load the files named as the 3 above parameters (if they exist,
-    otherwise it runs the full function as usual).
+    otherwise it runs the full function as usual). Please do not used
+    the files from **save_AISinterlate_at** outside of the function as
+    they are not complete: they need to be re-loaded by the function.
 
 -   **run_AIStravel**: if TRUE, run the function **AIStravel**. If the
     function has already been run and results saved but that the

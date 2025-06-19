@@ -26,7 +26,7 @@
 #' @param nb_cores number of cores to used with doParallel.
 #' @param outfile file to print the logs if parallelize = T.
 #' @param save_AIStravel if results from AIStravel must be saved (only if run_AIStravel = T).
-#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T)
+#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.
 #' @param save_AISextract_perHour if results from AISextract must be saved, (only if run_AISextract_perHour = T).
 #' @param file_AIStravel if save_AIStravel = TRUE, is the file name where AIStravel output is saved. Must not contain file format: the files are written as .rds.
 #' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
