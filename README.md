@@ -1,15 +1,16 @@
 
 # LAST UPDATE:
 
-<font size='6'> **19 June 2025** </font> <br> <font size='5'>**Please
-update if your installation of AISanalyze is prior to this
-revision.**</font>
+## **19 June 2025** <br>
+
+**Please update if your installation of AISanalyze is prior to this
+revision.**
 
 <br>Last updates: <br>correction in AIScorrect_speed for stationary
 boats; correction of time_travelled and distance_travelled in the case
 of several consecutive interpolated points.
 
-### Functionality of the package
+## Functionality of the package
 
 AISanalyze is an R-package developed to specifically correct GPS errors
 in AIS data, interpolate (linearly) the vessel positions at the desired
@@ -42,9 +43,9 @@ Mobile Service Identity), removing the errors present in the AIS data.
 This information can later be added to the interpolated/extracted AIS
 data.
 
-### AISanalyze R-package
+## AISanalyze R-package
 
-#### 1. Quick overview
+### 1. Quick overview
 
 You can:
 
@@ -138,7 +139,7 @@ You can:
         can be found typing **??AIStravel_interpolate_extract** or
         **??AISextract** on R console.
 
-##### Parallelize:
+### Parallelize:
 
 **AISinterpolate_at** can be run in parallel (with **parallelize** =
 TRUE; you can define the number of cores to use with nb_cores and the
@@ -148,13 +149,13 @@ outfile can also contain the path of the folder where you want to save
 the file, in addition to the name of the file (usually in .txt
 extension, must be specified in outfile).
 
-##### Careful:
+### Careful:
 
 The RAM and CPU needed to run large datasets increases exponentially and
 parallel should be run only after having investigated the RAM and CPU
 used in series computation.
 
-##### Important:
+### Important:
 
 **Most of the time, you are interesting running the above 3 steps
 (calculate speed, interpolate vessel tracks and extract vessel positions
@@ -223,7 +224,7 @@ the function parameters:
     **run_AISinterpolate_at** = FALSE and **run_AISextract_perHour** =
     TRUE to run only the latter and skip the first steps.
 
-#### 2. For further information:
+### 2. For further information:
 
 -   **MMSI_infos**: taking AIS data as input, this function aims to
     estimate the most probable type, length, draught, width, imo and
@@ -264,3 +265,10 @@ MMSI to the results obtained with the above functions.
         any value derived from the vessel speed. You can take a look to
         the default expression used for this threshold in
         **AIScorrect_speed** to see an example.
+
+## How to Cite
+
+Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters
+J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.
+(2024). Maritime traffic alters distribution of the harbour porpoise in
+the North Sea. *Marine Pollution Bulletin.* 208: 116925.

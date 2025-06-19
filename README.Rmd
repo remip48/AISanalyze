@@ -8,17 +8,17 @@ library(lubridate)
 ```
 
 ```{r date, echo=FALSE, results='asis'}
-cat("<font size='6'>", paste0("**", as.character(format(as.Date(lubridate::today()), "%d %B %Y")),
+cat("##", paste0("**", as.character(format(as.Date(lubridate::today()), "%d %B %Y")),
            "**"),
-    "</font> ", "<br>")
+    "", "<br>")
 ```
-<font size='5'>**Please update if your installation of AISanalyze is prior to this revision.**</font>
+**Please update if your installation of AISanalyze is prior to this revision.**
 
 <br>Last updates: 
 <br>correction in AIScorrect_speed for stationary boats; correction of time_travelled and distance_travelled in the case of several consecutive interpolated points.
 
 
-### Functionality of the package
+## Functionality of the package
 
 AISanalyze is an R-package developed to specifically correct GPS errors in AIS data, interpolate (linearly) the vessel positions at the desired times, and extract the locations and information of vessels around desired locations, at desired times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. Furthermore, this package identifies the vessels from the base stations and aircrafts in the AIS data, based on the distance and speed travelled, allowing to filter only the first if desired. It extracts information on vessel length and type as well, by excluding errors on vessel length and type originally present in the AIS data. First, an all-in-one function was constructed to analyze, correct, and extract AIS data around desired locations, therefore:
 
@@ -30,9 +30,9 @@ AISanalyze is an R-package developed to specifically correct GPS errors in AIS d
 
 However, each function is available individually as well. Second, a further function allows to interpolate (linearly) all AIS data at the desired temporal resolution, regardless of the location. Finally, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
 
-### AISanalyze R-package
+## AISanalyze R-package
 
-#### 1.	Quick overview
+### 1.	Quick overview
 You can:
 
 *	calculate the distance and time travelled for each vessel (defined by MMSI) between every AIS signal, as well as the corresponding speed (km/h), using **AIStravel** function;
@@ -55,13 +55,13 @@ You can:
     + In addition to the columns of the input data and AIS data, the output data contains other columns that add information on the AIS data returned (for example, how many points this MMSI has in the AIS data; whether any **speed_kmh** value was NA (very unexpected !); or the difference of seconds between the input time and the extracted time). More information on these columns can be found typing **??AIStravel_interpolate_extract** or **??AISextract** on R console.
 
 
-##### Parallelize:
+### Parallelize:
 **AISinterpolate_at** can be run in parallel (with **parallelize** = TRUE; you can define the number of cores to use with nb_cores and the file where iterations, warnings and errors are printed with outfile (doParallel does not print results in the console of R by default). outfile can also contain the path of the folder where you want to save the file, in addition to the name of the file (usually in .txt extension, must be specified in outfile). 
 
-##### Careful: 
+### Careful: 
 The RAM and CPU needed to run large datasets increases exponentially and parallel should be run only after having investigated the RAM and CPU used in series computation.
 
-##### Important: 
+### Important: 
 **Most of the time, you are interesting running the above 3 steps (calculate speed, interpolate vessel tracks and extract vessel positions in your study area at the desired times). To simplify the process, the function AIStravel_interpolate_extract does the full process for you in a single run**: you can enter your AIS data, your input data and define wether you want to extract the presence of vessels prior to your input data as well (**duplicate_time** = TRUE, **max_time_diff** = number of seconds until which you are want to extract vessel locations, **t_gap** = intervals of seconds over which vessel locations are extracted from your input times until ‘max_time_diff’ seconds before). You can also define your radius where vessels signals are considered for interpolation (see **AISinterpolate_at** above), and **search_into_radius_m** (distance over which you want to extract vessel locations around your input locations). Due to the high computation time for large datasets (either input or AIS), the function also allows to progressively write the results during the process, avoiding to spend extra time if the function crashes in reason of large computation requirements. With the appropriate set of parameters, the function can be simply re-run to load the saved results and to continue at the step it stopped. Please do not used the files from **save_AISinterlate_at** outside of the function as they are not complete: they need to be loaded by the function **AISinterpolate_at** (or **AIStravel_interpolate_extract**) to be completed. To do this, you have the function parameters:
 
 * **Overwrite**: if TRUE, the function runs all the steps and overwrite the existing files.
@@ -77,7 +77,7 @@ The RAM and CPU needed to run large datasets increases exponentially and paralle
 * **run_AISextract_perHour**: same but for the extraction of AIS data around your desired location~time. If the function has stopped during **AISextract**, and not before, you can simply set **load_existing_files** = TRUE, **run_AIStravel** = FALSE, **run_AISinterpolate_at** = FALSE and **run_AISextract_perHour** = TRUE to run only the latter and skip the first steps.
 
 
-#### 2.	For further information:
+### 2.	For further information:
 
 * **MMSI_infos**: taking AIS data as input, this function aims to estimate the most probable type, length, draught, width, imo and name of each vessel based on the AIS information. These can indeed contain diverging information for single vessels. The function returns a list of 2 elements:
 
@@ -95,3 +95,5 @@ The information on vessel length, type, and other, can then be joined by MMSI to
   
     + Another vessel-specific threshold can be defined as a function of the vessel speed. This function can use the argument **speed_kmh** (the vector of speed for each vessel) to use the mean, for example, of the vessel speed – you have to use mean(speed_kmh) in this case – and define a upper threshold adapted to the vessel. In the same manner, the median – median(speed_kmh) – or quantile – quantile(speed_kmh, 0.95) for example – can be used to define the upper threshold, as well as any value derived from the vessel speed. You can take a look to the default expression used for this threshold in **AIScorrect_speed** to see an example.
 
+## How to Cite
+Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. *Marine Pollution Bulletin.* 208: 116925. 
