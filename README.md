@@ -1,5 +1,15 @@
 
-### Functionality
+# LAST UPDATE:
+
+<font size='6'> **19 June 2025** </font> <br> <font size='5'>**Please
+update if your installation of AISanalyze is prior to this
+revision.**</font>
+
+<br>Last updates: <br>correction in AIScorrect_speed for stationary
+boats; correction of time_travelled and distance_travelled in the case
+of several consecutive interpolated points.
+
+### Functionality of the package
 
 AISanalyze is an R-package developed to specifically correct GPS errors
 in AIS data, interpolate (linearly) the vessel positions at the desired
@@ -16,14 +26,11 @@ vessel length and type originally present in the AIS data. First, an
 all-in-one function was constructed to analyze, correct, and extract AIS
 data around desired locations, therefore:
 
--   calculating the distance, time and speed travelled by each vessel;
-
--   identifying base stations and aircrafts in the AIS;
-
--   correcting GPS errors and GPS delays;
-
--   interpolating the vessel positions at the customized times;
-
+-   calculating the distance, time and speed travelled by each
+    vessel;<br>
+-   identifying base stations and aircrafts in the AIS;<br>
+-   correcting GPS errors and GPS delays;<br>
+-   interpolating the vessel positions at the customized times;<br>
 -   extracting the vessel positions and their information around the
     desired locations, at the desired times.
 
@@ -41,11 +48,11 @@ data.
 
 You can:
 
--   Calculate the distance and time travelled for each vessel (defined
+-   calculate the distance and time travelled for each vessel (defined
     by MMSI) between every AIS signal, as well as the corresponding
-    speed (km/h), using **AIStravel** function.
+    speed (km/h), using **AIStravel** function;
 
--   Interpolate the MMSI locations at the desired times with the
+-   interpolate the MMSI locations at the desired times with the
     function **AISinterpolate_at**. To restrict the computation time and
     not interpolate tracks of vessels that are not of interest, the
     function asks to associate every time with a location (longitude,
@@ -55,21 +62,17 @@ You can:
 
     -   This function allows, for example, interpolating the vessel
         locations around your survey / bio-logging data at the time you
-        wish.
-
+        wish. <br>
     -   You can enter, as input data, a data frame with several rows,
         each one containing different combinations of time\~location (in
         order to extract vessel locations along the track of your survey
-        / bio-logging data, for example).
-
+        / bio-logging data, for example). <br>
     -   Vessel tracks are interpolated based on AIS data that are within
         the radius around all your input locations; this **radius**
         (default value: 200 km) must therefore be large enough to
-        account for GPS or AIS gaps, for example in offshore areas.
-
+        account for GPS or AIS gaps, for example in offshore areas. <br>
     -   The GPS errors and unrealistic speeds are also corrected in the
-        process of interpolation.
-
+        process of interpolation.<br>
     -   You can filter out the base-stations and aircrafts from the AIS
         data using **filter_station** = TRUE and **filter_high_speed** =
         TRUE. The first are estimated based on the distance they have
@@ -86,15 +89,13 @@ You can:
     -   Your input data is a data frame where each row contains a
         combination of time\~location (location around which you want to
         extract vessel locations). You can, for example, define input
-        data as your survey / bio-logging data.
-
+        data as your survey / bio-logging data.<br>
     -   The function parameter **t_gap** defines the time range over
         which AIS data are considered for extracting the vessel
         locations at the closest moment to your input times. Default is
         **t_gap** = 10×60 = 10 minutes, meaning AIS data at the input
         times ± 10 minutes are kept for extracting vessel locations at
-        the closest time of your input time.
-
+        the closest time of your input time.<br>
     -   If you are also interested in the presence of vessels before
         your input time (e.g. how many vessels where present every
         minute in the study area, until 10 minutes before the survey
@@ -102,8 +103,7 @@ You can:
         **max_time_diff** = 10×60 (number of seconds) and **t_gap** =
         1×60 (number of seconds). This extracts the vessel locations
         every minutes from your input time until 10 minutes before, for
-        later advanced analysis.
-
+        later advanced analysis.<br>
     -   If you want to extract the vessel locations within an area that
         is not circular, it is recommended to enter, as input data,
         different locations that allow to cover your study area when
@@ -114,15 +114,13 @@ You can:
         complicated, but do not hesitate to contact me for more
         information, and we could consider adding some options in the
         function to extract directly vessel locations within the
-        non-circular areas, without these additional steps.
-
+        non-circular areas, without these additional steps.<br>
     -   If many input times are defined for extraction, the process will
         also be long. The computation time can be greatly decreased with
         **accelerate** = TRUE and **average_at** (number of seconds).
         This average the input times that you want to extract to time
         intervals that are separated by ‘**average_at**’ number of
-        seconds.
-
+        seconds.<br>
     -   The output data are the input data, with the AIS data of
         surrounding vessels joined using left_join (dplyr R-package).
         This means that an input data with 2 surrounding vessels will be
@@ -130,8 +128,7 @@ You can:
         data of 1 of the vessel, at the closest moment of the time you
         want to extract. An input data without any surrounding vessel
         will be present 1 time in the ouput data, but the columns
-        corresponding to the AIS data will all be filled by NA.
-
+        corresponding to the AIS data will all be filled by NA. <br>
     -   In addition to the columns of the input data and AIS data, the
         output data contains other columns that add information on the
         AIS data returned (for example, how many points this MMSI has in
@@ -140,6 +137,8 @@ You can:
         time and the extracted time). More information on these columns
         can be found typing **??AIStravel_interpolate_extract** or
         **??AISextract** on R console.
+
+##### Parallelize:
 
 **AISinterpolate_at** can be run in parallel (with **parallelize** =
 TRUE; you can define the number of cores to use with nb_cores and the
