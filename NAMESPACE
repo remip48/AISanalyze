@@ -2,6 +2,7 @@
 
 export(AIScorrect_speed)
 export(AISextract)
+export(AISextract_all)
 export(AISidentify_stations_aircraft)
 export(AISinterpolate_all)
 export(AISinterpolate_at)
