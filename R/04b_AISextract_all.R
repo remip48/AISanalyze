@@ -55,187 +55,111 @@
 #' @export
 
 AISextract_all <- function(data,
-                       crs_meters = 3035,
-                       ais_data,
-                       search_into_radius_m = 50000,
-                       interval_time_before = 5 * 60,
-                       interval_time_after = 5 * 60
-) {
-
-  ######## filter first AIS data before first time and after last time, and filter AIS data too far from points to extract.
-
-  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
-  # inst <- which(!(pack %in% installed.packages()[,1]))
-  #
-  # if (length(inst) > 0) {
-  #   lapply(pack[inst], function(p) {install.packages(p)})
-  # }
-  #
-  # lapply(pack, library, character.only = TRUE)
-
-  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp, na.rm = T) - (interval_time_before)) &
-                         ais_data$timestamp <= (max(data$timestamp, na.rm = T) + interval_time_after), ]
-
+                           crs_meters = 3035,
+                           ais_data,
+                           search_into_radius_m = 50000,
+                           interval_time_before = 5 * 60,
+                           interval_time_after = 5 *	60)
+{
+  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp,
+                                                  na.rm = T) - (interval_time_before)) & ais_data$timestamp <=
+                         (max(data$timestamp, na.rm = T) + interval_time_after),
+  ]
   if (!(all(c("ais_X", "ais_Y") %in% colnames(ais_data)))) {
     if (!(all(c("X", "Y") %in% colnames(ais_data)))) {
       if (!("sf" %in% class(ais_data))) {
-        ais_data <- ais_data %>%
-          dplyr::mutate(tlon = lon,
-                        tlat = lat) %>%
-          st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
+        ais_data <- ais_data %>% dplyr::mutate(tlon = lon,
+                                               tlat = lat) %>% st_as_sf(coords = c("tlon",
+                                                                                   "tlat"), crs = 4326)
       }
-      # if (st_crs(ais_data)$input != "EPSG:3035") {
-      ais_data <- ais_data %>%
-        st_transform(crs = crs_meters)
-      # }
-
-      coords_eff <- ais_data %>%
-        st_coordinates() %>%
-        as.data.frame()
-
-      ais_data <- ais_data %>%
-        st_drop_geometry() %>%
-        dplyr::mutate(X = coords_eff[,1],
-                      Y = coords_eff[,2]) %>%
-        dplyr::rename(ais_X = X, ais_Y = Y)
-
+      ais_data <- ais_data %>% st_transform(crs = crs_meters)
+      coords_eff <- ais_data %>% st_coordinates() %>% as.data.frame()
+      ais_data <- ais_data %>% st_drop_geometry() %>% dplyr::mutate(X = coords_eff[,
+                                                                                   1], Y = coords_eff[, 2]) %>% dplyr::rename(ais_X = X,
+                                                                                                                              ais_Y = Y)
       rm(coords_eff)
-    } else {
-      ais_data <- ais_data %>%
-        dplyr::rename(ais_X = X, ais_Y = Y)
+    }
+    else {
+      ais_data <- ais_data %>% dplyr::rename(ais_X = X,
+                                             ais_Y = Y)
     }
   }
-
   colnam <- colnames(ais_data)
-  if (any(colnam[!(colnam %in% c("timestamp", "mmsi"))] %in% c(colnames(data)))) {
-    colnames(ais_data)[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))] <- paste0("ais_", colnam[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))])
-    cat("\n", paste0("'", paste(colnam[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "),
-                     "'"),
-        "columns in AIS data renamed as",
-        paste0("'", paste(colnames(ais_data)[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"), "\n")
+  if (any(colnam[!(colnam %in% c("timestamp", "mmsi"))] %in%
+          c(colnames(data)))) {
+    colnames(ais_data)[colnam %in% c(colnames(data)) & !(colnam %in%
+                                                           c("timestamp", "mmsi"))] <- paste0("ais_", colnam[colnam %in%
+                                                                                                               c(colnames(data)) & !(colnam %in% c("timestamp",
+                                                                                                                                                   "mmsi"))])
+    cat("\n", paste0("'", paste(colnam[colnam %in% colnames(data) &
+                                         !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "),
+                     "'"), "columns in AIS data renamed as", paste0("'",
+                                                                    paste(colnames(ais_data)[colnam %in% colnames(data) &
+                                                                                               !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "),
+                                                                    "'"), "\n")
   }
   rm(colnam)
-
   if (any(colnames(data) == "mmsi")) {
     colnames(data)[colnames(data) == "mmsi"] <- "initial_mmsi"
     cat("\nmmsi column in dataframe renamed as 'initial_mmsi'")
   }
-
   if (!(all(c("X", "Y") %in% colnames(data)))) {
     if (!("sf" %in% class(data))) {
-      data <- data %>%
-        dplyr::mutate(tlon = lon,
-                      tlat = lat) %>%
+      data <- data %>% dplyr::mutate(tlon = lon, tlat = lat) %>%
         st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
-    # if (st_crs(data)$input != "EPSG:3035") {
-    data <- data %>%
-      st_transform(crs = crs_meters)
-    # }
-
-    coords_eff <- data %>%
-      st_coordinates() %>%
-      as.data.frame()
-
-    data <- data %>%
-      st_drop_geometry() %>%
-      dplyr::mutate(X = coords_eff[,1],
-                    Y = coords_eff[,2])
-
+    data <- data %>% st_transform(crs = crs_meters)
+    coords_eff <- data %>% st_coordinates() %>% as.data.frame()
+    data <- data %>% st_drop_geometry() %>% dplyr::mutate(X = coords_eff[,
+                                                                         1], Y = coords_eff[, 2])
     rm(coords_eff)
   }
-
-  data <- data %>%
-    # dplyr::arrange(timestamp_AIS_to_extract) %>%
-    # dplyr::mutate(timestamp_eff = timestamp) %>%
-    # dplyr::select(!"timestamp") %>%
-    dplyr::mutate(idd_effort = 1:n())
-
+  data <- data %>% dplyr::mutate(idd_effort = 1:n())
   return_columns <- function(.x) {
     return(.x)
   }
-
-  ais_data <- ais_data %>%
-    as.data.frame() %>%
-    dplyr::rename(ais_timestamp = timestamp)
-
+  ais_data <- ais_data %>% as.data.frame() %>% dplyr::rename(ais_timestamp = timestamp)
   time_ais <- map_dfr(unique(data$timestamp), function(dt) {
-
-    eff_dt <- data[data$timestamp_AIS_to_extract == dt,]
-
-    mmsi_ref <- ais_data[ais_data$ais_timestamp >= (dt - interval_time_before) &
-                           ais_data$ais_timestamp <= (dt + interval_time_after) &
-                           ais_data$ais_X >= (min(eff_dt$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
-                           ais_data$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_dt$Y) + search_into_radius_m),]
-
+    eff_dt <- data[data$timestamp == dt, ]
+    mmsi_ref <- ais_data[ais_data$ais_timestamp >= (dt -
+                                                      interval_time_before) & ais_data$ais_timestamp <=
+                           (dt + interval_time_after) & ais_data$ais_X >= (min(eff_dt$X) -
+                                                                             search_into_radius_m) & ais_data$ais_X <= (max(eff_dt$X) +
+                                                                                                                          search_into_radius_m) & ais_data$ais_Y >= (min(eff_dt$Y) -
+                                                                                                                                                                       search_into_radius_m) & ais_data$ais_Y <= (max(eff_dt$Y) +
+                                                                                                                                                                                                                    search_into_radius_m), ]
     if (nrow(mmsi_ref) > 1) {
-      # mmsi_ref <- mmsi_ref
-      #
-      # mmsi_eff <- mmsi_ref
-
-      out <- eff_dt %>%
-        as.data.frame() %>%
-        group_by(idd_effort) %>%
-        dplyr::reframe(across(colnames(eff_dt)[colnames(eff_dt) != "idd_effort"], ~ return_columns(.x)),
-          mmsi_ref %>%
-            dplyr::mutate(distance_effort_ais_m = sqrt((ais_X-X)^2 + (ais_Y-Y)^2))
-        ) %>%
-        dplyr::filter(distance_effort_ais_m <= search_into_radius_m)
-
-      # out <- out[out$distance_effort_ais_m <= search_into_radius_m, ] %>%
-      #   # left_join(eff_dt, by = "idd_effort") %>%
-      #   # left_join(mmsi_ref %>%
-      #   #             dplyr::select(-c(ais_X, ais_Y, mmsi, timestamp)), by = "idd_ais") %>%
-      #   dplyr::select(-idd_ais)
-
-      rm(mmsi_eff)
-    } else {
+      out <- eff_dt %>% as.data.frame() %>% group_by(idd_effort) %>%
+        dplyr::reframe(across(colnames(eff_dt)[colnames(eff_dt) !=
+                                                 "idd_effort"], ~return_columns(.x)), mmsi_ref %>%
+                         dplyr::mutate(distance_effort_ais_m = sqrt((ais_X -
+                                                                       X)^2 + (ais_Y - Y)^2))) %>% dplyr::filter(distance_effort_ais_m <=
+                                                                                                                   search_into_radius_m)
+    }
+    else {
       out <- eff_dt
     }
-
     rm(eff_dt)
     rm(mmsi_ref)
-
     return(out)
-
   })
-
   if (!("ais_timestamp" %in% colnames(time_ais))) {
-    cat("\nNo AIS data for data processed between", as.character(lubridate::as_datetime(min(time_ais$timestamp))), "and",
-        as.character(lubridate::as_datetime(max(time_ais$timestamp))), "\n")
-    time_ais <- time_ais %>%
-      dplyr::mutate(ais_timestamp = NA)
+    cat("\nNo AIS data for data processed between", as.character(lubridate::as_datetime(min(time_ais$timestamp))),
+        "and", as.character(lubridate::as_datetime(max(time_ais$timestamp))),
+        "\n")
+    time_ais <- time_ais %>% dplyr::mutate(ais_timestamp = NA)
   }
-
-  time_ais <- time_ais %>%
-    dplyr::mutate(diffTime_AIS_effort = ais_timestamp - timestamp) %>%
-    dplyr::select(-c("point")[c("point") %in% colnames(time_ais)])
-
+  time_ais <- time_ais %>% dplyr::mutate(diffTime_AIS_effort = ais_timestamp -
+                                           timestamp) %>% dplyr::select(-c("point")[c("point") %in%
+                                                                                      colnames(time_ais)])
   if (any(!(data$idd_effort %in% time_ais$idd_effort))) {
-    time_ais <- map_dfr(list(time_ais,
-                             data[!(data$idd_effort %in% time_ais$idd_effort), ]),
-                        function(l) {return(l)})
+    time_ais <- map_dfr(list(time_ais, data[!(data$idd_effort %in%
+                                                time_ais$idd_effort), ]), function(l) {
+                                                  return(l)
+                                                })
   }
-
   gc()
-
-  # if (limited_to_AIS_time) {
-  #   time_ais <- time_ais %>%
-  #     filter(timestamp_AIS_to_extract >= (min(AIS$timestamp, na.rm = T) - t_gap) & timestamp_AIS_to_extract <= (max(AIS$timestamp, na.rm = T) + t_gap))
-  # }
-
-  time_ais <- time_ais %>%
-    # dplyr::mutate(timestamp = timestamp_eff) %>%
-    dplyr::select(!c("idd_effort"))
-
-  # if (nrow(time_ais) == 0) {
-  #   time_ais <- data %>%
-  #     dplyr::mutate(timestamp = timestamp_eff) %>%
-  #     dplyr::select(!"timestamp_eff")
-  # }
-
+  time_ais <- time_ais %>% dplyr::select(!c("idd_effort"))
   rm(data)
-
   return(time_ais)
-
 }
