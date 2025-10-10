@@ -7,7 +7,7 @@
 #' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
 #' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
 #' @param load_existing_files if TRUE, load the existing files of AISinterpolate_at named as paste0(file_AISinterlate_at, "_hour_", hour_processed, ".rds).
-#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.
+#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (if run_AISinterpolate_at = T). IMPORTANT: The saved results should not be used outside of this function as they are not complete yet! Please re-run this function to have the full interpolated data.
 #' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
 #' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
 #' @param radius radius (meters) around data where AIS data are considered for interpolation of the positions. Must be large enough to collect the AIS data necessary for a linear interpolation at the time of the data. Is used also to filter the AIS data too far from the data of interest and slowing the processes (we used 200 km as default value of radius).
@@ -1018,6 +1018,10 @@ AISinterpolate_at <- function(data,
     rm(ais_ok)
     rm(ais_data)
     # rm(ais_data_ref)
+
+    # for (hh in) {
+    #   unlink(paste0(file_AISinterlate_at, "_hour_", hh, ".rds"))
+    # }
 
     return(out)
   } else {
