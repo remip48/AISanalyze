@@ -150,7 +150,7 @@ AIScorrect_speed <- function(ais_data,
     ais_data <- ais_data %>%
       dplyr::group_by(mmsi) %>%
       dplyr::mutate(station = ifelse(quantile(distance_travelled, quantile_station, na.rm = T) <= threshold_distance_station, T, F),
-                    high_speed = ifelse(quantile(speed_kmh, quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
+                    high_speed = ifelse(quantile(speed_kmh, 1 - quantile_high_speed, na.rm = T) >= threshold_high_speed, T, F),
                     id_mmsi_point_initial = 1:n()) %>%
       ungroup()
   }
