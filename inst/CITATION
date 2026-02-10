@@ -1,6 +1,13 @@
 citHeader("To cite AISanalyze, please use:")
 
 bibentry(
+  author = "Pigeault R., Ruser A., Ramirez-Martinez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.",
+  bibtype = "Article",
+  title   = "Maritime traffic alters distribution of the harbour porpoise in the North Sea",
+  year    = "2024",
+  journal = "Marine Pollution Bulletin",
+  volume  = "208",
+  pages   = "116925",
   textVersion =
-    "Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. Marine Pollution Bulletin. 208: 116925."
+    "Pigeault R., Ruser A., Ramirez-Martinez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. Marine Pollution Bulletin. 208: 116925."
 )
