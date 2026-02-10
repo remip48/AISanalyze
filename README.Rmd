@@ -1,6 +1,10 @@
 ---
 output: github_document
 ---
+
+## How to Cite
+Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. *Marine Pollution Bulletin.* 208: 116925. 
+
 # LAST UPDATE:
 ```{r setup, include=FALSE, echo=FALSE}
 Sys.setlocale("LC_TIME", "English")
@@ -95,5 +99,3 @@ The information on vessel length, type, and other, can then be joined by MMSI to
   
     + Another vessel-specific threshold can be defined as a function of the vessel speed. This function can use the argument **speed_kmh** (the vector of speed for each vessel) to use the mean, for example, of the vessel speed – you have to use mean(speed_kmh) in this case – and define a upper threshold adapted to the vessel. In the same manner, the median – median(speed_kmh) – or quantile – quantile(speed_kmh, 0.95) for example – can be used to define the upper threshold, as well as any value derived from the vessel speed. You can take a look to the default expression used for this threshold in **AIScorrect_speed** to see an example.
 
-## How to Cite
-Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. *Marine Pollution Bulletin.* 208: 116925. 

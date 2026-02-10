@@ -81,6 +81,8 @@ AISinterpolate_all <- function(ais_data,
                                # land_sf_polygon = NA
                                ){
 
+  cat("This function is interpolating ALL vessel tracks with AIS gap > t_gaps: please consider using AISinterpolate_at if you are interested in just few timestamps or locations, or if you are interested in vessel tracks with equalised time-steps between each AIS signal (which wont be equalised with the present function)\n\n")
+
   list_num <- c("mmsi_time_to_order", "correct_speed", "filter_station", "filter_high_speed", "interpolate_station", "interpolate_high_speed")
   if (any(!do.call("c", map(list(mmsi_time_to_order, correct_speed, filter_station, filter_high_speed, interpolate_station, interpolate_high_speed),
                             is.logical)))) {

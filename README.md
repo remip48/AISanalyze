@@ -1,7 +1,14 @@
 
+## How to Cite
+
+Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters
+J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.
+(2024). Maritime traffic alters distribution of the harbour porpoise in
+the North Sea. *Marine Pollution Bulletin.* 208: 116925.
+
 # LAST UPDATE:
 
-## **19 June 2025** <br>
+## **10 February 2026** <br>
 
 **Please update if your installation of AISanalyze is prior to this
 revision.**
@@ -265,10 +272,3 @@ MMSI to the results obtained with the above functions.
         any value derived from the vessel speed. You can take a look to
         the default expression used for this threshold in
         **AIScorrect_speed** to see an example.
-
-## How to Cite
-
-Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters
-J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.
-(2024). Maritime traffic alters distribution of the harbour porpoise in
-the North Sea. *Marine Pollution Bulletin.* 208: 116925.

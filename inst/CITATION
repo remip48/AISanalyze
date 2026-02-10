@@ -1,0 +1,6 @@
+citHeader("To cite AISanalyze, please use:")
+
+bibentry(
+  textVersion =
+    "Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. Marine Pollution Bulletin. 208: 116925."
+)
