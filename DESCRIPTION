@@ -1,55 +1,29 @@
 Package: AISanalyze
-Title: road2DSM
-Version: 0.0.0.9000
+Title: AISanalyze
+Version: 1.0
 Authors@R: c(
-    person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre")),
-    person("Vincent", "Benoit", , "vincent.benoit@tiho-hannover.de", role = "ctb"),
-    person("Nadya Carolina", "Ramirez-Martinez", , "Nadya.Carolina.Ramirez.Martinez@tiho-hannover.de", role = "ctb"),
-    person("Anita", "Gilles", , "anita.gilles@tiho-hannover.de", role = "ctb"),
-    person("Matthieu", "Authier", , "matthieu.authier@univ-lr.fr", role = "ctb")
+    person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
-Description: Functions to extract covariates from NC files on effort &
-    prediction grids for density surface modelling. Create prediction grid
-    in flexible way, fit models and write comprehensive overview of model
-    comparison after model fitting.
+Description: Correct, interpolate, extract and analyze AIS data.
 License: MIT + file LICENSE
-URL: https://github.com/remip48/road2DSM
-BugReports: https://github.com/remip48/road2DSM/issues
+Depends: 
+    R(>= 4.2.0),
+    tidyverse (>= 2.0.0),
+    dplyr (>= 1.1.2),
+    sf (>= 1.0-9),
+    lubridate (>= 1.9.2),
+    units (>= 0.8-0),
+    purrr (>= 1.0.1),
+    stats (>= 4.2.1),
+    utils (>= 4.2.1),
+    stringr (>= 1.5.0),
+    doParallel (>= 1.0.17)
+URL: https://github.com/remip48/AISanalyze
+BugReports: https://github.com/remip48/AISanalyze/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-Imports: 
-    assertthat,
-    collapse,
-    colorspace,
-    data.table,
-    doParallel,
-    dplyr,
-    dsmextra,
-    foreach,
-    ggnewscale,
-    ggplot2,
-    gratia,
-    knitr,
-    lubridate,
-    lwgeom,
-    magrittr,
-    MASS,
-    mgcv,
-    parallel,
-    patchwork,
-    purrr,
-    raster,
-    readxl,
-    rlang,
-    rmapshaper,
-    rmarkdown,
-    sf,
-    stars,
-    stringr,
-    terra,
-    tidyr,
-    timeDate,
-    units,
-    viridis,
-    writexl
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+LazyData: true
