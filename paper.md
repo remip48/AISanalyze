@@ -29,7 +29,8 @@ bibliography: paper.bib
 
 # Summary
 
-AISanalyze is an R-package developed to specifically correct GPS errors in AIS data, linearly interpolate the vessel positions at the desired times, and extract the locations and information of vessels around desired locations, at desired times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. Furthermore, this package identifies the vessels from the base stations and aircrafts in the AIS data, based on the distance and speed travelled, allowing to filter only the first if desired. It extracts information on vessel length and type as well, by excluding errors on vessel length and type originally present in the AIS data. First, an all-in-one function was constructed to analyze, correct, and extract AIS data around desired locations, therefore:
+AISanalyze is an R-package developed specifically to correct GPS errors in AIS data, linearly interpolate vessel positions at the desired times, and extract the locations and information of vessels around desired locations/times. The advantage of this package is that the computation time is considerably reduced to perform these operations, enabling results to be obtained in few minutes to few hours depending on the size of AIS data and the number of points to extract. The package distinguishes vessels from base-stations and aircrafts in AIS data (based on the distance and speed travelled), allowing users to remove the latter if needed. The package also extracts information on vessel length and type, excluding errors originally present in the AIS data. 
+First, an all-in-one function was constructed to analyse, correct, and extract AIS data around desired locations, therefore:
 
 - calculating the distance, time and speed travelled by each vessel;
 
@@ -39,13 +40,15 @@ AISanalyze is an R-package developed to specifically correct GPS errors in AIS d
 
 - interpolating the vessel positions at the customized times;
 
-- extracting the vessel positions and their information around the desired locations, at the desired times.
+- extracting the vessel positions and their information around the desired locations/times.
 
-However, each function is available individually as well. Second, a further function allows to linearly interpolate all AIS data at the desired temporal resolution, regardless of the location. Finally, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
+However, each function is also available individually. 
+Second, a function allows to linearly interpolate AIS data at the desired temporal resolution, regardless of the location. 
+Third, a last function extracts the length and type of vessel per MMSI (Maritime Mobile Service Identity), removing the errors present in the AIS data. This information can later be added to the interpolated/extracted AIS data.
 
 # Statement of need
 
-Human activities and their impacts on the ocean and their ecosystem components continue to increase (Halpern et al., 2008, 2015), and with them the maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel Monitoring System) are the only sources of global data on vessel positions in real time to date. Studies on the impacts of maritime traffic are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, and errors of receptions. This leads to vessel tracks with erroneous positions, speeds, and information (e.g., wrong vessel length and type). Furthermore, the huge size of the AIS data makes any overview complex and highly time-consuming. These two points greatly limit the research possibilities related to vessel tracks and densities including a wider context. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to carry out these researches. AISanalyze opens up a wide range of research possibilities, from studying the effects and distribution of maritime traffic to improving the treatment and shortcomings of AIS data.
+Human activities and their impacts on the ocean and their ecosystem components continue to increase (Halpern et al., 2008, 2015), including maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel Monitoring System) are the only sources of global data on vessel positions in real time to date. Studies on the impacts of maritime traffic are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, and errors of receptions. This leads to vessel tracks with erroneous positions, speeds, and information (e.g., wrong vessel length and type). The huge size of AIS data makes any overview complex and highly time-consuming. These two points greatly limit research possibilities related to vessel tracks and densities in a wider context. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to carry out these researches. AISanalyze opens up a wide range of research possibilities, including the study of maritime traffic effects and distribution and the improvement of AIS data shortcomings and processing.
 
 # Acknowledgements
 
