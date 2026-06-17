@@ -17,13 +17,18 @@ authors:
   - name: Nadya C. Ramirez-Martinez
     orcid: 0000-0003-0151-8787
     affiliation: 1
+  - name: Ursula Siebert
+    orcid: 0000-0002-2556-3948
+    affiliation: [1, 2]
   - name: Anita Gilles
     orcid: 0000-0001-7234-8645
     affiliation: 1
 affiliations:
  - name: Institute for Terrestrial and Aquatic Wildlife Research, University of Veterinary Medicine Hannover, Foundation, Buesum, Germany
    index: 1
-date: 08 January 2024
+ - name: Department of Ecoscience, Marine Mammal Research, Aarhus University, Denmark
+   index: 2
+date: 17 June 2026
 bibliography: paper.bib
 ---
 
@@ -48,7 +53,7 @@ Third, a last function extracts the length and type of vessel per MMSI (Maritime
 
 # Statement of need
 
-Human activities and their impacts on the ocean and their ecosystem components continue to increase (Halpern et al., 2008, 2015), including maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel Monitoring System) are the only sources of global data on vessel positions in real time to date. Studies on the impacts of maritime traffic are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, and errors of receptions. This leads to vessel tracks with erroneous positions, speeds, and information (e.g., wrong vessel length and type). The huge size of AIS data makes any overview complex and highly time-consuming. These two points greatly limit research possibilities related to vessel tracks and densities in a wider context. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to carry out these researches. AISanalyze opens up a wide range of research possibilities, including the study of maritime traffic effects and distribution and the improvement of AIS data shortcomings and processing.
+Human activities and their impacts on the ocean and their ecosystem components continue to increase (Halpern et al., 2008, 2015), including maritime traffic. AIS (Automatic Identification System) and VMS data (Vessel Monitoring System) are the only sources of global data on vessel positions in real time to date. Studies on the impacts of maritime traffic are therefore heavily dependent on these data: however, numerous errors are found, due to GPS errors, GPS delays, and errors of receptions. This leads to vessel tracks with erroneous positions, speeds, and information (e.g., wrong vessel length and type). The huge size of AIS data makes any overview complex and highly time-consuming. These two points greatly limit research possibilities related to vessel tracks and densities in a wider context. Easy-to-use and fast calculation algorithms are required to fill these gaps and allow the community to use AIS data to carry out these researches. AISanalyze opens up a wide range of research possibilities, including the study of maritime traffic effects and distribution and the improvement of AIS data shortcomings and processing (e.g. Pigeault et al., 2024).
 
 # Acknowledgements
 
@@ -59,3 +64,8 @@ We acknowledge contributions from Daniel Alexander Schwarzkopf, Volker Matthias,
 Halpern, B. S., Frazier, M., Potapenko, J., Casey, K. S., Koenig, K., Longo, C., Lowndes, J. S., Rockwood, R. C., Selig, E. R., Selkoe, K. A., & Walbridge, S. (2015). Spatial and temporal changes in cumulative human impacts on the world’s ocean. Nature Communications, 6, 7615. https://doi.org/10.1038/ncomms8615.
 
 Halpern, B. S., Walbridge, S., Selkoe, K. a, Kappel, C. V, Micheli, F., D’Agrosa, C., Bruno, J. F., Casey, K. S., Ebert, C., Fox, H. E., Fujita, R., Heinemann, D., Lenihan, H. S., Madin, E. M. P., Perry, M. T., Selig, E. R., Spalding, M., Steneck, R., & Watson, R. (2008). A Global Map of Human Impact on Marine Ecosystems. Science, 319(5865), 948–952. https://doi.org/10.1126/science.1149345
+
+Pigeault, R., Ruser, A., Ramírez-Martínez, N.C., Geelhoed, S.C.V., Haelters, J.,
+Nachtsheim, D.A., Schaffeld, T., Sveegaard, S., Siebert, U., Gilles, A. (2024). Maritime
+traffic alters distribution of the harbour porpoise in the North Sea. Mar. Pollut. Bull.
+208, 116925. https://doi.org/10.1016/j.marpolbul.2024.116925.
