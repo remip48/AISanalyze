@@ -26,13 +26,13 @@
 #' @param nb_cores number of cores to used with doParallel.
 #' @param outfile file to print the logs if parallelize = T.
 #' @param save_AIStravel if results from AIStravel must be saved (only if run_AIStravel = T).
-#' @param save_AISinterlate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.
+#' @param save_AISinterpolate_at if TRUE, save the results for each iteration of hour of AIS data (only if run_AISinterpolate_at = T). The saved results should not be used outside of this function as they are not complete yet! Please re-run these function to have the full interpolated data.
 #' @param save_AISextract_perHour if results from AISextract must be saved, (only if run_AISextract_perHour = T).
 #' @param file_AIStravel if save_AIStravel = TRUE, is the file name where AIStravel output is saved. Must not contain file format: the files are written as .rds.
-#' @param file_AISinterlate_at if save_AISinterlate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
+#' @param file_AISinterpolate_at if save_AISinterpolate_at = TRUE, is the file name where hourly interpolated AIS data are saved. Must not contain file format: the files are written as .rds.
 #' @param file_AISextract_perHour if save_AISextract_perHour = TRUE, is the file name where hourly extracted AIS data along data of interest are saved. Must not contain file format: the files are written as .rds.
 #' @param load_existing_files if TRUE, load the existing files (saved during previous runs) of AIStravel, AISinterpolate_at and AISextract when running the functions.
-#' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterlate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
+#' @param overwrite if TRUE, the saved files (see save_AIStravel, save_AISinterpolate_at, save_AISextract_perHour) overwrite existing files. Otherwise load the existing files if these are existing and needed in the function.
 #' @param threshold_speed_to_correct speeds higher than this threshold are corrected if the mmsi is not an aircraft and if correct_speed = T
 #' @param threshold_speed_to_correct_expr expression (function having "speed_kmh" as unique parameter) to determine another threshold correcting GPS errors and delays. This expression is ran for each MMSI individually, allowing to identify unrealistic speeds based on the mean of the vessel speed, median, standard deviation or other functions. The default expression has been tested as relevant and appropriate to filter GPS errors and delays, still checks are necessary.
 #' @param quantile_station Quantile (0 to 1) of distance, by mmsi, which is compared to threshold_distance_station to assess if the MMSI is a station or not: if below threshold_distance_station, MMSI is considered as stationary and is a station. We used 0.975 to prevent misinterpretations from GPS errors leading to distance travelled by stations.
@@ -49,7 +49,6 @@
 #' \item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
 #' \item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
 #' \item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-#' \item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from diffTime_AIS_extraction_effort due to the parameter "average_at" (that average the timestamp to extract).
 #' \item hour_AIS_to_extract: hour of timestamp_AIS_to_extract
 #' \item time_travelled: number of seconds since the last reception or interpolation of an AIS signal (0 if first reception).
 #' \item distance_travelled:  distance travelled (meters) since the last reception or interpolation of an AIS signal (0 if first reception).
@@ -86,8 +85,8 @@
 #'                               overwrite = F,
 #'                               time_stop = 5*60*60,
 #'                               run_AISinterpolate_at = T,
-#'                               save_AISinterlate_at = T,
-#'                               file_AISinterlate_at = "AISinterpolate_at",
+#'                               save_AISinterpolate_at = T,
+#'                               file_AISinterpolate_at = "AISinterpolate_at",
 #'                               correct_speed = T,
 #'                               threshold_speed_to_correct = 100,
 #'                               duplicate_time = F,
@@ -108,68 +107,50 @@
 
 AIStravel_interpolate_extract <- function(data,
                                           ais_data,
-                                          mmsi_time_to_order = T,
+                                          mmsi_time_to_order = TRUE,
                                           search_into_radius_m = 50000,
-                                          run_AIStravel = T,
-                                          save_AIStravel = T,
+                                          run_AIStravel = TRUE,
+                                          save_AIStravel = TRUE,
                                           file_AIStravel = "AIStravel",
-                                          load_existing_files = F,
-                                          overwrite = F,
+                                          load_existing_files = FALSE,
+                                          overwrite = FALSE,
                                           time_stop = 5*60*60,
-                                          run_AISinterpolate_at = T,
-                                          save_AISinterlate_at = T,
-                                          file_AISinterlate_at = "AISinterpolate_at",
-                                          correct_speed = T,
+                                          run_AISinterpolate_at = TRUE,
+                                          save_AISinterpolate_at = TRUE,
+                                          file_AISinterpolate_at = "AISinterpolate_at",
+                                          correct_speed = TRUE,
                                           threshold_speed_to_correct = 100,
                                           threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 1], na.rm = T) +
                                                                                                            sd(speed_kmh[speed_kmh > 1 & speed_kmh < quantile(speed_kmh[speed_kmh > 1], .75)]) * 5 + 15))},
                                           crs_meters = 3035,
-                                          duplicate_time = T,
+                                          duplicate_time = TRUE,
                                           max_time_diff = 1 * 60 * 60,
                                           t_gap = 2*60,
-                                          accelerate = T,
+                                          accelerate = TRUE,
                                           average_at = 30,
-                                          filter_station = T,
-                                          filter_high_speed = T,
-                                          # interpolate_station = T,
-                                          # interpolate_high_speed = T,
+                                          filter_station = TRUE,
+                                          filter_high_speed = TRUE,
                                           radius = 200000,
                                           quantile_station = 0.975,
                                           threshold_distance_station = 1,
                                           quantile_high_speed = 0.97,
                                           threshold_high_speed = 110,
-                                          run_AISextract_perHour = T,
-                                          save_AISextract_perHour = T,
+                                          run_AISextract_perHour = TRUE,
+                                          save_AISextract_perHour = TRUE,
                                           file_AISextract_perHour = "AISextract",
-                                          return_merged_all_extracted = T,
-                                          parallelize = F,
+                                          return_merged_all_extracted = TRUE,
+                                          parallelize = FALSE,
                                           nb_cores = NA,
                                           outfile = "log.txt",
-                                          # average_mmsi_at = 0,
-                                          QUIET = F
-                                          # spatial_limit = NA,
-                                          # on_Land_analysis = F,
-                                          # land_sf_polygon = NA,
+                                          QUIET = FALSE
 ) {
 
-  # param spatial_limit sf polygon object of the area where outside points must be filtered out of the output. Not tested and might lead to few errors.
-  # param on_Land_analysis sf polygon object of the countries to study the reliability of GPS positions and interpolations with an analysis of the paths travelled by mmsi on land. Not tested and might lead to few errors.
-  # param land_sf_polygon if on_Land_analysis, sf polygon object for countries.
-  average_mmsi_at <- 0
-  # param average_mmsi_at number of seconds where positions of mmsi are averaged for extraction. Less useful than average_at which average the data timestamps to process.
-  # param interpolate_station if FALSE, do not interpolate the positions of the stations.
-  # param interpolate_high_speed if FALSE, do not interpolate the positions of the aircrafts.
-  # interpolate_station <- !filter_station
-  # interpolate_high_speed <- !filter_high_speed
+  if (!parallelize) {
+    parallelize <- T
+    nb_cores <- 1
+  }
 
-  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
-  # inst <- which(!(pack %in% installed.packages()[,1]))
-  #
-  # if (length(inst) > 0) {
-  #   lapply(pack[inst], function(p) {install.packages(p)})
-  # }
-  #
-  # lapply(pack, library, character.only = TRUE)
+  average_mmsi_at <- 0
 
   ais_data <- ais_data %>%
     dplyr::mutate(mmsi = ifelse(is.na(mmsi) | is.nan(mmsi) | is.null(mmsi), 0.1, mmsi))
@@ -210,38 +191,15 @@ AIStravel_interpolate_extract <- function(data,
     dplyr::mutate(hour_AIS_to_extract = lubridate::hour(datetime_AIS_to_extract),
                   dayhour = paste(lubridate::date(datetime_AIS_to_extract), hour_AIS_to_extract))
 
-  if (!(all(c("X", "Y") %in% colnames(eff_d)))) {
-    if (!("sf" %in% class(eff_d))) {
-      eff_d <- eff_d %>%
-        dplyr::mutate(tlon = lon,
-                      tlat = lat) %>%
-        st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
-    }
-    # if (st_crs(eff_d)$input != "EPSG:3035") {
-      eff_d <- eff_d %>%
-        st_transform(crs = crs_meters)
-    # }
-
-    coords_eff <- eff_d %>%
-      st_coordinates() %>%
-      as.data.frame()
-
-    eff_d <- eff_d %>%
-      st_drop_geometry() %>%
-      dplyr::mutate(X = coords_eff[,1],
-                    Y = coords_eff[,2])
-
-    rm(coords_eff)
-  }
-
+  eff_d <- add_coordinates_meters(eff_d, crs_meters = crs_meters) %>%
+    st_drop_geometry()
 
   if (run_AIStravel) {
     cat("Estimating speed, distance and time travelled by MMSI\n")
 
     if (load_existing_files & file.exists(file = paste0(file_AIStravel, ".rds")) & !overwrite) {
       ais_data <- readRDS(file = paste0(file_AIStravel, ".rds"))
-    }
-    else {
+    } else {
       ais_data <- AIStravel(ais_data = ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + max_time_diff + average_at + time_stop)) &
                                                   ais_data$timestamp <= (max(eff_d$timestamp_AIS_to_extract, na.rm = T) + t_gap + average_at + time_stop), ],
                             time_stop = time_stop,
@@ -263,30 +221,16 @@ AIStravel_interpolate_extract <- function(data,
   if (run_AISinterpolate_at) {
     cat("Interpolating MMSI positions for data timestamps\n")
 
-    # if (any(!is.na(spatial_limit))) {
-    #   if (st_crs(spatial_limit)$input != "EPSG:3035") {
-    #     spatial_limit <- spatial_limit %>%
-    #       st_transform(crs = crs_meters)
-    #   }
-    # }
-    # if (any(!is.na(land_sf_polygon))) {
-    #   if (st_crs(land_sf_polygon)$input != "EPSG:3035") {
-    #     land_sf_polygon <- land_sf_polygon %>%
-    #       st_transform(crs = crs_meters)
-    #   }
-    # }
-
-    if (load_existing_files & !overwrite & file.exists(file = paste0(file_AISinterlate_at, ".rds"))) {
-      ais_data <- readRDS(paste0(file_AISinterlate_at, ".rds"))
+    if (load_existing_files & !overwrite & file.exists(file = paste0(file_AISinterpolate_at, ".rds"))) {
+      ais_data <- readRDS(paste0(file_AISinterpolate_at, ".rds"))
     } else {
       ais_data <- AISinterpolate_at(ais_data = ais_data,
                                     crs_meters = crs_meters,
                                     mmsi_time_to_order = ifelse(run_AIStravel, F, mmsi_time_to_order),
                                     QUIET = QUIET,
                                     load_existing_files = load_existing_files,
-                                    file_AISinterlate_at = file_AISinterlate_at,
+                                    file_AISinterpolate_at = file_AISinterpolate_at,
                                     overwrite = overwrite,
-                                    # average_mmsi_at = average_mmsi_at,
                                     data = (eff_d %>%
                                               dplyr::select(timestamp, lon, lat, X, Y) %>%
                                               dplyr::distinct()),
@@ -298,22 +242,16 @@ AIStravel_interpolate_extract <- function(data,
                                     threshold_speed_to_correct = threshold_speed_to_correct,
                                     threshold_high_speed = threshold_high_speed,
                                     filter_station = filter_station,
-                                    # interpolate_station = interpolate_station,
                                     filter_high_speed = filter_high_speed,
-                                    # interpolate_high_speed = interpolate_high_speed,
-                                    save_AISinterlate_at = save_AISinterlate_at,
+                                    save_AISinterpolate_at = save_AISinterpolate_at,
                                     time_stop = time_stop,
                                     threshold_speed_to_correct_expr = threshold_speed_to_correct_expr,
-                                    # spatial_limit = spatial_limit,
-                                    # on_Land_analysis = on_Land_analysis,
-                                    # land_sf_polygon = land_sf_polygon,
-                                    # return_all = F,
                                     parallelize = parallelize,
                                     nb_cores = nb_cores,
                                     outfile = outfile)
 
-      if (save_AISinterlate_at & (!file.exists(paste0(file_AISinterlate_at, ".rds")) | overwrite)) {
-        saveRDS(ais_data, file = paste0(file_AISinterlate_at, ".rds"))
+      if (save_AISinterpolate_at & (!file.exists(paste0(file_AISinterpolate_at, ".rds")) | overwrite)) {
+        saveRDS(ais_data, file = paste0(file_AISinterpolate_at, ".rds"))
       }
     }
 
@@ -321,11 +259,7 @@ AIStravel_interpolate_extract <- function(data,
 
   }
 
-  # d_max <- (search_into_radius_m*1.5 + 2000) / (8*1e3)
-  ## for 1 deg of difference, maximum distance of 111 km on the planet, minimum distance of 9.7
-
   if (run_AISextract_perHour) {
-    # ais_data_ref <- ais_data
 
     ais_data <- ais_data[ais_data$timestamp >= (min(eff_d$timestamp_AIS_to_extract, na.rm = T) - (t_gap + average_at +
                                                                                                     average_mmsi_at/2)) &
@@ -334,99 +268,11 @@ AIStravel_interpolate_extract <- function(data,
                            ais_data$X >= (min(eff_d$X) - search_into_radius_m) & ais_data$X <= (max(eff_d$X) + search_into_radius_m) &
                            ais_data$Y >= (min(eff_d$Y) - search_into_radius_m) & ais_data$Y <= (max(eff_d$Y) + search_into_radius_m), ]
 
-    colnam <- colnames(ais_data)
-    if (any(colnam[!(colnam %in% c("timestamp", "lon", "lat", "mmsi"))] %in% c(colnames(eff_d)))) {
-      colnames(ais_data)[colnam %in% c(colnames(eff_d)) & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))] <- paste0("ais_", colnam[colnam %in% c(colnames(eff_d)) & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))])
-      cat("\n", paste0("'", paste(colnam[colnam %in% c(colnames(eff_d)[!(colnames(eff_d) %in% c("X", "Y"))]) & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "columns in AIS data renamed as", paste0("'", paste(colnames(ais_data)[colnam %in% c(colnames(eff_d)[!(colnames(eff_d) %in% c("X", "Y"))]) & !(colnam %in% c("timestamp", "lon", "lat", "mmsi"))], collapse = ", "), "'"), "\n")
-    }
-    rm(colnam)
-
-    if (any(colnames(eff_d) == "mmsi")) {
-      colnames(eff_d)[colnames(eff_d) == "mmsi"] <- "initial_mmsi"
-      cat("\nmmsi column in dataframe renamed as 'initial_mmsi'")
-    }
-
     tot <- unique(eff_d$dayhour)
 
     cat("\nExtracting MMSI positions for data locations\n")
 
-    if (!parallelize) {
-      if(!QUIET) {
-        pb <- txtProgressBar(min = 0, max = length(tot), style = 3)
-      }
-
-      daily_ais <- purrr::map_dfr(tot, function(h) {
-        if (!QUIET) {
-          setTxtProgressBar(pb, match(h, tot))
-        }
-
-        eff_h <- eff_d %>%
-          dplyr::filter(dayhour == h)
-
-        if (overwrite |
-            !(file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds")))) {
-
-          hourly_mmsi <- ais_data[ais_data$timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at - average_mmsi_at/2) &
-                                    ais_data$timestamp < (max(eff_h$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2) &
-                                    ais_data$ais_X >= (min(eff_h$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_h$X) + search_into_radius_m) &
-                                    ais_data$ais_Y >= (min(eff_h$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_h$Y) + search_into_radius_m), ] %>%
-            dplyr::rename(ais_lon = lon,
-                          ais_lat = lat)
-
-          ais_on_effort <- AISextract(data = eff_h,
-                                      crs_meters = crs_meters,
-                                      ais_data = hourly_mmsi,
-                                      search_into_radius_m = search_into_radius_m,
-                                      max_time_diff = 0,
-                                      duplicate_time = F,
-                                      t_gap = t_gap,
-                                      average_at = average_at,
-                                      accelerate = F
-          )
-
-          # ais_on_effort <- ais_on_effort %>%
-          #   dplyr::mutate(inside_daily_AIS_time_range = ifelse(timestamp >= (min(ais_data_ref$timestamp, na.rm = T) - t_gap - average_at) & timestamp <= (max(ais_data_ref$timestamp, na.rm = T) + t_gap + average_at),
-          #                                                      T, F))
-
-          ais_on_effort <- ais_on_effort %>%
-            dplyr::mutate(timestamp = timestamp_ofEffort,
-                          diffTime_AIS_effort = ais_timestamp - timestamp,
-                          diffTime_AIS_extraction_effort = timestamp_AIS_to_extract - timestamp) %>%
-            dplyr::select(!c("timestamp_ofEffort", "dayhour"))
-
-          if (save_AISextract_perHour) {
-            saveRDS(ais_on_effort,
-                    file = paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            cat("\nFILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "SAVED\n")
-          }
-
-          rm(eff_h)
-          rm(hourly_mmsi)
-
-          if (return_merged_all_extracted) {
-            return(ais_on_effort)
-          } else {
-            return(NULL)
-          }
-
-        } else {
-
-          if (return_merged_all_extracted &
-              file.exists(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))) {
-
-            cat("\nLOAD FILE", paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"), "\n")
-
-            ais_on_effort <- readRDS(paste0(file_AISextract_perHour, "_hour_", paste(unique(eff_h$hour_AIS_to_extract), collapse = "-"), ".rds"))
-            return(ais_on_effort)
-          } else {
-            return(NULL)
-          }
-        }
-
-      })
-
-    }
-    else {
+    {
       cl <- makeCluster(nb_cores, outfile = outfile)
       registerDoParallel(cl)
 
@@ -438,7 +284,6 @@ AIStravel_interpolate_extract <- function(data,
                            .packages = c("dplyr","tidyverse", "lubridate", "AISanalyze", "purrr", "stringr")
       ) %dopar% {
         if (!QUIET) {
-          # setTxtProgressBar(pb, match(h, tot))
           cat(match(h, tot), "/", length(tot), "\n")
         }
 
@@ -451,9 +296,7 @@ AIStravel_interpolate_extract <- function(data,
           hourly_mmsi <- ais_data[ais_data$timestamp > (min(eff_h$timestamp, na.rm = T) - t_gap - average_at - average_mmsi_at/2) &
                                     ais_data$timestamp < (max(eff_h$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2) &
                                     ais_data$ais_X >= (min(eff_h$X) - search_into_radius_m) & ais_data$ais_X <= (max(eff_h$X) + search_into_radius_m) &
-                                    ais_data$ais_Y >= (min(eff_h$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_h$Y) + search_into_radius_m), ] %>%
-          dplyr::rename(ais_lon = lon,
-                        ais_lat = lat)
+                                    ais_data$ais_Y >= (min(eff_h$Y) - search_into_radius_m) & ais_data$ais_Y <= (max(eff_h$Y) + search_into_radius_m), ]
 
           ais_on_effort <- AISextract(data = eff_h,
                                       crs_meters = crs_meters,
@@ -466,13 +309,8 @@ AIStravel_interpolate_extract <- function(data,
                                       accelerate = F
           )
 
-          # ais_on_effort <- ais_on_effort %>%
-          #   dplyr::mutate(inside_daily_AIS_time_range = ifelse(timestamp >= (min(ais_data_ref$timestamp, na.rm = T) - t_gap - average_at - average_mmsi_at/2) & timestamp <= (max(ais_data_ref$timestamp, na.rm = T) + t_gap + average_at + average_mmsi_at/2),
-          #                                                      T, F))
-
           ais_on_effort <- ais_on_effort %>%
             dplyr::mutate(timestamp = timestamp_ofEffort,
-                          diffTime_AIS_effort = ais_timestamp - timestamp,
                           diffTime_AIS_extraction_effort = timestamp_AIS_to_extract - timestamp) %>%
             dplyr::select(!c("timestamp_ofEffort", "dayhour"))
 
@@ -512,15 +350,12 @@ AIStravel_interpolate_extract <- function(data,
       daily_ais <- purrr::map_dfr(daily_ais, function(d) {return(d)})
     }
 
-    # rm(ais_data_ref)
   } else {
     daily_ais <- ais_data
   }
 
-  # rm(d_max)
   rm(ais_data)
   rm(eff_d)
-  # rm(dates_ais)
 
   gc()
   cat("\n                                DONE                                  \n")

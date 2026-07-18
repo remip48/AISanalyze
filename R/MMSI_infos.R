@@ -84,7 +84,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_lengths_weighted = sum(n[!is.na(as.numeric(length))]),
                      all_lengths = paste(sort(unique(na.omit(as.numeric(length)))), collapse = ", "),
                      n_length = length(unique(na.omit(as.numeric(length)))),
-                     # all_dates_length = paste(unique(date[!is.na(as.numeric(length))]), collapse = ", "),
                      length = all_lengths,
                      npoint_length = npoint_all_lengths,
                      npoint_length_weighted = npoint_all_lengths_weighted) %>%
@@ -99,18 +98,16 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, length) %>%
       dplyr::summarise(n_l = sum(n),
                        n_li = sum(real_n)
-                       # dates = paste(unique(date[!is.na(as.numeric(length))]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(length = length[which.max(n_l)],
-                       # dates_length = paste(unique(date[which.max(n_l)]), collapse = ", "),
                        npoint_length = n_li[which.max(n_l)],
                        npoint_length_weighted = max(n_l)) %>%
       ungroup()
 
     to_corr <- to_corr %>%
-      dplyr::select(-c(length, npoint_length, npoint_length_weighted)) %>% # dates_length
+      dplyr::select(-c(length, npoint_length, npoint_length_weighted)) %>%
       left_join(uni_length, by = "mmsi") %>%
       mutate(length = as.numeric(length),
              npoint_length = as.numeric(npoint_length),
@@ -140,7 +137,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_type_weighted = sum(n[!is.na(shiptype)]),
                      all_types = paste(sort(unique(na.omit(shiptype))), collapse = ", "),
                      n_type = length(unique(na.omit(shiptype))),
-                     # all_dates_type = paste(unique(date[!is.na(shiptype)]), collapse = ", "),
                      type = all_types,
                      npoint_type = npoint_all_type,
                      npoint_type_weighted = npoint_all_type_weighted) %>% #,
@@ -157,12 +153,10 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, shiptype) %>%
       dplyr::summarise(n_t = sum(n),
                        n_ti = sum(real_n)
-                       # date = paste(unique(date[!is.na(shiptype)]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(type = shiptype[which.max(n_t)],
-                       # dates_type = paste(unique(date[which.max(n_t)]), collapse = ", "),
                        npoint_type = n_ti[which.max(n_t)],
                        npoint_type_weighted = max(n_t)) %>%
       ungroup()
@@ -184,7 +178,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_draughts_weighted = sum(n[!is.na(as.numeric(draught))]),
                      all_draughts = paste(sort(unique(na.omit(as.numeric(draught)))), collapse = ", "),
                      n_draught = length(unique(na.omit(as.numeric(draught)))),
-                     # all_dates_draught = paste(unique(date[!is.na(as.numeric(draught))]), collapse = ", "),
                      draught = all_draughts,
                      npoint_draught = npoint_all_draughts,
                      npoint_draught_weighted = npoint_all_draughts_weighted) %>%
@@ -199,18 +192,16 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, draught) %>%
       dplyr::summarise(n_l = sum(n),
                        n_li = sum(real_n)
-                       # dates = paste(unique(date[!is.na(as.numeric(draught))]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(draught = draught[which.max(n_l)],
-                       # dates_draught = paste(unique(date[which.max(n_l)]), collapse = ", "),
                        npoint_draught = n_li[which.max(n_l)],
                        npoint_draught_weighted = max(n_l)) %>%
       ungroup()
 
     to_corr <- to_corr %>%
-      dplyr::select(-c(draught, npoint_draught, npoint_draught_weighted)) %>% # dates_draught
+      dplyr::select(-c(draught, npoint_draught, npoint_draught_weighted)) %>%
       left_join(uni_draught, by = "mmsi") %>%
       mutate(draught = as.numeric(draught),
              npoint_draught = as.numeric(npoint_draught),
@@ -239,7 +230,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_widths_weighted = sum(n[!is.na(as.numeric(width))]),
                      all_widths = paste(sort(unique(na.omit(as.numeric(width)))), collapse = ", "),
                      n_width = length(unique(na.omit(as.numeric(width)))),
-                     # all_dates_width = paste(unique(date[!is.na(as.numeric(width))]), collapse = ", "),
                      width = all_widths,
                      npoint_width = npoint_all_widths,
                      npoint_width_weighted = npoint_all_widths_weighted) %>%
@@ -254,18 +244,16 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, width) %>%
       dplyr::summarise(n_l = sum(n),
                        n_li = sum(real_n)
-                       # dates = paste(unique(date[!is.na(as.numeric(width))]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(width = width[which.max(n_l)],
-                       # dates_width = paste(unique(date[which.max(n_l)]), collapse = ", "),
                        npoint_width = n_li[which.max(n_l)],
                        npoint_width_weighted = max(n_l)) %>%
       ungroup()
 
     to_corr <- to_corr %>%
-      dplyr::select(-c(width, npoint_width, npoint_width_weighted)) %>% # dates_width
+      dplyr::select(-c(width, npoint_width, npoint_width_weighted)) %>%
       left_join(uni_width, by = "mmsi") %>%
       mutate(width = as.numeric(width),
              npoint_width = as.numeric(npoint_width),
@@ -295,7 +283,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_name_weighted = sum(n[!is.na(shipname)]),
                      all_names = paste(sort(unique(na.omit(shipname))), collapse = ", "),
                      n_name = length(unique(na.omit(shipname))),
-                     # all_dates_name = paste(unique(date[!is.na(shipname)]), collapse = ", "),
                      name = all_names,
                      npoint_name = npoint_all_name,
                      npoint_name_weighted = npoint_all_name_weighted) %>% #,
@@ -312,12 +299,10 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, shipname) %>%
       dplyr::summarise(n_t = sum(n),
                        n_ti = sum(real_n)
-                       # date = paste(unique(date[!is.na(shipname)]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(name = shipname[which.max(n_t)],
-                       # dates_name = paste(unique(date[which.max(n_t)]), collapse = ", "),
                        npoint_name = n_ti[which.max(n_t)],
                        npoint_name_weighted = max(n_t)) %>%
       ungroup()
@@ -339,7 +324,6 @@ MMSI_infos <- function(ais_data,
                      npoint_all_imos_weighted = sum(n[!is.na(as.numeric(imo))]),
                      all_imos = paste(sort(unique(na.omit(as.numeric(imo)))), collapse = ", "),
                      n_imo = length(unique(na.omit(as.numeric(imo)))),
-                     # all_dates_imo = paste(unique(date[!is.na(as.numeric(imo))]), collapse = ", "),
                      imo = all_imos,
                      npoint_imo = npoint_all_imos,
                      npoint_imo_weighted = npoint_all_imos_weighted) %>%
@@ -354,12 +338,10 @@ MMSI_infos <- function(ais_data,
       group_by(mmsi, imo) %>%
       dplyr::summarise(n_l = sum(n),
                        n_li = sum(real_n)
-                       # dates = paste(unique(date[!is.na(as.numeric(imo))]), collapse = ", ")
       ) %>%
       ungroup() %>%
       group_by(mmsi) %>%
       dplyr::summarise(imo = imo[which.max(n_l)],
-                       # dates_imo = paste(unique(date[which.max(n_l)]), collapse = ", "),
                        npoint_imo = n_li[which.max(n_l)],
                        npoint_imo_weighted = max(n_l)) %>%
       ungroup()

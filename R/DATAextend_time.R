@@ -29,38 +29,18 @@
 #'                 t_gap = 30,
 #'                 accelerate = T,
 #'                 average_at = 30)}
-#' @export
 
 DATAextend_time <- function(data,
                             max_time_diff = 1 * 60 * 60,
                             t_gap = 30,
-                            accelerate = T,
+                            accelerate = TRUE,
                             average_at = 30) {
 
-  if (!is.numeric(data$timestamp)) {
-    stop("timestamp must be numeric in data")
-  }
-  if (!is.numeric(max_time_diff)) {
-    stop("max_time_diff must be numeric")
-  }
-  if (!is.numeric(t_gap)) {
-    stop("t_gap must be numeric")
-  }
-  if (!is.logical(accelerate)) {
-    stop("accelerate must be numeric")
-  }
-  if (!is.numeric(average_at)) {
-    stop("average_at must be numeric")
-  }
-
-  # pack <- c("tidyverse", "dplyr", "sf", "lubridate", "units", "purrr", "stats", "utils", "stringr", "doParallel")
-  # inst <- which(!(pack %in% installed.packages()[,1]))
-  #
-  # if (length(inst) > 0) {
-  #   lapply(pack[inst], function(p) {install.packages(p)})
-  # }
-  #
-  # lapply(pack, library, character.only = TRUE)
+  assertthat::assert_that(is.numeric(data$timestamp))
+  assertthat::assert_that(is.numeric(max_time_diff))
+  assertthat::assert_that(is.numeric(t_gap))
+  assertthat::assert_that(is.logical(accelerate))
+  assertthat::assert_that(is.numeric(average_at))
 
   if (accelerate) {
     list_times <- seq(min(data$timestamp, na.rm = T) - (max_time_diff + t_gap), max(data$timestamp, na.rm = T) + t_gap, by = average_at)
