@@ -16,23 +16,23 @@
 add_coordinates_meters <- function(data, crs_meters = 3035, coordinates_to_write = c("X", "Y")) {
   if (!(all(coordinates_to_write %in% colnames(data)))) {
     if (!("sf" %in% class(data))) {
-      data <- data |>
+      data <- data %>%
         dplyr::mutate(tlon = lon,
-                      tlat = lat) |>
+                      tlat = lat) %>%
         sf::st_as_sf(coords = c("tlon", "tlat"), crs = 4326)
     }
 
-    data <- data |>
+    data <- data %>%
       sf::st_transform(crs = crs_meters)
 
-    coords_eff <- data |>
-      sf::st_coordinates() |>
+    coords_eff <- data %>%
+      sf::st_coordinates() %>%
       as.data.frame()
 
-    data <- data |>
+    data <- data %>%
       dplyr::mutate(X = coords_eff[,1],
-                    Y = coords_eff[,2]) |>
-      sf::st_cast() |>
+                    Y = coords_eff[,2]) %>%
+      sf::st_cast() %>%
       dplyr::filter(!is.na(X) & !is.na(Y) & !is.nan(X) & !is.nan(Y))
 
     colnames(data)[colnames(data) == "X"] <- coordinates_to_write[1]

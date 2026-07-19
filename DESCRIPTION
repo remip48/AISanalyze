@@ -6,9 +6,8 @@ Authors@R: c(
   )
 Description: Correct, interpolate, extract and analyze AIS data.
 License: MIT + file LICENSE
-Depends: 
+Depends:
     R(>= 4.2.0),
-    tidyverse (>= 2.0.0),
     dplyr (>= 1.1.2),
     sf (>= 1.0-9),
     lubridate (>= 1.9.2),
@@ -18,7 +17,8 @@ Depends:
     utils (>= 4.2.1),
     stringr (>= 1.5.0),
     doParallel (>= 1.0.17),
-    assertthat (>= 0.2.1)
+    assertthat (>= 0.2.1),
+    magrittr (>= 2.0.5)
 URL: https://github.com/remip48/AISanalyze
 BugReports: https://github.com/remip48/AISanalyze/issues
 Encoding: UTF-8

@@ -44,7 +44,7 @@ between consecutive AIS positions for each vessel (\code{mmsi}).
 library(AISanalyze)
 data("ais")
 
-ais <- ais |>
+ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime)))
 
 out <- AIStravel(ais_data = ais,

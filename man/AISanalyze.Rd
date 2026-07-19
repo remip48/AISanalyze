@@ -6,17 +6,33 @@
 \alias{AISanalyze}
 \title{AISanalyze}
 \description{
-Tools for analysing AIS data.
+Tools for analysing, cleaning, interpolating and extracting Automatic
+Identification System (AIS) vessel data.
 }
 \details{
-Main functions:
+\subsection{Main functions:}{
+
+\strong{Travel metrics}
 \itemize{
 \item \code{\link[=AIStravel]{AIStravel()}}
 \item \code{\link[=AIScorrect_speed]{AIScorrect_speed()}}
+}
+
+\strong{Vessel characteristics}
+\itemize{
 \item \code{\link[=AISidentify_stations_aircraft]{AISidentify_stations_aircraft()}}
-\item \code{\link[=AISinterpolate]{AISinterpolate()}}
-\item \code{\link[=AISextract]{AISextract()}}
 \item \code{\link[=AISinfos]{AISinfos()}}
+}
+
+\strong{Interpolation}
+\itemize{
+\item \code{\link[=AISinterpolate]{AISinterpolate()}}
+}
+
+\strong{Extraction}
+\itemize{
+\item \code{\link[=AISextract]{AISextract()}}
+}
 }
 }
 \seealso{
@@ -36,3 +52,4 @@ Authors:
 }
 
 }
+\keyword{internal}

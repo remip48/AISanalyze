@@ -27,7 +27,7 @@
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' ais <- ais |>
+#' ais <- ais %>%
 #'   mutate(timestamp = as.numeric(ymd_hms(datetime)))
 #'
 #' out <- AIStravel(ais_data = ais,
@@ -46,24 +46,24 @@ AIStravel <- function(ais_data,
   assertthat::assert_that(is.logical(return_sf))
   assertthat::assert_that(is.logical(return_meter_coords))
 
-  ais_data <- ais_data |>
+  ais_data <- ais_data %>%
     dplyr::arrange(mmsi, timestamp)
 
-  ais_data <- ais_data[!duplicated(paste0(ais_data$mmsi, ais_data$timestamp)), ] |>
+  ais_data <- ais_data[!duplicated(paste0(ais_data$mmsi, ais_data$timestamp)), ] %>%
     add_coordinates_meters(., crs_meters = crs_meters)
 
   if (!return_sf) {
-    ais_data <- ais_data |>
+    ais_data <- ais_data %>%
       sf::st_drop_geometry()
   }
 
   mmsi_prev <- ais_data$mmsi[-nrow(ais_data)]
 
-  ais_data <- ais_data |>
+  ais_data <- ais_data %>%
     dplyr::mutate(
       tmmsi = c("initial", mmsi_prev))
 
-  ais_data <- ais_data |>
+  ais_data <- ais_data %>%
     dplyr::mutate(time_travelled = timestamp - c(dplyr::first(timestamp), timestamp[-n()]),
                   time_travelled = ifelse(time_travelled > 5*60*60, 0,
                                           ifelse(mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)),
@@ -74,11 +74,11 @@ AIStravel <- function(ais_data,
                                      ifelse(time_travelled == 0,
                                             0,
                                             c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))))
-    ) |>
+    ) %>%
     dplyr::select(-c("tmmsi"))
 
   if (!return_meter_coords) {
-    ais_data <- ais_data |>
+    ais_data <- ais_data %>%
       dplyr::select(-c("X", "Y"))
   }
 

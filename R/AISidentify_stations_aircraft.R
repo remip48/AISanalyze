@@ -20,8 +20,8 @@
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' ais <- ais |>
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
 #'   AIStravel(.)
 #'
 #' out <- AISidentify_stations_aircraft(ais_data = ais)}
@@ -39,26 +39,26 @@ AISidentify_stations_aircraft <- function(ais_data,
 
   init_cols <- colnames(ais_data)
 
-  ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) |>
+  ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
     sf::st_drop_geometry()
 
   if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
     stop("Please run AIStravel() before AISidentify_stations_aircraft()")
   }
 
-  ais_data <- ais_data |>
-    dplyr::group_by(mmsi) |>
+  ais_data <- ais_data %>%
+    dplyr::group_by(mmsi) %>%
     dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = T) <= 1, T, F),
                   high_speed = ifelse(stats::quantile(speed_kmh, 1 - 0.97, na.rm = T) >= 110, T, F),
                   n_point_mmsi_initial_data = n(),
-                  id_mmsi_point_initial = 1:n()) |>
+                  id_mmsi_point_initial = 1:n()) %>%
     ungroup()
 
   filt <- unique(c(init_cols, "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed", "n_point_mmsi_initial_data",
                    "id_mmsi_point_initial"))
   filt <- filt[filt %in% colnames(ais_data)]
 
-  ais_data <- ais_data |>
+  ais_data <- ais_data %>%
     dplyr::select(dplyr::all_of(filt))
 
   return(ais_data)

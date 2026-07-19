@@ -32,8 +32,8 @@ Identify AIS base stations and high-speed craft
 library(AISanalyze)
 data("ais")
 
-ais <- ais |>
-  mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
   AIStravel(.)
 
 out <- AISidentify_stations_aircraft(ais_data = ais)}

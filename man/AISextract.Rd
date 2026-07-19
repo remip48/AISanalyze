@@ -53,14 +53,14 @@ library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-point_to_extract <- point_to_extract |>
+point_to_extract <- point_to_extract \%>\%
   mutate(timestamp = as.numeric(ymd_hm(datetime)))
 
-ais <- ais |>
-  mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
+ais <- ais \%>\%
+  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
   AIStravel(ais_data = .,
             return_sf = F,
-            return_meter_coords = F) |>
+            return_meter_coords = F) \%>\%
   AISinterpolate(ais_data = .,
                type_interpolation = "exact_timestamp",
                exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,

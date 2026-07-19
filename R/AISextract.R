@@ -30,14 +30,14 @@
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' point_to_extract <- point_to_extract |>
+#' point_to_extract <- point_to_extract %>%
 #'   mutate(timestamp = as.numeric(ymd_hm(datetime)))
 #'
-#' ais <- ais |>
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
+#' ais <- ais %>%
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
 #'   AIStravel(ais_data = .,
 #'             return_sf = F,
-#'             return_meter_coords = F) |>
+#'             return_meter_coords = F) %>%
 #'   AISinterpolate(ais_data = .,
 #'                type_interpolation = "exact_timestamp",
 #'                exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,
@@ -101,7 +101,7 @@ AISextract <- function(data,
 
   ais_data <- add_coordinates_meters(ais_data,
                                      crs_meters = crs_meters,
-                                     coordinates_to_write = c("ais_X", "ais_Y")) |>
+                                     coordinates_to_write = c("ais_X", "ais_Y")) %>%
     sf::st_drop_geometry()
 
   ais_data <- rename_colums_ais(ais_data,
@@ -109,14 +109,14 @@ AISextract <- function(data,
 
   data <- rename_columns_data(data)
 
-  data <- add_coordinates_meters(data, crs_meters = crs_meters) |>
+  data <- add_coordinates_meters(data, crs_meters = crs_meters) %>%
     sf::st_drop_geometry()
 
-  data <- data |>
+  data <- data %>%
     dplyr::mutate(idd_effort = 1:n())
 
-  ais_data <- ais_data |>
-    as.data.frame() |>
+  ais_data <- ais_data %>%
+    as.data.frame() %>%
     dplyr::rename(ais_timestamp = timestamp)
 
   time_ais <- purrr::map_dfr(unique(data$timestamp), function(dt) {
@@ -132,12 +132,12 @@ AISextract <- function(data,
 
     if (nrow(mmsi_ref) >= 1 & !return_all_vessel_locations) {
 
-      mmsi_refi <- mmsi_ref |>
+      mmsi_refi <- mmsi_ref %>%
         dplyr::mutate(idd_ais = 1:n())
 
-      mmsi_ref <- mmsi_refi |>
-        as.data.frame() |>
-        dplyr::group_by(mmsi) |>
+      mmsi_ref <- mmsi_refi %>%
+        as.data.frame() %>%
+        dplyr::group_by(mmsi) %>%
         dplyr::reframe(point = which.min(abs(ais_timestamp - dt)),
                        idd_ais = idd_ais[point],
                        ais_X = ais_X[point],
@@ -148,18 +148,18 @@ AISextract <- function(data,
     }
     if (nrow(mmsi_ref) >= 1) {
 
-      out <- eff_dt |>
-        as.data.frame() |>
-        dplyr::group_by(idd_effort) |>
-        dplyr::reframe(mmsi_ref |>
-                         dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2))) |>
-        dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m) |>
+      out <- eff_dt %>%
+        as.data.frame() %>%
+        dplyr::group_by(idd_effort) %>%
+        dplyr::reframe(mmsi_ref %>%
+                         dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2))) %>%
+        dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m) %>%
         dplyr::left_join(eff_dt, by = "idd_effort")
 
       if (!return_all_vessel_locations) {
-        out <- out |>
-          dplyr::left_join(mmsi_refi |>
-                      dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") |>
+        out <- out %>%
+          dplyr::left_join(mmsi_refi %>%
+                      dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") %>%
           dplyr::select(-c(idd_ais, point))
       }
 
@@ -176,7 +176,7 @@ AISextract <- function(data,
 
   if (!("ais_timestamp" %in% colnames(time_ais))) {
     cat("\nNo AIS data extracted at all for the input data\n")
-    time_ais <- time_ais |>
+    time_ais <- time_ais %>%
       dplyr::mutate(mmsi = NA,
                     ais_timestamp = NA)
   }
@@ -190,13 +190,13 @@ AISextract <- function(data,
 
   gc()
 
-  time_ais <- time_ais |>
-    dplyr::select(!c("idd_effort", "ais_X", "ais_Y")) |>
+  time_ais <- time_ais %>%
+    dplyr::select(!c("idd_effort", "ais_X", "ais_Y")) %>%
     dplyr::select(dplyr::all_of(colnames(data)[colnames(data) %in% colnames(.)]),
                   dplyr::all_of(colnames(.)[!(colnames(.) %in% c(colnames(data),
                                                           colnames(ais_data)))]),
                   dplyr::all_of(colnames(ais_data)[colnames(ais_data) %in% colnames(.)])
-                  ) |>
+                  ) %>%
     dplyr::arrange(timestamp, ais_timestamp)
 
   rm(data)
