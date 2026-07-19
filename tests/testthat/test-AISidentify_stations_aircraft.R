@@ -17,11 +17,7 @@ test_that("AISidentify_stations_aircraft", {
                                               distance_travelled))
 
   out <- AISidentify_stations_aircraft(ais_data,
-                                       crs_meters = 3035,
-                                       quantile_station = 0.975,
-                                       threshold_distance_station = 1,
-                                       quantile_high_speed = 0.97,
-                                       threshold_high_speed = 110)
+                                       crs_meters = 3035)
 
   expect_all_true(out$high_speed[out$mmsi == 1])
   expect_all_true(out$station[out$mmsi == 2])

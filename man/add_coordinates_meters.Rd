@@ -25,8 +25,9 @@ Add spatial coordinates in the crs in meters
 }
 \examples{
 \dontrun{
+library(AISanalyze)
 data("ais")
 
-ais <- add_coordinates_meters(ais, crs_meters = 3035, coordinates_to_write = c("X", "Y"))}
+out <- add_coordinates_meters(ais, crs_meters = 3035, coordinates_to_write = c("X", "Y"))}
 
 }

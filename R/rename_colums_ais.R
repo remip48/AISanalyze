@@ -1,11 +1,11 @@
-#' Rename columns of AIS data to avoid mismatch with data (excepted MMSI and timestamp)
+#' Check column names of AIS data
+#'
+#' Check if any columns of AIS data are in conflict with those of `data`, and rename them if so to avoid conflicts (excepted for `mmsi` and `timestamp`).
 #'
 #' @param ais_data AIS data
-#' @param data data with timestamp and locations where to extract
+#' @param data data with target timestamps and locations to extract
 #'
-#' @return
-#'
-#' @examples
+#' @return the same AIS dataset, with columns that are renamed if conflict were detected
 #'
 rename_colums_ais <- function(ais_data, data) {
   colnam <- colnames(ais_data)

@@ -1,76 +1,71 @@
-#' Estimate distance, time and speed (km/h) travelled by vessels
+#' Calculate vessel travel metrics
 #'
-#' Calculate the distance (meters), time (seconds) and speed (km/h) travelled by each MMSI (vessel) between each AIS reception.
+#' Calculates the distance travelled (m), travel time (s), and speed (km/h)
+#' between consecutive AIS positions for each vessel (`mmsi`).
 #'
-#' @param ais_data AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.
-#' @param crs_meters projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).
-#' @param time_stop number of seconds before and after the AIS signal were the vessel track is not calculated/interpolated anymore if there is not another AIS signal meanwhile. Filter also AIS data too long before and after that are not of interest, to accelerate a lot the process.
-#' @param mmsi_time_to_order if MMSI and timestamps are not yet arranged as dplyr::arrange(AIS data, mmsi, timestamp), must be TRUE. We recommand to put it as TRUE by precaution. Important to prevent large errors.
-#' @param return_sf if TRUE, return an sf object. If FALSE a data frame with coordinates as column variable.
-#' @param return_3035_coords if TRUE, return the ETRS3035 coordinates as X and Y columns in the output.
+#' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
+#'   `mmsi`. `timestamp` must be Unix time (seconds since 1970-01-01), while
+#'   `lon` and `lat` must be numeric. Another vessel identifier may be used if
+#'   the column is named `mmsi`.
+#' @param crs_meters CRS (in metres) used to calculate distances. Defaults to
+#'   EPSG:3035.
+#' @param return_sf Logical. If `TRUE`, returns an `sf` object; otherwise,
+#'   returns a data frame.
+#' @param return_meter_coords Logical. If `TRUE`, adds
+#'   coordinates (`X` and `Y`) in `crs_meters` to the output.
 #'
-#' @return return the AIS data with the distance, time travelled and the speed of the vessels since the last AIS reception. Contains the columns:
+#' @return The input AIS data with the following additional columns:
 #' \itemize{
-#' \item time_travelled: number of seconds since the last reception of an AIS signal (0 if first reception).
-#' \item distance_travelled:  distance travelled (meters) since the last reception of an AIS signal (0 if first reception).
-#' \item speed_kmh: speed (km/h) of the vessels since the last reception of an AIS signal.
-#' \item X and Y columns (ETRS3035 coordinates) if return_3035_coords = T.
+#' \item `time_travelled`: Travel time (s) since the previous AIS position.
+#' \item `distance_travelled`: Distance travelled (m) since the previous AIS position.
+#' \item `speed_kmh`: Vessel speed (km/h).
+#' \item `X`, `Y`: coordinates in `crs_meters` when `return_meter_coords = TRUE`.
 #' }
 #'
 #' @examples
 #' \dontrun{
+#' library(AISanalyze)
 #' data("ais")
 #'
-#' library(dplyr)
-#' library(lubridate)
-#' ais <- ais %>%
+#' ais <- ais |>
 #'   mutate(timestamp = as.numeric(ymd_hms(datetime)))
 #'
-#' AIStravel(ais_data = ais,
-#'           time_stop = 5*60*60,
-#'           mmsi_time_to_order = T,
+#' out <- AIStravel(ais_data = ais,
 #'           return_sf = F,
-#'           return_3035_coords = F)}
+#'           return_meter_coords = F)}
 #' @export
 
 AIStravel <- function(ais_data,
                       crs_meters = 3035,
-                      time_stop = 5*60*60,
-                      mmsi_time_to_order = TRUE,
                       return_sf = FALSE,
-                      return_3035_coords = FALSE
+                      return_meter_coords = FALSE
 ) {
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that(is.numeric(ais_data$lon))
   assertthat::assert_that(is.numeric(ais_data$lat))
-  assertthat::assert_that(is.numeric(time_stop))
   assertthat::assert_that(is.logical(return_sf))
-  assertthat::assert_that(is.logical(return_3035_coords))
+  assertthat::assert_that(is.logical(return_meter_coords))
 
-  if (mmsi_time_to_order) {
-    ais_data <- ais_data %>%
-      dplyr::arrange(mmsi, timestamp)
-  }
+  ais_data <- ais_data |>
+    dplyr::arrange(mmsi, timestamp)
 
-  ais_data <- ais_data[!duplicated(paste0(ais_data$mmsi, ais_data$timestamp)), ] %>%
+  ais_data <- ais_data[!duplicated(paste0(ais_data$mmsi, ais_data$timestamp)), ] |>
     add_coordinates_meters(., crs_meters = crs_meters)
 
   if (!return_sf) {
-    ais_data <- ais_data %>%
+    ais_data <- ais_data |>
       sf::st_drop_geometry()
   }
 
-  ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
-
   mmsi_prev <- ais_data$mmsi[-nrow(ais_data)]
 
-  ais_data <- ais_data %>%
+  ais_data <- ais_data |>
     dplyr::mutate(
       tmmsi = c("initial", mmsi_prev))
 
-  ais_data <- ais_data %>%
-    dplyr::mutate(time_travelled = timestamp - c(first(timestamp), timestamp[-n()]),
-                  time_travelled = ifelse(time_travelled > time_stop, 0,
+  ais_data <- ais_data |>
+    dplyr::mutate(time_travelled = timestamp - c(dplyr::first(timestamp), timestamp[-n()]),
+                  time_travelled = ifelse(time_travelled > 5*60*60, 0,
                                           ifelse(mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)),
                                                  0,
                                                  time_travelled)),
@@ -79,11 +74,11 @@ AIStravel <- function(ais_data,
                                      ifelse(time_travelled == 0,
                                             0,
                                             c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))))
-    ) %>%
+    ) |>
     dplyr::select(-c("tmmsi"))
 
-  if (!return_3035_coords) {
-    ais_data <- ais_data %>%
+  if (!return_meter_coords) {
+    ais_data <- ais_data |>
       dplyr::select(-c("X", "Y"))
   }
 

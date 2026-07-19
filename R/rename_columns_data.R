@@ -1,14 +1,15 @@
-#' Avoid columns in data with locations/timestamp to extract to be named as mmsi
+#' Check column names of data
 #'
-#' @param data
+#' Check if any column in `data` are called `mmsi`, and rename it if so to avoid conflict with AIS data.
 #'
-#' @return
+#' @param data data with target timestamps and locations to extract
 #'
-#' @examples
+#' @return the same dataset, with columns that are renamed if conflict were detected
+#'
 rename_columns_data <- function(data) {
   if (any(colnames(data) == "mmsi")) {
-    colnames(data)[colnames(data) == "mmsi"] <- "initial_mmsi"
-    cat("\nmmsi column in dataframe renamed as 'initial_mmsi'\n")
+    colnames(data)[colnames(data) == "mmsi"] <- "data_mmsi"
+    base::cat("\nmmsi column in dataframe renamed as 'data_mmsi'\n")
   }
 
   return(data)

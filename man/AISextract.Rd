@@ -2,90 +2,89 @@
 % Please edit documentation in R/AISextract.R
 \name{AISextract}
 \alias{AISextract}
-\title{Extract the AIS position for desired location and times}
+\title{Extract AIS positions around target locations and times}
 \usage{
 AISextract(
   data,
-  crs_meters = 3035,
   ais_data,
+  crs_meters = 3035,
+  return_all_vessel_locations = T,
   search_into_radius_m = 50000,
-  duplicate_time = FALSE,
-  max_time_diff = 0,
-  t_gap = 10 * 60,
-  accelerate = F,
-  average_at = 0
+  interval_time_before = 5 * 60,
+  interval_time_after = 5 * 60
 )
 }
 \arguments{
-\item{data}{Data of interest for the extraction of AIS. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude) & lat (latitude). timestamp, lon and lat must be numeric.}
+\item{data}{Data frame containing \code{timestamp}, \code{lon}, and \code{lat}.
+\code{timestamp} must be Unix time (seconds since 1970-01-01), while \code{lon}
+and \code{lat} must be numeric.}
 
-\item{crs_meters}{projection (crs) in 'meters' to use to calculate distance over the study area. Default to 3035 (ETRS89).}
+\item{ais_data}{AIS data frame containing \code{timestamp}, \code{lon}, \code{lat}, and
+\code{mmsi}. \code{timestamp}, \code{lon}, and \code{lat} must be numeric. Another vessel
+identifier may be used if the column is named \code{mmsi}.}
 
-\item{ais_data}{AIS data. Must contain a column: timestamp (number of seconds since January 1, 1970 (the Unix epoch): see https://r-lang.com/how-to-convert-date-to-numeric-format-in-r/ for transformation), and the columns lon (longitude), lat (latitude) and mmsi (Maritime mobile service identity). timestamp, lon and lat must be numeric. The mmsi column is the identifier for the vessels, the values can be replaced by the IMO or another identifier, but the name of the column must be mmsi.}
+\item{crs_meters}{CRS (metres) used to calculate distances. Defaults to
+EPSG:3035.}
 
-\item{search_into_radius_m}{radius (kilometer) where the MMSIs are extracted and returned.}
+\item{return_all_vessel_locations}{Logical. If \code{TRUE}, returns all vessel
+positions within the specified time window. Otherwise, returns only the
+closest position in time.}
 
-\item{duplicate_time}{if TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.}
+\item{search_into_radius_m}{Search radius (m).}
 
-\item{max_time_diff}{if duplicate_time = TRUE, extend (and duplicate) the data to past timestamps, to investigate the past presence of vessels at the data locations: extend the data timestamps up to "max_time_diff" number of seconds before the timestamps, by steps of "t_gap" number of seconds.}
+\item{interval_time_before}{Time window (s) before each \code{data$timestamp}.}
 
-\item{t_gap}{see "max_time_diff". Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction (otherwise other AIS data are filtered out).}
-
-\item{accelerate}{if TRUE, data timestamps are averaged at "average_at" seconds to decrease the number of data timestamp to process and  strongly decrease the computation time.}
-
-\item{average_at}{if accelerate = TRUE, the data timestamps are approximated to within to "average_at" number of seconds. This, to decrease the number of data timestamps to process. Necessary for large data timestamps to extract. Is also used as the number of seconds before and after the data timestamps where vessels are considered for extraction, in addition to "t_gap" parameter (otherwise other AIS data are filtered out).}
+\item{interval_time_after}{Time window (s) after each \code{data$timestamp}.}
 }
 \value{
-return the input data with the AIS extracted merged in the dataframe: each line of input data is duplicated by timestamp to extract (every "t_gap" number of seconds up to "max_time_diff" number of seconds). All these lines are duplicated for each MMSI present in the area at the moment of the extraction. If no AIS are present in the radius at this moment, the columns dedicated to AIS data are filled with NA, so that no input data and no timestamp to extract is lost.
-The output dataframe contains the columns of the input data, the columns of the AIS data (with "ais_" as prefix if the same column is already present in the input data), and the following columns:
-\itemize{
-\item distance_effort_ais_m: distance (meters) between the data location and the MMSI at this time (filled with NA if no MMSI).
-\item timestamp_AIS_to_extract: timestamp for the extraction of the AIS (approximated with "average_at" number of seconds if accelerate = TRUE).
-\item diffTime_AIS_extraction_effort: difference (in seconds) between the timestamp to extract (timestamp_AIS_to_extract) and the real data timestamp.
-\item datetime_AIS_to_extract: datetime of timestamp_AIS_to_extract.
-\item diffTime_AIS_effort: difference, in seconds, between the AIS data and the data timestamp: can be different from diffTime_AIS_extraction_effort due to the parameter "average_at" (that average the timestamp to extract).}
+\code{data} joined with matching AIS positions. Rows are duplicated when
+several vessel positions match a target location and time. If no vessel is
+found, AIS columns (including \code{mmsi}) are filled with \code{NA}. The output also
+includes \code{distance_vessel_to_location_m}, the distance (m) between the target
+location and each vessel position.
 }
 \description{
-Extract the AIS position around the locations and
-at the time of the data
+Returns either the vessel position closest in time to each target timestamp
+or all vessel positions within a specified time window.
 }
 \examples{
 \dontrun{
+library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-library(dplyr)
-library(lubridate)
-point_to_extract <- point_to_extract \%>\%
+point_to_extract <- point_to_extract |>
   mutate(timestamp = as.numeric(ymd_hm(datetime)))
-ais <- ais \%>\%
-  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
-  AIStravel(ais_data = .,
-            time_stop = 5*3600,
-            mmsi_time_to_order = T,
-            return_sf = F,
-            return_3035_coords = F) \%>\%
-  AISinterpolate_at(data = point_to_extract,
-                  ais_data = .,
-                  mmsi_time_to_order = T,
-                  load_existing_files = T,
-                  save_AISinterlate_at = T,
-                  overwrite = F,
-                  file_AISinterlate_at = "AISinterpolate_at",
-                  radius = 200000,
-                  time_stop = 5*3600,
-                  correct_speed = T,
-                  threshold_speed_to_correct = 100,
-                  filter_station = T,
-                  filter_high_speed = T,
-                  parallelize = F)
 
-AISextract(data = point_to_extract,
+ais <- ais |>
+  mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
+  AIStravel(ais_data = .,
+            return_sf = F,
+            return_meter_coords = F) |>
+  AISinterpolate(ais_data = .,
+               type_interpolation = "exact_timestamp",
+               exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,
+                                      locations_of_interest = data.frame(lon = point_to_extract$lon,
+                                                                         lat = point_to_extract$lat),
+                                      radius = 200000),
+               crs_meters = 3035,
+               parallelize = F)
+
+# to return all vessel positions around the target location/timestamps:
+out <- AISextract(data = point_to_extract,
            ais_data = ais,
+           crs_meters = 3035,
+           return_all_vessel_locations = T
            search_into_radius_m = 50000,
-           duplicate_time = F,
-           max_time_diff = 0,
-           t_gap = 10*60,
-           accelerate = F,
-           average_at = 0)}
+           interval_time_before = 5 * 60,
+           interval_time_after = 5 * 60)
+
+# to return the position of each vessel closest in time to the target timestamps (around the target location)
+out <- AISextract(data = point_to_extract,
+           ais_data = ais,
+           crs_meters = 3035,
+           return_all_vessel_locations = T
+           search_into_radius_m = 50000,
+           interval_time_before = 5 * 60,
+           interval_time_after = 5 * 60)}
 }

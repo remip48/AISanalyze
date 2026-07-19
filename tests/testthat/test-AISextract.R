@@ -9,30 +9,32 @@ test_that("AISextract", {
                          mmsi = 1) %>%
     AIStravel()
 
+  data <- data.frame(timestamp = 3360,
+                     lon = 5.05,
+                     lat = 5.05)
+
+  ## extract
+  out <- AISextract(data,
+                    crs_meters = 3035,
+                    ais_data,
+                    return_all_vessel_locations = T,
+                    search_into_radius_m = 500,
+                    interval_time_before = 5 * 60,
+                    interval_time_after = 5 * 60)
+
+  expect_all_true(out$ais_timestamp %in% c(3060, 3120, 3180))
+
+  ## extract
   data <- ais_data[50, ]
 
   out <- AISextract(data,
                     crs_meters = 3035,
                     ais_data,
+                    return_all_vessel_locations = F,
                     search_into_radius_m = 500,
-                    duplicate_time = F,
-                    max_time_diff = 10 * 60,
-                    t_gap = 10*60,
-                    accelerate = F,
-                    average_at = 0)
+                    interval_time_before = 5 * 60,
+                    interval_time_after = 5 * 60)
 
   expect_equal(out$ais_timestamp, ais_data$timestamp[50])
-
-  out <- AISextract(data,
-                    crs_meters = 3035,
-                    ais_data,
-                    search_into_radius_m = 5000,
-                    duplicate_time = T,
-                    max_time_diff = 10 * 60,
-                    t_gap = 1 * 60,
-                    accelerate = F,
-                    average_at = 0)
-
-  expect_all_true(out$ais_timestamp %in% seq(ais_data$timestamp[50], ais_data$timestamp[50] - 10*60, -60))
 
 })

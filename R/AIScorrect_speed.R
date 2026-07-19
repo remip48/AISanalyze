@@ -9,22 +9,12 @@
 #'   the column is named `mmsi`.
 #' @param crs_meters CRS (metres) used to calculate travelled distances.
 #'   Defaults to EPSG:3035.
-#' @param mmsi_time_to_order Logical. If `TRUE`, orders the data by `mmsi` and
-#'   `timestamp` before processing.
-#' @param correct_high_speed_craft Logical. Correct high-speed craft (typically
-#'   aircraft).
 #' @param threshold_speed_to_correct Speed threshold (km/h) above which
 #'   observations are corrected.
 #' @param threshold_speed_to_correct_expr Function returning a vessel-specific
 #'   speed threshold from `speed_kmh`.
-#' @param time_stop Maximum time gap (seconds) used for interpolation.
-#' @param quantile_station Distance quantile (0-1) used to identify stationary
-#'   MMSIs.
-#' @param threshold_distance_station Distance threshold (metres) for stationary
-#'   MMSIs.
-#' @param quantile_high_speed Speed quantile (0-1) used to identify high-speed
-#'   craft.
-#' @param threshold_high_speed Speed threshold (km/h) for high-speed craft.
+#' @param correct_high_speed_craft Logical. Correct high-speed craft (typically
+#'   aircraft).
 #'
 #' @return The input data with corrected travel metrics and the following
 #'   columns:
@@ -39,38 +29,28 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(AISanalyze)
 #' data("ais")
 #'
-#' library(dplyr)
-#' library(lubridate)
-#' ais <- ais %>%
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#' ais <- ais |>
+#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) |>
 #'   AIStravel(ais_data = .,
-#'             time_stop = 5*60*60,
-#'             mmsi_time_to_order = T,
 #'             return_sf = F,
-#'             return_3035_coords = F)
+#'             return_meter_coords = F)
 #'
-#' AIScorrect_speed(ais_data = ais,
-#'                  mmsi_time_to_order = T,
-#'                  threshold_speed_to_correct = 100,
-#'                  time_stop = 5*60*60)}
+#' out <- AIScorrect_speed(ais_data = ais,
+#'                  crs_meters = 3035,
+#'                  threshold_speed_to_correct = 100)}
 #' @export
 
 AIScorrect_speed <- function(ais_data,
                              crs_meters = 3035,
-                             mmsi_time_to_order = TRUE,
                              threshold_speed_to_correct = 100,
-                             threshold_speed_to_correct_expr = function(speed_kmh) {return((median(speed_kmh[speed_kmh > 1], na.rm = T) +
-                                                                                              sd(speed_kmh[speed_kmh > 1 & speed_kmh < quantile(speed_kmh[speed_kmh > 1], .75)]) * 5 + 15))},
-                             time_stop = 5*60*60,
-                             nb_iteration = 1,
-                             nb_iteration_successive_strange = 1,
-                             correct_high_speed_craft = FALSE,
-                             quantile_station = 0.975,
-                             threshold_distance_station = 1,
-                             quantile_high_speed = 0.97,
-                             threshold_high_speed = 110
+                             threshold_speed_to_correct_expr = function(speed_kmh) {
+                               return(
+                                 15 + stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 * sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh > 1], .75)])
+                                 )},
+                             correct_high_speed_craft = FALSE
 ) {
 
   assertthat::assert_that(is.numeric(ais_data$lon))
@@ -78,77 +58,56 @@ AIScorrect_speed <- function(ais_data,
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that(is.numeric(crs_meters))
   assertthat::assert_that(is.numeric(threshold_speed_to_correct))
-  assertthat::assert_that(is.numeric(time_stop))
+
+  if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
+    stop("Please run AIStravel() before AIScorrect_speed()")
+  }
+
+  if (!("station" %in% colnames(ais_data)) | !("high_speed" %in% colnames(ais_data))) {
+    stop("Please run AISidentify_stations_aircraft() before AIScorrect_speed()")
+  }
 
   init_cols <- colnames(ais_data)
 
   cat("In case of consecutive GPS points detected as an error for single vessels, only the first GPS point will be removed (and others will be kept) to avoid overcorrecting tracks with usual patterns, and as most GPS errors occur over one point only.\n")
 
-  ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
-    st_drop_geometry()
+  ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) |>
+    sf::st_drop_geometry()
 
-  ais_data <- ais_data[!is.na(ais_data$X) & !is.na(ais_data$Y) & !is.nan(ais_data$X) & !is.nan(ais_data$Y), ]
+  ais_data <- ais_data |>
+    dplyr::arrange(mmsi, timestamp)
 
-  if (mmsi_time_to_order) {
-    ais_data <- ais_data %>%
-      dplyr::arrange(mmsi, timestamp)
-
-    # if (!("id_ais_data_initial" %in% colnames(ais_data))) {
-    #   cat("Rewriting id_ais_data_initial\n")
-    # }
-
-    ais_data <- ais_data %>%
-      dplyr::mutate(id_ais_data_initial = 1:n())
-  }
-
-  if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
-    ais_data <- AIStravel(ais_data = ais_data,
-                          crs_meters = crs_meters,
-                          time_stop = time_stop,
-                          mmsi_time_to_order = F,
-                          return_sf = F,
-                          return_3035_coords = T)
-  }
+  ais_data <- ais_data |>
+    dplyr::mutate(id_ais_data_initial = 1:n())
 
   if (!("id_ais_data_initial" %in% colnames(ais_data))) {
-    ais_data <- ais_data %>%
+    ais_data <- ais_data |>
       dplyr::mutate(id_ais_data_initial = 1:n())
-  }
-
-  if (!("id_mmsi_point_initial" %in% colnames(ais_data)) | !("station" %in% colnames(ais_data)) | !("high_speed" %in% colnames(ais_data))) {
-    ais_data <- ais_data %>%
-      left_join(AISidentify_stations_aircraft(.,
-                                              crs_meters = crs_meters,
-                                              quantile_station = quantile_station,
-                                              threshold_distance_station = threshold_distance_station,
-                                              quantile_high_speed = quantile_high_speed,
-                                              threshold_high_speed = threshold_high_speed) %>%
-                  dplyr::select(mmsi, timestamp, station, high_speed, id_mmsi_point_initial), by = c("mmsi", "timestamp"))
   }
 
   if (correct_high_speed_craft) {
-    ais_data <- ais_data %>%
+    ais_data <- ais_data |>
       dplyr::mutate(real_high_speed = high_speed,
                     high_speed = F)
   }
 
-  ais_data <- ais_data %>%
-    group_by(mmsi) %>%
+  ais_data <- ais_data |>
+    dplyr::group_by(mmsi) |>
     dplyr::mutate(last_row = 1:n(),
-                  last_row = ifelse(last_row == n(), T, F)) %>%
-    ungroup()
+                  last_row = ifelse(last_row == n(), T, F)) |>
+    dplyr::ungroup()
 
-  strange_speed <- ais_data %>%
-    dplyr::group_by(mmsi) %>%
-    dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)) %>%
-    dplyr::ungroup() %>%
-    dplyr::filter(id_mmsi_point_initial != 1 & !last_row) %>%
+  strange_speed <- ais_data |>
+    dplyr::group_by(mmsi) |>
+    dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)) |>
+    dplyr::ungroup() |>
+    dplyr::filter(id_mmsi_point_initial != 1 & !last_row) |>
     dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                    threshold_speed_to_correct,
-                                                   threshold_strange_speed)) %>%
+                                                   threshold_strange_speed)) |>
     dplyr::filter((speed_kmh > threshold_speed_to_correct |
                      speed_kmh > threshold_strange_speed) &
-                    (time_travelled < time_stop &
+                    (time_travelled < 5*60*60 &
                        !(high_speed) &
                        !(station)))
 
@@ -177,41 +136,39 @@ AIScorrect_speed <- function(ais_data,
   if (length(strange_speed) > 0) {
     to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ]
 
-    to_correct <- to_correct %>%
-      dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) %>%
-      left_join(AIStravel(.,
+    to_correct <- to_correct |>
+      dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) |>
+      dplyr::left_join(AIStravel(.,
                           crs_meters = crs_meters,
-                          time_stop = time_stop,
-                          mmsi_time_to_order = FALSE,
                           return_sf = FALSE,
-                          return_3035_coords = FALSE) %>%
+                          return_meter_coords = FALSE) |>
                   dplyr::select(time_travelled, distance_travelled, speed_kmh, mmsi, timestamp),
                 by = c("mmsi", "timestamp"))
 
-    ais_data <- ais_data[!(ais_data$id_ais_data_initial %in% c(strange_speed, strange_speed + 1)), ] %>%
-      dplyr::mutate(speed_kmh_corrected = F) %>%
-      rbind(to_correct %>%
-              dplyr::filter(id_ais_data_initial %in% (strange_speed + 1)) %>%
-              dplyr::mutate(speed_kmh_corrected = T)) %>%
+    ais_data <- ais_data[!(ais_data$id_ais_data_initial %in% c(strange_speed, strange_speed + 1)), ] |>
+      dplyr::mutate(speed_kmh_corrected = F) |>
+      rbind(to_correct |>
+              dplyr::filter(id_ais_data_initial %in% (strange_speed + 1)) |>
+              dplyr::mutate(speed_kmh_corrected = T)) |>
       dplyr::arrange(id_ais_data_initial)
 
     rm(to_correct)
     rm(strange_speed)
 
-    ais_data <- ais_data %>%
+    ais_data <- ais_data |>
       dplyr::mutate(id_ais_data_initial = 1:n())
   }
 
   if ("real_high_speed" %in% colnames(ais_data)) {
-    ais_data <- ais_data %>%
-      dplyr::mutate(high_speed = real_high_speed) %>%
+    ais_data <- ais_data |>
+      dplyr::mutate(high_speed = real_high_speed) |>
       dplyr::select(-real_high_speed)
   }
 
   filt <- unique(c(init_cols, "speed_kmh_corrected", "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed"))
   filt <- filt[filt %in% colnames(ais_data)]
 
-  ais_data <- ais_data %>%
+  ais_data <- ais_data |>
     dplyr::select(dplyr::all_of(filt))
 
   return(ais_data)
