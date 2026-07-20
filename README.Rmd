@@ -64,12 +64,11 @@ library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-ais <- ais %>%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
+## define the Unix time (seconds since 1970-01-01)
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime)))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
 
-point_to_extract <- point_to_extract %>%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hm(datetime)))
-
+## process, correct, interpolate and extract AIS data:
 ais <- AIStravel(ais)
 
 ais_identified <- AISidentify_stations_aircraft(ais)
@@ -85,7 +84,7 @@ ais_extracted <- AISextract(ais_data = ais_interpolated,
                             return_all_vessel_locations = T,
                             search_into_radius_m = 50000)
 
-head(ais)
+head(ais_extracted)
 ```
 
 ## Citation
