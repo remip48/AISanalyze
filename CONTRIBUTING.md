@@ -1,27 +1,34 @@
-# Contributing
+# Contributing to AISanalyze
 
-Thank you for considering contributing.
+The aim of AISanalyze is to provide reliable and reproducible tools for analysing Automatic Identification System (AIS) data. Contributions improving performance, documentation, testing, or functionality are welcome, including:
 
-## Reporting bugs
+- Reporting bugs.
+- Suggesting new features or improvements.
+- Improving the documentation or examples.
+- Submitting pull requests.
 
-Open an issue.
+## Reporting issues
+
+Please use the GitHub Issues page to report bugs or request new features.
+
+When reporting a bug, please include:
+
+- the version of AISanalyze;
+- your R version (`sessionInfo()`);
+- a minimal reproducible example;
+- the complete error message, if applicable.
 
 ## Pull requests
 
-Fork the repository.
+Before submitting a pull request, please:
 
-Create a branch.
+- follow the existing coding style;
+- document any new exported functions using roxygen2;
+- add or update unit tests when appropriate;
+- ensure that `devtools::check()` completes without errors.
 
-Run
+## Questions
 
-devtools::check()
+If you have questions about using AISanalyze, please contact remi.pigeault@gmail.com or open a GitHub Discussion or Issue.
 
-before submitting.
-
-## Coding style
-
-Follow the tidyverse style guide.
-
-## Tests
-
-Please add tests for new features.
+Thank you for helping improve AISanalyze!
