@@ -76,10 +76,10 @@ out <- AISinterpolate(ais_data = ais,
                type_interpolation = "maximum_time_interval",
                maximum_time_interval = list(maximum_gap_seconds = 60),
                crs_meters = 3035,
-               parallelize = F)
+               parallelize = FALSE)
 
-# to interpolate all vessel locations at exact timestamps, within a radius
-of 200 000 meters around
+# to interpolate all vessel locations at exact timestamps,
+# within a radius of 200 000 meters around
 # target locations
 out <- AISinterpolate(ais_data = ais,
            type_interpolation = "exact_timestamp",
@@ -89,5 +89,6 @@ out <- AISinterpolate(ais_data = ais,
                                                  lat = point_to_extract$lat),
                radius = 200000),
            crs_meters = 3035,
-           parallelize = F)}
+           parallelize = FALSE)
+           }
 }

@@ -17,7 +17,8 @@ test_that("AISinterpolate", {
   out <- AISinterpolate(ais_data,
                         type_interpolation = "maximum_time_interval",
                         maximum_time_interval = list(maximum_gap_seconds = 30),
-                        parallelize = FALSE)
+                        parallelize = TRUE,
+                        nb_cores = 1)
 
   expect_all_true(out$timestamp %in% seq(dplyr::first(ais_data$timestamp),
                                          dplyr::last(ais_data$timestamp),
@@ -41,10 +42,13 @@ test_that("AISinterpolate", {
                                                locations_of_interest = data.frame(lon = data$lon,
                                                                                   lat = data$lat),
                                                radius = 200000),
-                        parallelize = FALSE)
+                        parallelize = TRUE,
+                        nb_cores = 1)
 
   expect_equal(out$timestamp, (ais_data$timestamp[49] + ais_data$timestamp[50]) / 2)
   expect_equal(out$lon, (ais_data$lon[49] + ais_data$lon[50]) / 2)
   expect_equal(out$lat, (ais_data$lat[49] + ais_data$lat[50]) / 2)
+
+  unlink(r"(tests\testthat\log.txt)")
 
 })

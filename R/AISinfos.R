@@ -232,7 +232,7 @@ AISinfos <- function(ais_data,
   colnames(out)[colnames(out) %in% c("shiptype", "name", "length", "draught", "width", "imo")] <- paste0("Selected_",
                                                                                                          colnames(out)[colnames(out) %in% c("shiptype", "name", "length", "draught", "width", "imo")])
 
-  cat("Warnings are printed if any value of length, draught, width or imo is not numeric,
+  cat("\nWarnings are printed if any value of length, draught, width or imo is not numeric,
       or any value of shiptype and name can not be transformed to character.\n")
 
   return(list(estimated_values = out %>%

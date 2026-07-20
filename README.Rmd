@@ -31,13 +31,19 @@ data. It provides tools to
 remotes::install_github("YOUR_GITHUB_USERNAME/AISanalyze")
 ```
 
+For a complete workflow, see
+
+```r
+browseVignettes("AISanalyze")
+```
+
 ## Main functions
 
 | Function | Description |
 |----------|-------------|
 | `AIStravel()` | Estimate travelled distance, time and speed |
-| `AIScorrect_speed()` | Correct GPS errors and delays |
 | `AISidentify_stations_aircraft()` | Identify AIS stations and aircraft |
+| `AIScorrect_speed()` | Correct GPS errors and delays |
 | `AISinterpolate()` | Interpolate vessel positions |
 | `AISextract()` | Extract vessels around target locations |
 | `AISinfos()` | Estimate vessel characteristics |
@@ -71,16 +77,12 @@ ais <- ais %>%
 head(ais)
 ```
 
-For a complete workflow, see
-
-```r
-browseVignettes("AISanalyze")
-```
-
 ## Citation
 
-If you use AISanalyze, please cite 
-Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. *Marine Pollution Bulletin.* 208: 116925. 
+If you use AISanalyze, please cite:
+
+
+Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. *Marine Pollution Bulletin.* 208: 116925. 
 
 ## License
 

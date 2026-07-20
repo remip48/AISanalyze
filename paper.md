@@ -19,15 +19,13 @@ authors:
     affiliation: 1
   - name: Ursula Siebert
     orcid: 0000-0002-2556-3948
-    affiliation: [1, 2]
+    affiliation: 1
   - name: Anita Gilles
     orcid: 0000-0001-7234-8645
     affiliation: 1
 affiliations:
  - name: Institute for Terrestrial and Aquatic Wildlife Research, University of Veterinary Medicine Hannover, Foundation, Buesum, Germany
    index: 1
- - name: Department of Ecoscience, Marine Mammal Research, Aarhus University, Denmark
-   index: 2
 date: 17 June 2026
 bibliography: paper.bib
 ---

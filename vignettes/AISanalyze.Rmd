@@ -3,7 +3,7 @@ title: "AISanalyze: User guide"
 author: "Rémi Pigeault"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started with AISanalyze}
+  %\VignetteIndexEntry{AISanalyze: User guide}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -24,7 +24,7 @@ library(lubridate)
 AISanalyze provides a workflow to analyse Automatic Identification System (AIS)
 data, including:
   
-  - estimating vessel travel distance, time and speed;
+- estimating vessel travel distance, time and speed;
 - correcting GPS errors and delays;
 - identifying AIS stations and aircraft;
 - interpolating vessel positions;
@@ -58,7 +58,7 @@ ais <- AIStravel(ais_data = ais)
 
 Three variables are added:
   
-  - `distance_travelled`
+- `distance_travelled`
 - `time_travelled`
 - `speed_kmh`
 

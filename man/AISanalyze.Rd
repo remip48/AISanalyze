@@ -39,6 +39,7 @@ Identification System (AIS) vessel data.
 Useful links:
 \itemize{
   \item \url{https://github.com/remip48/AISanalyze}
+  \item \url{https://remip48.github.io/AISanalyze}
   \item Report bugs at \url{https://github.com/remip48/AISanalyze/issues}
 }
 

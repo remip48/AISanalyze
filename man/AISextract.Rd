@@ -67,24 +67,25 @@ ais <- ais \%>\%
                                                 lat = point_to_extract$lat),
              radius = 200000),
            crs_meters = 3035,
-           parallelize = F)
+           parallelize = FALSE)
 
 # to return all vessel positions around the target location/timestamps:
 out <- AISextract(data = point_to_extract,
            ais_data = ais,
            crs_meters = 3035,
-           return_all_vessel_locations = T
+           return_all_vessel_locations = TRUE,
            search_into_radius_m = 50000,
            interval_time_before = 5 * 60,
            interval_time_after = 5 * 60)
 
 # to return the position of each vessel closest in time to the target
-timestamps (around the target location)
+# timestamps (around the target location)
 out <- AISextract(data = point_to_extract,
            ais_data = ais,
            crs_meters = 3035,
-           return_all_vessel_locations = T
+           return_all_vessel_locations = FALSE,
            search_into_radius_m = 50000,
            interval_time_before = 5 * 60,
-           interval_time_after = 5 * 60)}
+           interval_time_after = 5 * 60)
+           }
 }
