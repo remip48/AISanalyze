@@ -1,20 +1,32 @@
-starting worker pid=20600 on localhost:11366 at 18:54:17.778
+starting worker pid=10616 on localhost:11191 at 10:34:17.074
+starting worker pid=6392 on localhost:11843 at 10:36:46.765
 Loading required package: AISanalyze
-Loading required package: tidyverse
-── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
 Loading required package: sf
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
 Loading required package: units
 udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
 Loading required package: doParallel
 Loading required package: foreach
 
@@ -27,32 +39,57 @@ The following objects are masked from 'package:purrr':
 Loading required package: iterators
 Loading required package: parallel
 Loading required package: assertthat
+Loading required package: magrittr
 
-Attaching package: 'assertthat'
+Attaching package: 'magrittr'
 
-The following object is masked from 'package:tibble':
+The following object is masked from 'package:purrr':
 
-    has_name
+    set_names
 
 loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 1 / 1 
-starting worker pid=20896 on localhost:11869 at 18:55:02.469
+starting worker pid=21144 on localhost:11027 at 10:38:44.004
 Loading required package: AISanalyze
-Loading required package: tidyverse
-── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
 Loading required package: sf
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
 Loading required package: units
 udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
 Loading required package: doParallel
 Loading required package: foreach
 
@@ -65,32 +102,57 @@ The following objects are masked from 'package:purrr':
 Loading required package: iterators
 Loading required package: parallel
 Loading required package: assertthat
+Loading required package: magrittr
 
-Attaching package: 'assertthat'
+Attaching package: 'magrittr'
 
-The following object is masked from 'package:tibble':
+The following object is masked from 'package:purrr':
 
-    has_name
+    set_names
 
 loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 1 / 1 
-starting worker pid=20476 on localhost:11439 at 18:56:54.549
+starting worker pid=22676 on localhost:11259 at 10:46:41.869
 Loading required package: AISanalyze
-Loading required package: tidyverse
-── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
 Loading required package: sf
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
 Loading required package: units
 udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
 Loading required package: doParallel
 Loading required package: foreach
 
@@ -103,32 +165,57 @@ The following objects are masked from 'package:purrr':
 Loading required package: iterators
 Loading required package: parallel
 Loading required package: assertthat
+Loading required package: magrittr
 
-Attaching package: 'assertthat'
+Attaching package: 'magrittr'
 
-The following object is masked from 'package:tibble':
+The following object is masked from 'package:purrr':
 
-    has_name
+    set_names
 
 loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 1 / 1 
-starting worker pid=1888 on localhost:11535 at 21:00:29.201
+starting worker pid=22480 on localhost:11245 at 10:53:20.846
 Loading required package: AISanalyze
-Loading required package: tidyverse
-── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
 Loading required package: sf
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
 Loading required package: units
 udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
 Loading required package: doParallel
 Loading required package: foreach
 
@@ -141,12 +228,152 @@ The following objects are masked from 'package:purrr':
 Loading required package: iterators
 Loading required package: parallel
 Loading required package: assertthat
+Loading required package: magrittr
 
-Attaching package: 'assertthat'
+Attaching package: 'magrittr'
 
-The following object is masked from 'package:tibble':
+The following object is masked from 'package:purrr':
 
-    has_name
+    set_names
 
 loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+1 / 1 
+starting worker pid=4596 on localhost:11001 at 12:32:55.195
+Loading required package: AISanalyze
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: sf
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
+Loading required package: units
+udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
+Loading required package: doParallel
+Loading required package: foreach
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: iterators
+Loading required package: parallel
+Loading required package: assertthat
+Loading required package: magrittr
+
+Attaching package: 'magrittr'
+
+The following object is masked from 'package:purrr':
+
+    set_names
+
+loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+1 / 1 
+starting worker pid=19680 on localhost:11571 at 12:38:17.247
+Loading required package: AISanalyze
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: sf
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Loading required package: lubridate
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union
+
+Loading required package: units
+udunits database from C:/Users/234028/AppData/Local/Programs/R/R-4.5.3/library/units/share/udunits/udunits2.xml
+Loading required package: purrr
+Loading required package: stringr
+Loading required package: doParallel
+Loading required package: foreach
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: iterators
+Loading required package: parallel
+Loading required package: assertthat
+Loading required package: magrittr
+
+Attaching package: 'magrittr'
+
+The following object is masked from 'package:purrr':
+
+    set_names
+
+loaded AISanalyze and set parent environment
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats 1.0.1     ✔ tibble  3.3.1
+✔ ggplot2 4.0.3     ✔ tidyr   1.3.2
+✔ readr   2.2.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ foreach::accumulate() masks purrr::accumulate()
+✖ tidyr::extract()      masks magrittr::extract()
+✖ dplyr::filter()       masks stats::filter()
+✖ tibble::has_name()    masks assertthat::has_name()
+✖ dplyr::lag()          masks stats::lag()
+✖ magrittr::set_names() masks purrr::set_names()
+✖ foreach::when()       masks purrr::when()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 1 / 1 

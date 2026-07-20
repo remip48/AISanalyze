@@ -19,16 +19,16 @@ test_that("AISinterpolate", {
                         maximum_time_interval = list(maximum_gap_seconds = 30),
                         parallelize = FALSE)
 
-  expect_all_true(out$timestamp %in% seq(first(ais_data$timestamp),
-                                         last(ais_data$timestamp),
+  expect_all_true(out$timestamp %in% seq(dplyr::first(ais_data$timestamp),
+                                         dplyr::last(ais_data$timestamp),
                                          by = 30))
 
-  expect_all_true(round(out$lon, 5) %in% round(seq(first(ais_data$lon),
-                                                   last(ais_data$lon),
+  expect_all_true(round(out$lon, 5) %in% round(seq(dplyr::first(ais_data$lon),
+                                                   dplyr::last(ais_data$lon),
                                                    length = 199), 5))
 
-  expect_all_true(round(out$lat, 5) %in% round(seq(first(ais_data$lat),
-                                                   last(ais_data$lat),
+  expect_all_true(round(out$lat, 5) %in% round(seq(dplyr::first(ais_data$lat),
+                                                   dplyr::last(ais_data$lat),
                                                    length = 199), 5))
 
   ## extract

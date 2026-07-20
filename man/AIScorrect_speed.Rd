@@ -10,10 +10,10 @@ AIScorrect_speed(
   threshold_speed_to_correct = 100,
   threshold_speed_to_correct_expr = function(speed_kmh) {
      return(15 +
-    stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 * sd(speed_kmh[speed_kmh > 1 &
-    speed_kmh < stats::quantile(speed_kmh[speed_kmh > 1], 0.75)]))
- },
-  correct_high_speed_craft = FALSE
+    stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 *
+    stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh >
+    1], 0.75)]))
+ }
 )
 }
 \arguments{
@@ -30,9 +30,6 @@ observations are corrected.}
 
 \item{threshold_speed_to_correct_expr}{Function returning a vessel-specific
 speed threshold from \code{speed_kmh}.}
-
-\item{correct_high_speed_craft}{Logical. Correct high-speed craft (typically
-aircraft).}
 }
 \value{
 The input data with corrected travel metrics and the following
@@ -57,9 +54,7 @@ data("ais")
 
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
-  AIStravel(ais_data = .,
-            return_sf = F,
-            return_meter_coords = F)
+  AIStravel(ais_data = .)
 
 out <- AIScorrect_speed(ais_data = ais,
                  crs_meters = 3035,

@@ -32,13 +32,13 @@ AISinterpolate(
 \code{type_interpolation = "exact_timestamp"}, containing:
 \itemize{
 \item \code{timestamp_to_interpolate}: Target timestamps.
-\item \code{locations_of_interest}: Optional data frame with \code{lon} and \code{lat} columns
-corresponding to each \code{timestamp_to_interpolate}.
+\item \code{locations_of_interest}: Optional data frame with \code{lon} and \code{lat}
+columns corresponding to each \code{timestamp_to_interpolate}.
 \item \code{radius}: Optional search radius (m) around each target location.
 }}
 
-\item{crs_meters}{CRS (in metres) used for distance calculations. Defaults to
-EPSG:3035.}
+\item{crs_meters}{CRS (in metres) used for distance calculations. Defaults
+to EPSG:3035.}
 
 \item{parallelize}{Logical. If \code{TRUE}, interpolation is parallelized using
 \strong{doParallel}.}
@@ -69,9 +69,7 @@ point_to_extract <- point_to_extract \%>\%
 
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
-  AIStravel(ais_data = .,
-            return_sf = F,
-            return_meter_coords = F)
+  AIStravel(ais_data = .)
 
 # to interpolate all vessel locations separated by > 60 seconds
 out <- AISinterpolate(ais_data = ais,
@@ -80,14 +78,16 @@ out <- AISinterpolate(ais_data = ais,
                crs_meters = 3035,
                parallelize = F)
 
-# to interpolate all vessel locations at exact timestamps, within a radius of 200 000 meters around
+# to interpolate all vessel locations at exact timestamps, within a radius
+of 200 000 meters around
 # target locations
 out <- AISinterpolate(ais_data = ais,
-               type_interpolation = "exact_timestamp",
-               exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,
-                                      locations_of_interest = data.frame(lon = point_to_extract$lon,
-                                                                         lat = point_to_extract$lat),
-                                      radius = 200000),
-               crs_meters = 3035,
-               parallelize = F)}
+           type_interpolation = "exact_timestamp",
+           exact_timestamp = list(
+               timestamp_to_interpolate = point_to_extract$timestamp,
+               locations_of_interest = data.frame(lon = point_to_extract$lon,
+                                                 lat = point_to_extract$lat),
+               radius = 200000),
+           crs_meters = 3035,
+           parallelize = F)}
 }

@@ -40,8 +40,8 @@ closest position in time.}
 \code{data} joined with matching AIS positions. Rows are duplicated when
 several vessel positions match a target location and time. If no vessel is
 found, AIS columns (including \code{mmsi}) are filled with \code{NA}. The output also
-includes \code{distance_vessel_to_location_m}, the distance (m) between the target
-location and each vessel position.
+includes \code{distance_vessel_to_location_m}, the distance (m) between the
+target location and each vessel position.
 }
 \description{
 Returns either the vessel position closest in time to each target timestamp
@@ -58,17 +58,16 @@ point_to_extract <- point_to_extract \%>\%
 
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
-  AIStravel(ais_data = .,
-            return_sf = F,
-            return_meter_coords = F) \%>\%
+  AIStravel(ais_data = .) \%>\%
   AISinterpolate(ais_data = .,
-               type_interpolation = "exact_timestamp",
-               exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,
-                                      locations_of_interest = data.frame(lon = point_to_extract$lon,
-                                                                         lat = point_to_extract$lat),
-                                      radius = 200000),
-               crs_meters = 3035,
-               parallelize = F)
+           type_interpolation = "exact_timestamp",
+           exact_timestamp = list(
+             timestamp_to_interpolate = point_to_extract$timestamp,
+             locations_of_interest = data.frame(lon = point_to_extract$lon,
+                                                lat = point_to_extract$lat),
+             radius = 200000),
+           crs_meters = 3035,
+           parallelize = F)
 
 # to return all vessel positions around the target location/timestamps:
 out <- AISextract(data = point_to_extract,
@@ -79,7 +78,8 @@ out <- AISextract(data = point_to_extract,
            interval_time_before = 5 * 60,
            interval_time_after = 5 * 60)
 
-# to return the position of each vessel closest in time to the target timestamps (around the target location)
+# to return the position of each vessel closest in time to the target
+timestamps (around the target location)
 out <- AISextract(data = point_to_extract,
            ais_data = ais,
            crs_meters = 3035,

@@ -16,12 +16,12 @@
 #'   `type_interpolation = "exact_timestamp"`, containing:
 #'   \itemize{
 #'   \item `timestamp_to_interpolate`: Target timestamps.
-#'   \item `locations_of_interest`: Optional data frame with `lon` and `lat` columns
-#'     corresponding to each `timestamp_to_interpolate`.
+#'   \item `locations_of_interest`: Optional data frame with `lon` and `lat`
+#'     columns corresponding to each `timestamp_to_interpolate`.
 #'   \item `radius`: Optional search radius (m) around each target location.
 #'   }
-#' @param crs_meters CRS (in metres) used for distance calculations. Defaults to
-#'   EPSG:3035.
+#' @param crs_meters CRS (in metres) used for distance calculations. Defaults
+#'   to EPSG:3035.
 #' @param parallelize Logical. If `TRUE`, interpolation is parallelized using
 #'   **doParallel**.
 #' @param nb_cores Number of CPU cores used when `parallelize = TRUE`.
@@ -43,9 +43,7 @@
 #'
 #' ais <- ais %>%
 #'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
-#'   AIStravel(ais_data = .,
-#'             return_sf = F,
-#'             return_meter_coords = F)
+#'   AIStravel(ais_data = .)
 #'
 #' # to interpolate all vessel locations separated by > 60 seconds
 #' out <- AISinterpolate(ais_data = ais,
@@ -54,16 +52,18 @@
 #'                crs_meters = 3035,
 #'                parallelize = F)
 #'
-#' # to interpolate all vessel locations at exact timestamps, within a radius of 200 000 meters around
+#' # to interpolate all vessel locations at exact timestamps, within a radius
+#' of 200 000 meters around
 #' # target locations
 #' out <- AISinterpolate(ais_data = ais,
-#'                type_interpolation = "exact_timestamp",
-#'                exact_timestamp = list(timestamp_to_interpolate = point_to_extract$timestamp,
-#'                                       locations_of_interest = data.frame(lon = point_to_extract$lon,
-#'                                                                          lat = point_to_extract$lat),
-#'                                       radius = 200000),
-#'                crs_meters = 3035,
-#'                parallelize = F)}
+#'            type_interpolation = "exact_timestamp",
+#'            exact_timestamp = list(
+#'                timestamp_to_interpolate = point_to_extract$timestamp,
+#'                locations_of_interest = data.frame(lon = point_to_extract$lon,
+#'                                                  lat = point_to_extract$lat),
+#'                radius = 200000),
+#'            crs_meters = 3035,
+#'            parallelize = F)}
 #' @export
 
 AISinterpolate <- function(ais_data,
@@ -77,6 +77,10 @@ AISinterpolate <- function(ais_data,
                               nb_cores = NA,
                               outfile = "log.txt"
 ){
+
+  if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
+    stop("Please run AIStravel() before AISinterpolate()")
+  }
 
   ## set up the parameters of interpolation according to the type of interpolation
   if (type_interpolation == "exact_timestamp") {
@@ -132,7 +136,7 @@ AISinterpolate <- function(ais_data,
   initial_columns <- colnames(ais_data)
 
   data <- add_coordinates_meters(data, crs_meters = crs_meters) %>%
-    st_drop_geometry()
+    sf::st_drop_geometry()
 
   ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
@@ -149,11 +153,11 @@ AISinterpolate <- function(ais_data,
 
     if (type_interpolation == "maximum_time_interval") {
       ais_data <- ais_data %>%
-        dplyr::mutate(id_ais_data_initial = 1:n())
+        dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
 
       to_interp <- ais_data %>%
         dplyr::group_by(mmsi) %>%
-        dplyr::mutate(idd = 1:n()) %>%
+        dplyr::mutate(idd = 1:dplyr::n()) %>%
         dplyr::ungroup() %>%
         dplyr::filter(idd != 1)  %>%
         dplyr::select(-idd)%>%
@@ -200,7 +204,7 @@ AISinterpolate <- function(ais_data,
         dplyr::filter(timestamp %in% timestamp_to_interpolate)
 
       ## select only timestamps where at least one vessel must be interpolated
-      all_to_run <- na.omit(purrr::map_dbl(timestamp_to_interpolate, function(t) {
+      all_to_run <- stats::na.omit(purrr::map_dbl(timestamp_to_interpolate, function(t) {
         done <- ais_ok$mmsi[ais_ok$timestamp %in% t]
 
         return(ifelse(all(ais_data$mmsi %in% done), NA, t))
@@ -213,7 +217,7 @@ AISinterpolate <- function(ais_data,
 
       ais_data <- purrr::map_dfr(hour_to_run, function(hh) {
 
-        to_run <- all_to_run[hour(as_datetime(all_to_run)) == hh]
+        to_run <- all_to_run[lubridate::hour(lubridate::as_datetime(all_to_run)) == hh]
 
         datah <- data[data$timestamp %in% to_run, ] %>%
           dplyr::distinct()
@@ -301,13 +305,15 @@ AISinterpolate <- function(ais_data,
               out <- purrr::map_dfr(list(out_ok,
                                          interp_eez),
                                     function(d) {return(d)}) %>%
-                dplyr::select(-"difftimestamp")
+                dplyr::select(-"difftimestamp") %>%
+                dplyr::mutate(timestamp = t)
 
               return(out)
 
             } else {
               return(out_ok %>%
-                       dplyr::select(-"difftimestamp"))
+                       dplyr::select(-"difftimestamp") %>%
+                       dplyr::mutate(timestamp = t))
             }
           } else {
             return(to_interp %>%
@@ -329,7 +335,6 @@ AISinterpolate <- function(ais_data,
       out <- purrr::map_dfr(list(ais_ok,
                                  ais_data),
                             function(d) {return(d)}) %>%
-        dplyr::filter(!duplicated(mmsi, timestamp)) %>%
         add_coordinates_meters(., crs_meters = crs_meters) %>%
         sf::st_drop_geometry()
 
@@ -341,10 +346,7 @@ AISinterpolate <- function(ais_data,
 
     ais_data <- AIStravel(ais_data = out %>%
                             dplyr::select(-c(time_travelled, distance_travelled, speed_kmh)),
-                          crs_meters = crs_meters,
-                          return_meter_coords = ifelse("X" %in% initial_columns & "Y" %in% initial_columns,
-                                                      T,
-                                                      F)) %>%
+                          crs_meters = crs_meters) %>%
       dplyr::mutate(interpolated = ifelse(is.na(interpolated), F, interpolated))
 
     return(ais_data %>%
@@ -353,11 +355,6 @@ AISinterpolate <- function(ais_data,
   } else {
 
     cat("No point left in AIS data for interpolation.\n")
-
-    if (!("X" %in% initial_columns) & !("Y" %in% initial_columns)) {
-      ais_data <- ais_data %>%
-        dplyr::select(-c(X, Y))
-    }
 
     return(ais_data %>%
              dplyr::select(dplyr::all_of(c(initial_columns,

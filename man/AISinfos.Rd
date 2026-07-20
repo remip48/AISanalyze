@@ -32,7 +32,7 @@ vessel length and ship type.}
 \value{
 A list containing:
 \itemize{
-\item \code{values_obtained}: Estimated vessel characteristics for each \code{mmsi}.
+\item \code{estimated_values}: Estimated vessel characteristics for each \code{mmsi}.
 \item \code{summary}: Summary statistics for each \code{mmsi}, including:
 \itemize{
 \item Number of AIS positions.
@@ -54,5 +54,5 @@ weight to records with more complete information.
 library(AISanalyze)
 data("ais")
 
-AISinfos(ais_data = ais)}
+out <- AISinfos(ais_data = ais)}
 }

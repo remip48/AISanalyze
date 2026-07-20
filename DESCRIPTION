@@ -1,22 +1,22 @@
 Package: AISanalyze
 Title: AISanalyze
-Version: 1.0
+Version: 2.0.0
 Authors@R: c(
     person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
 Description: Correct, interpolate, extract and analyze AIS data.
 License: MIT + file LICENSE
 Depends:
-    R(>= 4.2.0),
+    R(>= 4.2.0)
+Imports:
     dplyr (>= 1.1.2),
     sf (>= 1.0-9),
     lubridate (>= 1.9.2),
-    units (>= 0.8-0),
     purrr (>= 1.0.1),
     stats (>= 4.2.1),
-    utils (>= 4.2.1),
     stringr (>= 1.5.0),
     doParallel (>= 1.0.17),
+    foreach (>= 1.5.2),
     assertthat (>= 0.2.1),
     magrittr (>= 2.0.5)
 URL: https://github.com/remip48/AISanalyze

@@ -35,7 +35,7 @@ AISidentify_stations_aircraft <- function(ais_data,
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that(is.numeric(crs_meters))
 
-  cat("Stations and aircraft are only identified with speed, distance and time. Other criteria (e.g. less than 9 digits in the MMSI) are not used and should be filtered by the users itself if desired\n")
+  cat("Stations and aircraft are identified from speed, distance and time only. Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.\n")
 
   init_cols <- colnames(ais_data)
 
@@ -50,9 +50,9 @@ AISidentify_stations_aircraft <- function(ais_data,
     dplyr::group_by(mmsi) %>%
     dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = T) <= 1, T, F),
                   high_speed = ifelse(stats::quantile(speed_kmh, 1 - 0.97, na.rm = T) >= 110, T, F),
-                  n_point_mmsi_initial_data = n(),
-                  id_mmsi_point_initial = 1:n()) %>%
-    ungroup()
+                  n_point_mmsi_initial_data = dplyr::n(),
+                  id_mmsi_point_initial = 1:dplyr::n()) %>%
+    dplyr::ungroup()
 
   filt <- unique(c(init_cols, "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed", "n_point_mmsi_initial_data",
                    "id_mmsi_point_initial"))

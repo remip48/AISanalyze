@@ -19,7 +19,7 @@
 #'
 #' @return A list containing:
 #' \itemize{
-#' \item `values_obtained`: Estimated vessel characteristics for each `mmsi`.
+#' \item `estimated_values`: Estimated vessel characteristics for each `mmsi`.
 #' \item `summary`: Summary statistics for each `mmsi`, including:
 #'   \itemize{
 #'   \item Number of AIS positions.
@@ -35,7 +35,7 @@
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' AISinfos(ais_data = ais)}
+#' out <- AISinfos(ais_data = ais)}
 #' @export
 
 AISinfos <- function(ais_data,
@@ -47,7 +47,7 @@ AISinfos <- function(ais_data,
   weight_complete_data <- as.numeric(weight_complete_data)
 
   temp <- ais_data %>%
-    dplyr::mutate(shiptype = ifelse(str_remove_all(shiptype, " ") == "", NA, shiptype),
+    dplyr::mutate(shiptype = ifelse(stringr::str_remove_all(shiptype, " ") == "", NA, shiptype),
                   length = as.numeric(length),
                   draught = as.numeric(draught),
                   width = as.numeric(width),
@@ -58,7 +58,7 @@ AISinfos <- function(ais_data,
                   draught = ifelse(draught == 0 | draught > threshold_draught, NA, draught),
                   width = ifelse(width == 0 | width > threshold_width, NA, width)) %>%
     dplyr::group_by(mmsi, shiptype, length, width, draught, imo, name) %>%
-    dplyr::summarise(n = n(), .groups = "drop") %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(real_n = n,
                   n = ifelse(!is.na(length) & !is.na(shiptype)
@@ -77,8 +77,8 @@ AISinfos <- function(ais_data,
       dplyr::summarise(npoint = sum(real_n),
                        npoint_all_XXX = sum(real_n[!is.na(as.numeric(get(c)))]),
                        npoint_all_XXX_weighted = sum(n[!is.na(as.numeric(get(c)))]),
-                       all_XXX = paste(sort(unique(na.omit(as.numeric(get(c))))), collapse = ", "),
-                       n_XXX = length(unique(na.omit(as.numeric(get(c))))),
+                       all_XXX = paste(sort(unique(stats::na.omit(as.numeric(get(c))))), collapse = ", "),
+                       n_XXX = length(unique(stats::na.omit(as.numeric(get(c))))),
                        XXX = all_XXX,
                        npoint_XXX = npoint_all_XXX,
                        npoint_XXX_weighted = npoint_all_XXX_weighted,
@@ -90,7 +90,7 @@ AISinfos <- function(ais_data,
       to_corr <- out %>%
         dplyr::filter(n_XXX > 1)
 
-      uni_XXX <- temp[temp$mmsi %in% unique(to_corr$mmsi) & !is.na(temp %>% pull(get(c))), ] %>%
+      uni_XXX <- temp[temp$mmsi %in% unique(to_corr$mmsi) & !is.na(temp %>% dplyr::pull(get(c))), ] %>%
         dplyr::group_by(mmsi, get(c)) %>%
         dplyr::summarise(n_l = sum(n),
                          n_li = sum(real_n), .groups = "drop"
@@ -115,7 +115,7 @@ AISinfos <- function(ais_data,
 
       out <- purrr::map_dfr(list(out %>%
                             dplyr::filter(n_XXX < 2) %>%
-                            mutate(XXX = as.numeric(XXX),
+                            dplyr::mutate(XXX = as.numeric(XXX),
                                    npoint_XXX = as.numeric(npoint_XXX),
                                    npoint_XXX_weighted = as.numeric(npoint_XXX_weighted)),
                           to_corr), function(f) {return(f)})
@@ -127,7 +127,7 @@ AISinfos <- function(ais_data,
                npoint_XXX_weighted = as.numeric(npoint_XXX_weighted))
     }
 
-    colnames(out) <- str_replace_all(colnames(out),
+    colnames(out) <- stringr::str_replace_all(colnames(out),
                                      "XXX",
                                      c)
 
@@ -142,12 +142,12 @@ AISinfos <- function(ais_data,
   all_infos_character <- purrr::map(c("shiptype", "name"), function(c) {
 
     out_XXX <- temp %>%
-      mutate(XXX = ifelse(tolower(str_remove_all(get(c), " ")) %in% c("undefined", "unknown", "", "na"), NA, get(c))) %>%
+      dplyr::mutate(XXX = ifelse(tolower(stringr::str_remove_all(get(c), " ")) %in% c("undefined", "unknown", "", "na"), NA, get(c))) %>%
       dplyr::group_by(mmsi) %>%
       dplyr::summarise(npoint_all_XXX = sum(real_n[!is.na(get(c))]),
                        npoint_all_XXX_weighted = sum(n[!is.na(get(c))]),
-                       all_XXX = paste(sort(unique(na.omit(get(c)))), collapse = ", "),
-                       n_XXX = length(unique(na.omit(get(c)))),
+                       all_XXX = paste(sort(unique(stats::na.omit(get(c)))), collapse = ", "),
+                       n_XXX = length(unique(stats::na.omit(get(c)))),
                        XXX = all_XXX,
                        npoint_XXX = npoint_all_XXX,
                        npoint_XXX_weighted = npoint_all_XXX_weighted, .groups = "drop") %>%
@@ -159,7 +159,7 @@ AISinfos <- function(ais_data,
         dplyr::filter(n_XXX > 1)
 
       uni_XXX <- temp[temp$mmsi %in% unique(to_corr$mmsi) & !is.na(temp %>% dplyr::pull(get(c))), ] %>%
-        dplyr::mutate(XXX = ifelse(tolower(str_remove_all(get(c), " ")) %in% c("undefined", "unknown", "", "na"), NA, get(c))) %>%
+        dplyr::mutate(XXX = ifelse(tolower(stringr::str_remove_all(get(c), " ")) %in% c("undefined", "unknown", "", "na"), NA, get(c))) %>%
         dplyr::filter(!is.na(get(c))) %>%
         dplyr::group_by(mmsi, get(c)) %>%
         dplyr::summarise(n_t = sum(n),
@@ -186,7 +186,7 @@ AISinfos <- function(ais_data,
 
     }
 
-    colnames(out_XXX) <- str_replace_all(colnames(out_XXX),
+    colnames(out_XXX) <- stringr::str_replace_all(colnames(out_XXX),
                                      "XXX",
                                      c)
 
@@ -209,22 +209,22 @@ AISinfos <- function(ais_data,
     dplyr::left_join(all_infos_character[[2]], by = "mmsi") %>%
     dplyr::mutate(shiptype = ifelse(shiptype == "", NA, shiptype),
            name = ifelse(name == "", NA, name)) %>%
-    dplyr::select(-dplyr::all_of(colnames(.)[(str_detect(colnames(.),
+    dplyr::select(-dplyr::all_of(colnames(.)[(stringr::str_detect(colnames(.),
                                                  "npoint_") &
-                                        str_detect(colnames(.),
+                                                stringr::str_detect(colnames(.),
                                                    "_weighted")) |
-                                        str_detect(colnames(.),
+                                               stringr::str_detect(colnames(.),
                                                    "npoint_all_") |
-                                        str_detect(colnames(.),
+                                               stringr::str_detect(colnames(.),
                                                    "n_")])) %>%
     dplyr::rename(n_point_mmsi = npoint)
 
-  colnames(out)[str_detect(colnames(out), "npoint_")] <- paste0(str_replace_all(colnames(out)[str_detect(colnames(out), "npoint_")],
+  colnames(out)[stringr::str_detect(colnames(out), "npoint_")] <- paste0(stringr::str_replace_all(colnames(out)[stringr::str_detect(colnames(out), "npoint_")],
                                                                                "npoint_",
                                                                                "n_point_with_"),
                                                                "_value")
 
-  colnames(out)[str_detect(colnames(out), "all_")] <- paste0(str_replace_all(colnames(out)[str_detect(colnames(out), "all_")],
+  colnames(out)[stringr::str_detect(colnames(out), "all_")] <- paste0(stringr::str_replace_all(colnames(out)[stringr::str_detect(colnames(out), "all_")],
                                                                              "all_",
                                                                              "All_"),
                                                              "_values")
@@ -235,8 +235,8 @@ AISinfos <- function(ais_data,
   cat("Warnings are printed if any value of length, draught, width or imo is not numeric,
       or any value of shiptype and name can not be transformed to character.\n")
 
-  return(list(values_obtained = out %>%
-                dplyr::select(mmsi, dplyr::all_of(colnames(.)[str_detect(colnames(.), "Selected")])),
+  return(list(estimated_values = out %>%
+                dplyr::select(mmsi, dplyr::all_of(colnames(.)[stringr::str_detect(colnames(.), "Selected")])),
               summary = out))
 
 }

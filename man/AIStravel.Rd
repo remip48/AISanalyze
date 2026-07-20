@@ -4,12 +4,7 @@
 \alias{AIStravel}
 \title{Calculate vessel travel metrics}
 \usage{
-AIStravel(
-  ais_data,
-  crs_meters = 3035,
-  return_sf = FALSE,
-  return_meter_coords = FALSE
-)
+AIStravel(ais_data, crs_meters = 3035)
 }
 \arguments{
 \item{ais_data}{AIS data frame containing \code{timestamp}, \code{lon}, \code{lat}, and
@@ -19,12 +14,6 @@ the column is named \code{mmsi}.}
 
 \item{crs_meters}{CRS (in metres) used to calculate distances. Defaults to
 EPSG:3035.}
-
-\item{return_sf}{Logical. If \code{TRUE}, returns an \code{sf} object; otherwise,
-returns a data frame.}
-
-\item{return_meter_coords}{Logical. If \code{TRUE}, adds
-coordinates (\code{X} and \code{Y}) in \code{crs_meters} to the output.}
 }
 \value{
 The input AIS data with the following additional columns:
@@ -32,7 +21,7 @@ The input AIS data with the following additional columns:
 \item \code{time_travelled}: Travel time (s) since the previous AIS position.
 \item \code{distance_travelled}: Distance travelled (m) since the previous AIS position.
 \item \code{speed_kmh}: Vessel speed (km/h).
-\item \code{X}, \code{Y}: coordinates in \code{crs_meters} when \code{return_meter_coords = TRUE}.
+\item \code{X}, \code{Y}: coordinates in \code{crs_meters}.
 }
 }
 \description{
@@ -47,7 +36,5 @@ data("ais")
 ais <- ais \%>\%
   mutate(timestamp = as.numeric(ymd_hms(datetime)))
 
-out <- AIStravel(ais_data = ais,
-          return_sf = F,
-          return_meter_coords = F)}
+out <- AIStravel(ais_data = ais)}
 }

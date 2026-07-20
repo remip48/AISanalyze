@@ -23,4 +23,5 @@
 #' @name AISanalyze
 #' @keywords internal
 #' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
 "_PACKAGE"
