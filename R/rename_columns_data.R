@@ -9,7 +9,7 @@
 rename_columns_data <- function(data) {
   if (any(colnames(data) == "mmsi")) {
     colnames(data)[colnames(data) == "mmsi"] <- "data_mmsi"
-    base::cat("\nmmsi column in dataframe renamed as 'data_mmsi'\n")
+    cat("\nmmsi column in dataframe renamed as 'data_mmsi'\n")
   }
 
   return(data)

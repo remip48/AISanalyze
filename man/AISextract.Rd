@@ -66,8 +66,7 @@ ais <- ais \%>\%
              locations_of_interest = data.frame(lon = point_to_extract$lon,
                                                 lat = point_to_extract$lat),
              radius = 200000),
-           crs_meters = 3035,
-           parallelize = FALSE)
+           crs_meters = 3035)
 
 # to return all vessel positions around the target location/timestamps:
 out <- AISextract(data = point_to_extract,

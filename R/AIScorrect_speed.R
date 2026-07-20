@@ -65,20 +65,9 @@ AIScorrect_speed <- function(ais_data,
   )
 
   ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
-    sf::st_drop_geometry()
-
-  ais_data <- ais_data %>%
-    dplyr::arrange(mmsi, timestamp)
-
-  ais_data <- ais_data %>%
-    dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
-
-  if (!("id_ais_data_initial" %in% colnames(ais_data))) {
-    ais_data <- ais_data %>%
-      dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
-  }
-
-  ais_data <- ais_data %>%
+    sf::st_drop_geometry() %>%
+    dplyr::arrange(mmsi, timestamp) %>%
+    dplyr::mutate(id_ais_data_initial = 1:dplyr::n()) %>%
     dplyr::group_by(mmsi) %>%
     dplyr::mutate(last_row = 1:dplyr::n(),
                   last_row = ifelse(last_row == dplyr::n(), T, F)) %>%
@@ -92,11 +81,8 @@ AIScorrect_speed <- function(ais_data,
     dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                    threshold_speed_to_correct,
                                                    threshold_strange_speed)) %>%
-    dplyr::filter((speed_kmh > threshold_speed_to_correct |
-                     speed_kmh > threshold_strange_speed) &
-                    (time_travelled < 5*60*60 &
-                       !(high_speed) &
-                       !(station)))
+    dplyr::filter((speed_kmh > threshold_speed_to_correct | speed_kmh > threshold_strange_speed) &
+                    (time_travelled < 5*60*60 & !(high_speed) & !(station)))
 
   ## extract only rows with strange speed that are not consecutive in the dataset
   strange_speed <- strange_speed[c(T, (strange_speed$id_ais_data_initial[-1] - strange_speed$id_ais_data_initial[-nrow(strange_speed)]) >= 2), ]
@@ -104,14 +90,8 @@ AIScorrect_speed <- function(ais_data,
   strange_speed <- strange_speed$id_ais_data_initial
 
   ## points for which the error is actually on the previous point
-  short_time <- sort(ais_data$id_ais_data_initial[!(ais_data$high_speed) &
-                                                    !(ais_data$station) &
-                                                    ais_data$id_mmsi_point_initial != 1 &
-                                                    !ais_data$last_row &
-                                                    ((ais_data$distance_travelled <= 1 & ais_data$time_travelled > 60 * 5) |
-                                                       ais_data$distance_travelled == 0 |
-                                                       ais_data$speed_kmh < 0.001 |
-                                                       ais_data$time_travelled == 0)])
+  short_time <- sort(ais_data$id_ais_data_initial[!(ais_data$high_speed) & !ais_data$station & ais_data$id_mmsi_point_initial != 1 & !ais_data$last_row &
+                                                    ((ais_data$distance_travelled <= 1 & ais_data$time_travelled > 60 * 5) | ais_data$distance_travelled == 0 | ais_data$speed_kmh < 0.001 | ais_data$time_travelled == 0)])
 
   strange_speed <- sort(unique(c(strange_speed[!(strange_speed %in% short_time)], short_time)))
 
@@ -121,9 +101,7 @@ AIScorrect_speed <- function(ais_data,
 
   ## recalculate the time/speed/distance travelled for points consecutive to removed errors
   if (length(strange_speed) > 0) {
-    to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ]
-
-    to_correct <- to_correct %>%
+    to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ] %>%
       dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) %>%
       dplyr::left_join(AIStravel(.,
                           crs_meters = crs_meters) %>%
@@ -136,19 +114,11 @@ AIScorrect_speed <- function(ais_data,
               dplyr::filter(id_ais_data_initial %in% (strange_speed + 1)) %>%
               dplyr::mutate(speed_kmh_corrected = T)) %>%
       dplyr::arrange(id_ais_data_initial)
-
-    rm(to_correct)
-    rm(strange_speed)
-
-    ais_data <- ais_data %>%
-      dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
   }
 
   filt <- unique(c(init_cols, "speed_kmh_corrected", "time_travelled", "distance_travelled", "speed_kmh", "station", "high_speed"))
   filt <- filt[filt %in% colnames(ais_data)]
 
-  ais_data <- ais_data %>%
-    dplyr::select(dplyr::all_of(filt))
-
-  return(ais_data)
+  return(ais_data %>%
+           dplyr::select(dplyr::all_of(filt)))
 }

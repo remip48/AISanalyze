@@ -43,8 +43,7 @@
 #'              locations_of_interest = data.frame(lon = point_to_extract$lon,
 #'                                                 lat = point_to_extract$lat),
 #'              radius = 200000),
-#'            crs_meters = 3035,
-#'            parallelize = FALSE)
+#'            crs_meters = 3035)
 #'
 #' # to return all vessel positions around the target location/timestamps:
 #' out <- AISextract(data = point_to_extract,
@@ -103,22 +102,17 @@ AISextract <- function(data,
   ais_data <- add_coordinates_meters(ais_data,
                                      crs_meters = crs_meters,
                                      coordinates_to_write = c("ais_X", "ais_Y")) %>%
-    sf::st_drop_geometry()
-
-  ais_data <- rename_colums_ais(ais_data,
-                                data)
-
-  data <- rename_columns_data(data)
-
-  data <- add_coordinates_meters(data, crs_meters = crs_meters) %>%
-    sf::st_drop_geometry()
-
-  data <- data %>%
-    dplyr::mutate(idd_effort = 1:dplyr::n())
-
-  ais_data <- ais_data %>%
+    sf::st_drop_geometry() %>%
+    rename_colums_ais(.,
+                      data) %>%
     as.data.frame() %>%
     dplyr::rename(ais_timestamp = timestamp)
+
+  data <- data %>%
+    rename_columns_data(.) %>%
+    add_coordinates_meters(., crs_meters = crs_meters) %>%
+    sf::st_drop_geometry() %>%
+    dplyr::mutate(idd_effort = 1:dplyr::n())
 
   time_ais <- purrr::map_dfr(unique(data$timestamp), function(dt) {
 
@@ -132,7 +126,6 @@ AISextract <- function(data,
                            ais_data$ais_Y <= (max(eff_dt$Y) + search_into_radius_m), ]
 
     if (nrow(mmsi_ref) >= 1 & !return_all_vessel_locations) {
-
       mmsi_refi <- mmsi_ref %>%
         dplyr::mutate(idd_ais = 1:dplyr::n())
 
@@ -145,10 +138,9 @@ AISextract <- function(data,
                        ais_Y = ais_Y[point],
                        ais_timestamp = ais_timestamp[point]
         )
-
     }
-    if (nrow(mmsi_ref) >= 1) {
 
+    if (nrow(mmsi_ref) >= 1) {
       out <- eff_dt %>%
         as.data.frame() %>%
         dplyr::group_by(idd_effort) %>%
@@ -164,13 +156,9 @@ AISextract <- function(data,
           dplyr::select(-c(idd_ais, point))
       }
 
-    }
-    else {
+    } else {
       out <- eff_dt
     }
-
-    rm(eff_dt)
-    rm(mmsi_ref)
 
     return(out)
   })
@@ -182,14 +170,10 @@ AISextract <- function(data,
                     ais_timestamp = NA)
   }
 
-  ## check no missing data in the output
   if (any(!(data$idd_effort %in% time_ais$idd_effort))) {
-    time_ais <- purrr::map_dfr(list(time_ais,
-                             data[!(data$idd_effort %in% time_ais$idd_effort), ]),
+    time_ais <- purrr::map_dfr(list(time_ais, data[!(data$idd_effort %in% time_ais$idd_effort), ]),
                         function(l) {return(l)})
   }
-
-  gc()
 
   time_ais <- time_ais %>%
     dplyr::select(!c("idd_effort", "ais_X", "ais_Y")) %>%
@@ -199,8 +183,6 @@ AISextract <- function(data,
                   dplyr::all_of(colnames(ais_data)[colnames(ais_data) %in% colnames(.)])
                   ) %>%
     dplyr::arrange(timestamp, ais_timestamp)
-
-  rm(data)
 
   return(time_ais)
 }

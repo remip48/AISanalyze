@@ -7,7 +7,15 @@
 
 [![pkgdown](https://github.com/remip48/AISanalyze/actions/workflows/pkgdown.yaml/badge.svg)](https://remip48.github.io/AISanalyze/)
 
+[![DOI](https://zenodo.org/badge/DOI/...svg)](...)
+
 <!-- badges: end -->
+
+## Documentation
+
+📖 Full documentation, tutorials and function reference:
+
+<https://remip48.github.io/AISanalyze>
 
 ## Overview
 

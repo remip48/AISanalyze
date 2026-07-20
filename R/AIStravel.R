@@ -43,26 +43,19 @@ AIStravel <- function(ais_data,
 
   mmsi_prev <- ais_data$mmsi[-nrow(ais_data)]
 
-  ais_data <- ais_data %>%
-    dplyr::mutate(
-      tmmsi = c("initial", mmsi_prev))
-
-  ais_data <- ais_data %>%
-    dplyr::mutate(time_travelled = timestamp - c(dplyr::first(timestamp), timestamp[-dplyr::n()]),
-                  time_travelled = ifelse(time_travelled > 5*60*60, 0,
-                                          ifelse(mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)),
-                                                 0,
-                                                 time_travelled)),
-                  distance_travelled = ifelse(time_travelled == 0 | is.na(time_travelled), 0, c(0, sqrt((X[-dplyr::n()] - X[-1])^2 + (Y[-dplyr::n()] - Y[-1])^2))),
-                  speed_kmh = ifelse(is.na(time_travelled), 0,
-                                     ifelse(time_travelled == 0,
-                                            0,
-                                            c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))))
-    ) %>%
-    dplyr::select(-c("tmmsi"))
-
-  rm(mmsi_prev)
-
-  return(ais_data)
+  return(ais_data %>%
+           dplyr::mutate(tmmsi = c("initial", mmsi_prev),
+                         time_travelled = timestamp - c(dplyr::first(timestamp), timestamp[-dplyr::n()]),
+                         time_travelled = ifelse(time_travelled > 5*60*60, 0,
+                                                 ifelse(mmsi != tmmsi | (is.na(mmsi) & !is.na(tmmsi)) | (!is.na(mmsi) & is.na(tmmsi)),
+                                                        0,
+                                                        time_travelled)),
+                         distance_travelled = ifelse(time_travelled == 0 | is.na(time_travelled), 0, c(0, sqrt((X[-dplyr::n()] - X[-1])^2 + (Y[-dplyr::n()] - Y[-1])^2))),
+                         speed_kmh = ifelse(is.na(time_travelled), 0,
+                                            ifelse(time_travelled == 0,
+                                                   0,
+                                                   c(0, distance_travelled[-1] * 60 * 60 / (1000 * time_travelled[-1]))))
+           ) %>%
+           dplyr::select(-c("tmmsi")))
 
 }

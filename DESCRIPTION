@@ -23,8 +23,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-URL: https://github.com/remip48/AISanalyze,
-     https://remip48.github.io/AISanalyze
+URL: https://github.com/remip48/AISanalyze, https://remip48.github.io/AISanalyze, https://remip48.github.io/AISanalyze/
 BugReports: https://github.com/remip48/AISanalyze/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

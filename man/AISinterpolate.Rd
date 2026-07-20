@@ -11,8 +11,7 @@ AISinterpolate(
   exact_timestamp = list(timestamp_to_interpolate = NULL, locations_of_interest = NULL,
     radius = 2e+05),
   crs_meters = 3035,
-  parallelize = FALSE,
-  nb_cores = NA,
+  nb_cores = 1,
   outfile = "log.txt"
 )
 }
@@ -40,12 +39,9 @@ columns corresponding to each \code{timestamp_to_interpolate}.
 \item{crs_meters}{CRS (in metres) used for distance calculations. Defaults
 to EPSG:3035.}
 
-\item{parallelize}{Logical. If \code{TRUE}, interpolation is parallelized using
-\strong{doParallel}.}
+\item{nb_cores}{Number of CPU cores used if \code{type_interpolation = exact_timestamp}.}
 
-\item{nb_cores}{Number of CPU cores used when \code{parallelize = TRUE}.}
-
-\item{outfile}{File used to save logs when \code{parallelize = TRUE}.}
+\item{outfile}{File used to save logs when \code{type_interpolation = exact_timestamp}.}
 }
 \value{
 The interpolated AIS data with an additional column:
@@ -56,7 +52,7 @@ The interpolated AIS data with an additional column:
 \description{
 Interpolates vessel positions at regular time intervals or at
 user-defined timestamps. Interpolation can optionally be restricted to
-a given radius withing target locations
+a given radius within target locations.
 }
 \examples{
 \dontrun{
@@ -75,8 +71,7 @@ ais <- ais \%>\%
 out <- AISinterpolate(ais_data = ais,
                type_interpolation = "maximum_time_interval",
                maximum_time_interval = list(maximum_gap_seconds = 60),
-               crs_meters = 3035,
-               parallelize = FALSE)
+               crs_meters = 3035)
 
 # to interpolate all vessel locations at exact timestamps,
 # within a radius of 200 000 meters around
@@ -88,7 +83,6 @@ out <- AISinterpolate(ais_data = ais,
                locations_of_interest = data.frame(lon = point_to_extract$lon,
                                                  lat = point_to_extract$lat),
                radius = 200000),
-           crs_meters = 3035,
-           parallelize = FALSE)
+           crs_meters = 3035)
            }
 }
