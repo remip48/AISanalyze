@@ -7,7 +7,7 @@
 
 [![pkgdown](https://github.com/remip48/AISanalyze/actions/workflows/pkgdown.yaml/badge.svg)](https://remip48.github.io/AISanalyze/)
 
-[![DOI](https://zenodo.org/badge/DOI/...svg)](...)
+[![DOI](https://zenodo.org/badge/DOI/%3CYOUR_DOI%3E.svg)](https://doi.org/%3CYOUR_DOI%3E)
 
 <!-- badges: end -->
 
@@ -34,7 +34,7 @@ AISanalyze is an R package for analysing Automatic Identification System
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("YOUR_GITHUB_USERNAME/AISanalyze")
+remotes::install_github("remip48/AISanalyze")
 ```
 
 For a complete workflow, see
@@ -63,22 +63,25 @@ data("ais")
 data("point_to_extract")
 
 ais <- ais %>%
-  mutate(timestamp = as.numeric(ymd_hms(datetime)))
-  
-point_to_extract <- point_to_extract %>%
-  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
 
-ais <- ais %>% 
-  AIStravel() %>% 
-  AISidentify_stations_aircraft() %>% 
-  AIScorrect_speed() %>% 
-  AISinterpolate(ais_data = .,
-                 type_interpolation = "maximum_time_interval",
-                 maximum_time_interval = list(maximum_gap_seconds = 60)) %>% 
-  AISextract(ais_data = .,
-             data = point_to_extract,
-             return_all_vessel_locations = T,
-             search_into_radius_m = 50000)
+point_to_extract <- point_to_extract %>%
+  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hm(datetime)))
+
+ais <- AIStravel(ais)
+
+ais_identified <- AISidentify_stations_aircraft(ais)
+
+ais_corrected <- AIScorrect_speed(ais_identified)
+
+ais_interpolated <- AISinterpolate(ais_data = ais_corrected,
+                                   type_interpolation = "maximum_time_interval",
+                                   maximum_time_interval = list(maximum_gap_seconds = 60))
+
+ais_extracted <- AISextract(ais_data = ais_interpolated,
+                            data = point_to_extract,
+                            return_all_vessel_locations = T,
+                            search_into_radius_m = 50000)
 
 head(ais)
 ```
