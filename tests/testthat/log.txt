@@ -1,0 +1,48 @@
+starting worker pid=3560 on localhost:11071 at 13:34:43.952
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 
+starting worker pid=14480 on localhost:11071 at 13:34:46.045
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 
+starting worker pid=3696 on localhost:11071 at 13:34:47.373
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 
