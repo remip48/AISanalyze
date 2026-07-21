@@ -41,8 +41,8 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Rémi Pigeault <remi.pigeault@tiho-hannover.de>
+**Maintainer**: R\<U+00E9\>mi Pigeault <remi.pigeault@tiho-hannover.de>
 
 Authors:
 
-- Rémi Pigeault <remi.pigeault@tiho-hannover.de>
+- R\<U+00E9\>mi Pigeault <remi.pigeault@tiho-hannover.de>
