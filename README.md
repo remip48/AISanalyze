@@ -42,12 +42,6 @@ AISanalyze is an R package for analysing Automatic Identification System
 remotes::install_github("remip48/AISanalyze")
 ```
 
-For a complete workflow, see
-
-``` r
-browseVignettes("AISanalyze")
-```
-
 ## Main functions
 
 | Function                          | Description                                 |

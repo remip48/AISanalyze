@@ -41,12 +41,6 @@ data. It provides tools to
 remotes::install_github("remip48/AISanalyze")
 ```
 
-For a complete workflow, see
-
-```r
-browseVignettes("AISanalyze")
-```
-
 ## Main functions
 
 | Function | Description |
