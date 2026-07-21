@@ -50,9 +50,14 @@ The interpolated AIS data with an additional column:
 }
 }
 \description{
-Interpolates vessel positions at regular time intervals or at
-user-defined timestamps. Interpolation can optionally be restricted to
-a given radius within target locations.
+Interpolates vessel positions either: (depending on \code{type_interpolation})
+\itemize{
+\item to ensure time intervals do not exceed a specified maximum
+(\code{maximum_time_interval}).
+\item at user-defined timestamps (\code{exact_timestamp}). Interpolation
+can optionally be restricted to a given radius within
+target locations to reduce computation time.
+}
 }
 \examples{
 \dontrun{

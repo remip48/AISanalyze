@@ -5,12 +5,19 @@
 \alias{point_to_extract}
 \title{Example extraction locations}
 \format{
-A data frame with locations and timestamps of interest
+A data frame with the following variables:
+\describe{
+\item{point}{Unique identifier of the target location.}
+\item{lon, lat}{Longitude and latitude (WGS84).}
+\item{datetime}{Target date and time (UTC).}
 }
-\usage{
-point_to_extract
 }
 \description{
-Example target locations used in the package examples.
+Example locations and timestamps used to demonstrate
+\code{\link[=AISextract]{AISextract()}} and interpolation at exact timestamps with
+\code{\link[=AISinterpolate]{AISinterpolate()}}. Each row defines a target location and time for which
+nearby vessel positions can be extracted or interpolated.
 }
-\keyword{datasets}
+\seealso{
+\code{\link[=AISextract]{AISextract()}}, \code{\link[=AISinterpolate]{AISinterpolate()}}
+}

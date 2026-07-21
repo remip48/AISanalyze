@@ -12,6 +12,8 @@
 #' \itemize{
 #' \item `interpolated`: Whether the position was interpolated.
 #' }
+#' @keywords internal
+#' @noRd
 #'
 method_interpolation_max_time <- function(ais_data,
                                           maximum_gap_seconds) {

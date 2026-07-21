@@ -39,8 +39,6 @@ columns:
 \item \code{time_travelled}: Travel time (s).
 \item \code{distance_travelled}: Travelled distance (m).
 \item \code{speed_kmh}: Vessel speed (km/h).
-\item \code{station}: Whether the MMSI is stationary.
-\item \code{high_speed}: Whether the MMSI is high-speed.
 }
 }
 \description{

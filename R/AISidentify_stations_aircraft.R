@@ -46,7 +46,7 @@ AISidentify_stations_aircraft <- function(ais_data,
   ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
     dplyr::group_by(mmsi) %>%
-    dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = T) <= 1, T, F),
+    dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = T) <= 1 | stats::quantile(speed_kmh, 0.975, na.rm = T) <= 0.01, T, F),
                   high_speed = ifelse(stats::quantile(speed_kmh, 1 - 0.97, na.rm = T) >= 110, T, F),
                   n_point_mmsi_initial_data = dplyr::n(),
                   id_mmsi_point_initial = 1:dplyr::n()) %>%

@@ -7,14 +7,19 @@
 
 [![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/remip48/AISanalyze/blob/master/LICENSE.md)
+
 [![DOI](https://zenodo.org/badge/DOI/%3CYOUR_DOI%3E.svg)](https://doi.org/%3CYOUR_DOI%3E)
 
 <!-- badges: end -->
 
 ## Documentation
 
-📖 Full documentation, tutorials and function reference:
+A complete step-by-step workflow is available in the [User
+guide](https://remip48.github.io/AISanalyze/articles/AISanalyze.html).
 
+📖 Full documentation, tutorials and function reference:
 <https://remip48.github.io/AISanalyze>
 
 ## Overview

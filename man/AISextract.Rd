@@ -44,8 +44,11 @@ includes \code{distance_vessel_to_location_m}, the distance (m) between the
 target location and each vessel position.
 }
 \description{
-Returns either the vessel position closest in time to each target timestamp
-or all vessel positions within a specified time window.
+Returns either (depending on \code{return_all_vessel_locations}):
+\itemize{
+\item each vessel position at the target timestamps.
+\item or all vessel positions within a specified time window.
+}
 }
 \examples{
 \dontrun{

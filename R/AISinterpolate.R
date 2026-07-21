@@ -1,8 +1,13 @@
 #' Interpolate AIS positions
 #'
-#' Interpolates vessel positions at regular time intervals or at
-#' user-defined timestamps. Interpolation can optionally be restricted to
-#' a given radius within target locations.
+#' Interpolates vessel positions either: (depending on `type_interpolation`)
+#'   \itemize{
+#'   \item to ensure time intervals do not exceed a specified maximum
+#'   (`maximum_time_interval`).
+#'   \item at user-defined timestamps (`exact_timestamp`). Interpolation
+#'   can optionally be restricted to a given radius within
+#'   target locations to reduce computation time.
+#'   }
 #'
 #' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
 #'   `mmsi`. `timestamp` must be Unix time (seconds since 1970-01-01), while

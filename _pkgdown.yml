@@ -1,4 +1,35 @@
-url: https://remip48.github.io/AISanalyze/
+url: https://remip48.github.io/AISanalyze
+
 template:
   bootstrap: 5
 
+home:
+  title: AISanalyze
+  description: Tools for analysing Automatic Identification System (AIS) vessel tracking data.
+
+reference:
+  - title: Functions
+    desc: Core functions for analysing AIS data.
+    contents:
+      - AIStravel
+      - AIScorrect_speed
+      - AISidentify_stations_aircraft
+      - AISinterpolate
+      - AISextract
+      - AISinfos
+
+  - title: Example datasets
+    desc: Datasets included with AISanalyze.
+    contents:
+      - ais
+      - point_to_extract
+
+articles:
+  - title: User guide
+    contents:
+      - AISanalyze
+
+navbar:
+  structure:
+    left: [reference, articles, news]
+    right: [github]

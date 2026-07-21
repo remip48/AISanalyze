@@ -6,6 +6,8 @@
 #' @param data data with target timestamps and locations to extract
 #'
 #' @return the same AIS dataset, with columns that are renamed if conflict were detected
+#' @keywords internal
+#' @noRd
 #'
 rename_colums_ais <- function(ais_data, data) {
   colnam <- colnames(ais_data)

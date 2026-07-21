@@ -2,29 +2,31 @@
 
 ## New features
 
-* Added unit tests.
-* Added a package vignette.
+* Added comprehensive unit tests.
+* Added a package vignette with a complete workflow.
 * Added a package help page providing an overview of the public API.
+* Added a pkgdown website with online documentation.
 
 ## Improvements
 
-* Refactored large functions into smaller helper functions.
+* Refactored large functions into smaller helper functions for improved maintainability.
 * Simplified the package workflow.
-* Improved and shortened the documentation.
-* Added GitHub Actions for continuous integration.
-* Added pkgdown website.
-* Added NEWS and CONTRIBUTING files.
+* Improved and expanded function documentation and examples.
+* Added continuous integration with GitHub Actions.
+* Added `NEWS.md` and `CONTRIBUTING.md`.
 
 ## Bug fixes
 
-* Fixed extraction when only one AIS position is available for a vessel.
+* Fixed vessel extraction when only a single AIS position is available.
+* Improved handling of edge cases throughout the package.
+
 
 # AISanalyze 1.1.0 (2026-02-10)
 
 ## New features
 
-* First public GitHub release.
-* Added the accompanying paper.
+* First public release on GitHub.
+* Added the accompanying manuscript.
 
 ## Improvements
 
@@ -35,8 +37,9 @@
 * Fixed `AIScorrect_speed()` for stationary vessels.
 * Corrected `time_travelled` and `distance_travelled` for consecutive interpolated positions.
 
-# AISanalyze 0.0.0 (2025-06-17)
+
+# AISanalyze 1.0.0 (2025-06-17)
 
 ## New features
 
-* Initial package implementation.
+* Initial release of the package.

@@ -12,6 +12,8 @@
 #' data("ais")
 #'
 #' out <- add_coordinates_meters(ais, crs_meters = 3035, coordinates_to_write = c("X", "Y"))}
+#' @keywords internal
+#' @noRd
 #'
 add_coordinates_meters <- function(data, crs_meters = 3035, coordinates_to_write = c("X", "Y")) {
   if (!(all(coordinates_to_write %in% colnames(data)))) {

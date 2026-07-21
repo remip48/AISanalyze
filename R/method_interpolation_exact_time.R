@@ -4,10 +4,12 @@
 #' Interpolation can optionally be restricted to
 #' a given radius within target locations
 #'
-#' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
-#'   `mmsi`. `timestamp` must be Unix time (seconds since 1970-01-01), while
-#'   `lon` and `lat` must be numeric.
-#' @param data target timestamps and locations (optional)
+#' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`,
+#'   `mmsi`, `X` and `Y` (`crs_meters` coordinates). `timestamp` must be Unix
+#'   time (seconds since 1970-01-01), while
+#'   `lon`, `lat`, `X` and `Y` must be numeric.
+#' @param data target timestamps and locations. Contains `timestamp`,
+#'   `lon`, `lat`, `X` and `Y` (`crs_meters` coordinates).
 #' @param crs_meters CRS (in metres) used for distance calculations. Defaults
 #'   to EPSG:3035.
 #' @param radius Optional search radius (m) around each target location.
@@ -19,6 +21,8 @@
 #' \itemize{
 #' \item `interpolated`: Whether the position was interpolated.
 #' }
+#' @keywords internal
+#' @noRd
 #'
 method_interpolation_exact_time <- function(ais_data,
                                             data,
@@ -151,7 +155,6 @@ method_interpolation_exact_time <- function(ais_data,
      out <- purrr::map_dfr(out, function(d) {return(d)})
 
      gc()
-
 
      return(out)
    })

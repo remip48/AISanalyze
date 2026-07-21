@@ -1,7 +1,10 @@
 #' Extract AIS positions around target locations and times
 #'
-#' Returns either the vessel position closest in time to each target timestamp
-#' or all vessel positions within a specified time window.
+#' Returns either (depending on `return_all_vessel_locations`):
+#'  \itemize{
+#'   \item each vessel position at the target timestamps.
+#'   \item or all vessel positions within a specified time window.
+#'  }
 #'
 #' @param data Data frame containing `timestamp`, `lon`, and `lat`.
 #'   `timestamp` must be Unix time (seconds since 1970-01-01), while `lon`
@@ -176,7 +179,7 @@ AISextract <- function(data,
   }
 
   time_ais <- time_ais %>%
-    dplyr::select(!c("idd_effort", "ais_X", "ais_Y")) %>%
+    dplyr::select(!(c("idd_effort", "ais_X", "ais_Y")[c("idd_effort", "ais_X", "ais_Y") %in% colnames(.)])) %>%
     dplyr::select(dplyr::all_of(colnames(data)[colnames(data) %in% colnames(.)]),
                   dplyr::all_of(colnames(.)[!(colnames(.) %in% c(colnames(data),
                                                           colnames(ais_data)))]),

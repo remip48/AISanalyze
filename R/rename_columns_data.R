@@ -5,6 +5,8 @@
 #' @param data data with target timestamps and locations to extract
 #'
 #' @return the same dataset, with columns that are renamed if conflict were detected
+#' @keywords internal
+#' @noRd
 #'
 rename_columns_data <- function(data) {
   if (any(colnames(data) == "mmsi")) {
