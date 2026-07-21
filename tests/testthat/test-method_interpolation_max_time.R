@@ -27,7 +27,4 @@ test_that("method_interpolation_max_time", {
                                                    dplyr::last(ais_data$lat),
                                                    length = nrow(out)), 5))
 
-  ## delete log file
-  unlink(r"(tests\testthat\log.txt)")
-
 })
