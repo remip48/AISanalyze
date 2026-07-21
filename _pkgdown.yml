@@ -21,8 +21,9 @@ reference:
   - ais
   - point_to_extract
 articles:
-- title: User guide
-  contents: AISanalyze
+  - title: User guide
+    contents:
+      - AISanalyze
 navbar:
   structure:
     left:
