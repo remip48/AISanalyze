@@ -1,4 +1,4 @@
-starting worker pid=22120 on localhost:11071 at 14:42:50.057
+starting worker pid=14536 on localhost:11071 at 15:36:42.910
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
@@ -14,7 +14,7 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
-starting worker pid=20756 on localhost:11071 at 14:42:52.243
+starting worker pid=20668 on localhost:11071 at 15:36:45.075
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
@@ -30,7 +30,7 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
-starting worker pid=18464 on localhost:11071 at 14:42:53.605
+starting worker pid=21916 on localhost:11071 at 15:36:46.523
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
@@ -46,7 +46,7 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
-starting worker pid=19384 on localhost:11071 at 14:50:42.455
+starting worker pid=18128 on localhost:11747 at 16:03:21.287
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
@@ -62,7 +62,7 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
-starting worker pid=2644 on localhost:11071 at 14:50:44.580
+starting worker pid=22060 on localhost:11747 at 16:03:24.028
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
@@ -78,7 +78,7 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
-starting worker pid=10124 on localhost:11071 at 14:50:46.389
+starting worker pid=9604 on localhost:11747 at 16:03:25.510
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 

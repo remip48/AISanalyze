@@ -5,12 +5,12 @@
 
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21474293.svg)](https://doi.org/10.5281/zenodo.21474293)
+
 [![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/remip48/AISanalyze/blob/master/LICENSE.md)
-
-[![DOI](https://zenodo.org/badge/DOI/%3CYOUR_DOI%3E.svg)](https://doi.org/%3CYOUR_DOI%3E)
 
 <!-- badges: end -->
 
