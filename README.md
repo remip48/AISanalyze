@@ -5,7 +5,7 @@
 
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21474293.svg)](https://doi.org/10.5281/zenodo.21474293)
+[![DOI](man/figures/zenodo.21474293.svg)](https://doi.org/10.5281/zenodo.21474293)
 
 [![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 

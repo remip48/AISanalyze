@@ -46,11 +46,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Rémi Pigeault \email{remi.pigeault@tiho-hannover.de}
+\strong{Maintainer}: R<U+00E9>mi Pigeault \email{remi.pigeault@tiho-hannover.de}
 
 Authors:
 \itemize{
-  \item Rémi Pigeault \email{remi.pigeault@tiho-hannover.de}
+  \item R<U+00E9>mi Pigeault \email{remi.pigeault@tiho-hannover.de}
 }
 
 }
