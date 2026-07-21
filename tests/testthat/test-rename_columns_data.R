@@ -9,7 +9,7 @@ test_that("rename_columns_data works", {
 
   data <- rename_columns_data(init_data)
 
-  ## check
+  ## check tests
   expect_true(all(colnames(data) != "mmsi"))
   expect_true(all(colnames(init_data)[colnames(init_data) != "mmsi"] %in% colnames(data)))
 
