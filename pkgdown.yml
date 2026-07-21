@@ -3,7 +3,7 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   AISanalyze: AISanalyze.html
-last_built: 2026-07-21T11:39Z
+last_built: 2026-07-21T12:32Z
 urls:
   reference: https://remip48.github.io/AISanalyze/reference
   article: https://remip48.github.io/AISanalyze/articles
