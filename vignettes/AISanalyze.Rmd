@@ -43,11 +43,8 @@ data("point_to_extract")
 Convert timestamps to Unix time.
 
 ```{r}
-ais <- ais %>%
-  mutate(timestamp = as.numeric(ymd_hms(datetime)))
-
-point_to_extract <- point_to_extract %>%
-  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+ais$timestamp <- as.numeric(ymd_hms(ais$datetime))
+point_to_extract$timestamp <- as.numeric(ymd_hm(point_to_extract$datetime))
 ```
 
 # Estimate travelled distance and speed
@@ -143,7 +140,7 @@ at the target timestamps:
 AISextract(
   data = point_to_extract,
   ais_data = ais_interpolated_exact_timestamps,
-  return_all_vessel_locations = TRUE,
+  return_all_vessel_locations = FALSE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
   interval_time_after = 300
