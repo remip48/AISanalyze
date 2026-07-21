@@ -82,11 +82,8 @@ System (AIS) data, including:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"point_to_extract"</span><span class="op">)</span></span></code></pre></div>
 <p>Convert timestamps to Unix time.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="va">ais</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">ymd_hms</span><span class="op">(</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">point_to_extract</span> <span class="op">&lt;-</span> <span class="va">point_to_extract</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">ymd_hm</span><span class="op">(</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">ymd_hms</span><span class="op">(</span><span class="va">ais</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">point_to_extract</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">ymd_hm</span><span class="op">(</span><span class="va">point_to_extract</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="estimate-travelled-distance-and-speed">Estimate travelled distance and speed<a class="anchor" aria-label="anchor" href="#estimate-travelled-distance-and-speed"></a>
@@ -127,7 +124,7 @@ transmission delays.</p>
 </h2>
 <p>The example below interpolates vessel positions every 60 seconds.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"maximum_time_interval"</span>,</span>
 <span>  maximum_time_interval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -137,15 +134,15 @@ transmission delays.</p>
 <p>The <code>datetime</code> column can be updated from the interpolated
 timestamps:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais_interp</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, interpolation can be performed at exact timestamps.
 Target locations and a search radius (m) can be specified to limit
 interpolation to the area of interest and reduce computation time. The
 <code>datetime</code> column can then be updated from the new
 <code>timestamp</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
-<span>  ais_data <span class="op">=</span> <span class="va">ais</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/AIStravel.html">AIStravel</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">ais_interpolated_exact_timestamps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
+<span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"exact_timestamp"</span>,</span>
 <span>  exact_timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    timestamp_to_interpolate <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">$</span><span class="va">timestamp</span>,</span>
@@ -154,29 +151,38 @@ interpolation to the area of interest and reduce computation time. The
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">ais_interp</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">ais_interpolated_exact_timestamps</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_exact_timestamps</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="extract-nearby-vessels">Extract nearby vessels<a class="anchor" aria-label="anchor" href="#extract-nearby-vessels"></a>
 </h2>
-<p>Extract vessel positions within 50 km and ±5 minutes of the target
-locations and timestamps (<code>point_to_extract</code>).</p>
+<p>Extract all vessel positions within 50 km and ±5 minutes of the
+target locations and timestamps (<code>point_to_extract</code>).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
-<span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
+<span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_60sec</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Set <code>return_all_vessel_locations = FALSE</code> to return only
-the vessel position closest in time to each target timestamp.</p>
+the vessel position at the target timestamps:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
+<span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>
+<span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="estimate-vessel-characteristics">Estimate vessel characteristics<a class="anchor" aria-label="anchor" href="#estimate-vessel-characteristics"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">infos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinfos.html">AISinfos</a></span><span class="op">(</span><span class="va">ais</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">summary_values</span> <span class="op">&lt;-</span> <span class="va">infos</span><span class="op">$</span><span class="va">summary</span></span>

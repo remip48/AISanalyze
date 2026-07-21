@@ -26,11 +26,8 @@ Convert timestamps to Unix time.
 
 ``` r
 
-ais <- ais %>%
-  mutate(timestamp = as.numeric(ymd_hms(datetime)))
-
-point_to_extract <- point_to_extract %>%
-  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+ais$timestamp <- as.numeric(ymd_hms(ais$datetime))
+point_to_extract$timestamp <- as.numeric(ymd_hm(point_to_extract$datetime))
 ```
 
 ## Estimate travelled distance and speed
@@ -77,7 +74,7 @@ The example below interpolates vessel positions every 60 seconds.
 
 ``` r
 
-ais_interp <- AISinterpolate(
+ais_interpolated_60sec <- AISinterpolate(
   ais_data = ais,
   type_interpolation = "maximum_time_interval",
   maximum_time_interval = list(
@@ -90,7 +87,7 @@ The `datetime` column can be updated from the interpolated timestamps:
 
 ``` r
 
-ais_interp$datetime <- lubridate::as_datetime(timestamp)
+ais_interpolated_60sec$datetime <- lubridate::as_datetime(ais_interpolated_60sec$timestamp)
 ```
 
 Alternatively, interpolation can be performed at exact timestamps.
@@ -100,8 +97,8 @@ interpolation to the area of interest and reduce computation time. The
 
 ``` r
 
-ais_interp <- AISinterpolate(
-  ais_data = ais %>% AIStravel(),
+ais_interpolated_exact_timestamps <- AISinterpolate(
+  ais_data = ais,
   type_interpolation = "exact_timestamp",
   exact_timestamp = list(
     timestamp_to_interpolate = point_to_extract$timestamp,
@@ -110,19 +107,19 @@ ais_interp <- AISinterpolate(
   )
 )
 
-ais_interp$datetime <- lubridate::as_datetime(timestamp)
+ais_interpolated_exact_timestamps$datetime <- lubridate::as_datetime(ais_interpolated_exact_timestamps$timestamp)
 ```
 
 ## Extract nearby vessels
 
-Extract vessel positions within 50 km and ±5 minutes of the target
+Extract all vessel positions within 50 km and ±5 minutes of the target
 locations and timestamps (`point_to_extract`).
 
 ``` r
 
 AISextract(
   data = point_to_extract,
-  ais_data = ais,
+  ais_data = ais_interpolated_60sec,
   return_all_vessel_locations = TRUE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
@@ -131,7 +128,19 @@ AISextract(
 ```
 
 Set `return_all_vessel_locations = FALSE` to return only the vessel
-position closest in time to each target timestamp.
+position at the target timestamps:
+
+``` r
+
+AISextract(
+  data = point_to_extract,
+  ais_data = ais_interpolated_exact_timestamps,
+  return_all_vessel_locations = FALSE,
+  search_into_radius_m = 50000,
+  interval_time_before = 300,
+  interval_time_after = 300
+)
+```
 
 ## Estimate vessel characteristics
 
