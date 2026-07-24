@@ -15,9 +15,9 @@ Identification System (AIS) vessel data.
 
 **Vessel characteristics**
 
-- [`AISidentify_stations_aircraft()`](https://remip48.github.io/AISanalyze/reference/AISidentify_stations_aircraft.md)
-
 - [`AISinfos()`](https://remip48.github.io/AISanalyze/reference/AISinfos.md)
+
+- [`AISidentify_stations_aircraft()`](https://remip48.github.io/AISanalyze/reference/AISidentify_stations_aircraft.md)
 
 **Interpolation**
 
@@ -41,8 +41,8 @@ Useful links:
 
 ## Author
 
-**Maintainer**: R\<U+00E9\>mi Pigeault <remi.pigeault@tiho-hannover.de>
+**Maintainer**: Rémi Pigeault <remi.pigeault@tiho-hannover.de>
 
 Authors:
 
-- R\<U+00E9\>mi Pigeault <remi.pigeault@tiho-hannover.de>
+- Rémi Pigeault <remi.pigeault@tiho-hannover.de>
