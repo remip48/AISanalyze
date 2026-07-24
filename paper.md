@@ -2,20 +2,22 @@
 
 AISanalyze is an open-source R package that provides an end-to-end
 workflow for transforming Automatic Identification System (AIS) vessel
-tracking data into analysis-ready datasets. AIS is an international
-radio-based vessel tracking system that continuously broadcasts ship
-identity, position, speed, heading, and other navigational information
-for maritime safety. Beyond its original purpose, AIS data have become
-an essential resource for studying maritime traffic in disciplines
-including marine ecology, conservation, fisheries, transportation, and
-marine spatial planning \[@crum2019; @robards2016; @yang2019\]. Despite
-their widespread use, AIS datasets frequently contain millions of
-observations together with transmission delays, positional inaccuracies,
-duplicated records, and incomplete vessel information \[@nachtsheim2023;
-@natale2015; @robards2016\]. Preparing these data for scientific
-analyses is therefore computationally demanding and often requires
-substantial preprocessing before vessel trajectories can be reliably
-analysed \[@kiersztyn2025\].
+tracking data into datasets tailored for environmental analyses. AIS is
+an international vessel tracking system that continuously broadcasts
+ship identity, position, speed, heading, and other navigational
+information for maritime safety. Beyond its original purpose, AIS data
+have become an essential resource for studying maritime traffic in
+disciplines including marine ecology, conservation, fisheries,
+transportation, and marine spatial planning \[@crum2019; @robards2016;
+@yang2019\].
+
+Despite their widespread use, AIS datasets frequently contain millions
+of observations together with transmission delays, positional
+inaccuracies, duplicated records, and incomplete vessel information
+\[@nachtsheim2023; @natale2015; @robards2016\]. Preparing these data for
+scientific analyses is therefore computationally demanding and often
+requires substantial preprocessing before vessel trajectories can be
+reliably analysed \[@kiersztyn2025\].
 
 AISanalyze provides an integrated workflow that implements the principal
 preprocessing operations required for scientific analyses of vessel
@@ -41,31 +43,31 @@ license.
 # Statement of need
 
 Maritime traffic is among the most pervasive human activities in the
-world’s oceans and contributes to a wide range of environmental
-pressures, including underwater noise, collision risk with marine
-wildlife, habitat disturbance, and greenhouse gas emissions
-\[@dekeling2014; @frisk2012; @halpern2008; @halpern2015\]. Quantifying
-the spatial and temporal distribution of vessel traffic has therefore
-become an essential component of marine ecological research,
-environmental impact assessments, and marine spatial planning
-\[@Benhemmalegall2023; @plot2025; @pigeault2024; @pirotta2025;
-@robards2016\]. AIS data provide detailed information on vessel
-movements over broad spatial and temporal scales and are increasingly
-combined with environmental observations, species distributions, animal
-telemetry, and oceanographic data to investigate the effects of maritime
-traffic on marine ecosystems and to support evidence-based management
-decisions \[@yang2019\]. Many of these applications require vessel
-trajectories to be matched with external datasets, creating
-preprocessing requirements that extend beyond trajectory reconstruction
-alone. However, raw AIS data are not directly suitable for scientific
-analyses: transmission delays, positional inaccuracies, duplicated
-records, missing vessel information, and non-vessel signals require
-substantial preprocessing before vessel trajectories can be reliably
-analysed \[@kiersztyn2025; @robards2016\]. Modern AIS datasets
-frequently contain tens to hundreds of millions of observations
-\[@natale2015\], making routine preprocessing computationally demanding
-and often requiring researchers to develop project-specific workflows
-that are difficult to reproduce and maintain.
+world oceans and contributes to a wide range of environmental pressures,
+including underwater noise, collision risk with marine wildlife, habitat
+disturbance, and greenhouse gas emissions \[@dekeling2014; @frisk2012;
+@halpern2008; @halpern2015\]. Quantifying the spatial and temporal
+distribution of vessel traffic has therefore become an essential
+component of marine ecological research, environmental impact
+assessments, and marine spatial planning \[@Benhemmalegall2023;
+@plot2025; @pigeault2024; @pirotta2025; @robards2016\]. AIS data provide
+detailed information on vessel movements over broad spatial and temporal
+scales and are increasingly combined with environmental observations,
+species distributions, animal telemetry, and oceanographic data to
+investigate the effects of maritime traffic on marine ecosystems and to
+support evidence-based management decisions \[@yang2019\].
+
+Many of these applications require vessel trajectories to be matched
+with external datasets, creating preprocessing requirements that extend
+beyond trajectory reconstruction alone. However, raw AIS data are not
+directly suitable for scientific analyses: transmission delays,
+positional inaccuracies, duplicated records, missing vessel information,
+and non-vessel signals require substantial preprocessing before vessel
+trajectories can be reliably analysed \[@kiersztyn2025; @robards2016\].
+Modern AIS datasets frequently contain tens to hundreds of millions of
+observations \[@natale2015\], making routine preprocessing
+computationally demanding and often requiring researchers to develop
+project-specific workflows that are difficult to reproduce and maintain.
 
 To date, these preprocessing tasks were commonly implemented through
 project-specific scripts that were repeatedly redeveloped across
@@ -118,17 +120,20 @@ marine ecologists and environmental scientists within a single software
 package, including travel estimation, GPS correction, identification of
 non-vessel signals, trajectory interpolation, extraction of vessel
 positions around user-defined locations and times, and retrieval of
-vessel characteristics. A key design choice of AISanalyze is the use of
-deterministic preprocessing algorithms that can be readily interpreted
-by users. For example, vessel trajectories are interpolated using linear
-interpolation between consecutive AIS positions, following approaches
-adopted in several existing AIS processing frameworks
-\[@nabenielsen2026; @park2026; @spadon2024\]. This choice minimizes
-methodological assumptions, preserves transparency, and remains
-computationally efficient for large AIS datasets. AISanalyze therefore
-complements existing AIS software by providing an integrated workflow
-that reduces the need for project-specific preprocessing scripts while
-facilitating reproducible ecological and environmental analyses.
+vessel characteristics. This allows researchers and practitioners to
+integrate AIS data with their own datasets within a single,
+computationally efficient framework, enabling rapid and streamlined
+analyses. A key design choice of AISanalyze is the use of deterministic
+preprocessing algorithms that can be readily interpreted by users. For
+example, vessel trajectories are interpolated using linear interpolation
+between consecutive AIS positions, following approaches adopted in
+several existing AIS processing frameworks \[@nabenielsen2026;
+@park2026; @spadon2024\]. This choice minimizes methodological
+assumptions, preserves transparency, and remains computationally
+efficient for large AIS datasets. AISanalyze therefore complements
+existing AIS software by providing an integrated workflow that reduces
+the need for project-specific preprocessing scripts while facilitating
+reproducible ecological and environmental analyses.
 
 # Software design
 
@@ -143,28 +148,24 @@ according to the requirements of a given study.
 
 A central design objective was to preserve compatibility with existing R
 workflows. Consequently, all functions accept and return standard data
-frames whose structure closely matches the original AIS dataset. Rather
+frames whose structure closely matches the original datasets. Rather
 than replacing existing information, derived variables such as travel
-distance, travel time, corrected vessel positions, or interpolated
-observations are appended to the original data. Preserving the original
-observations while augmenting them with derived variables allows users
-to inspect every preprocessing step and facilitates the integration of
-AISanalyze within downstream statistical, spatial, and ecological
-analyses.
+distance, travel time, and corrected vessel positions are appended to
+the original data. Preserving the original datasets while augmenting
+them with AIS data facilitates the analyses of maritime traffic within
+environmental assessments.
 
 Transparency and reproducibility were also important design
-considerations. Wherever possible, AISanalyze implements deterministic
-algorithms whose behaviour can be directly interpreted by users. For
-example, vessel trajectories are interpolated using linear interpolation
-rather than model-based prediction, allowing users to preserve observed
-vessel movements while avoiding additional modelling assumptions.
-Similarly, GPS correction procedures rely on explicit movement
-constraints derived from estimated vessel travel rather than statistical
-inference models.
+considerations. AISanalyze implements deterministic algorithms whose
+behaviour can be directly interpreted by users. For example, vessel
+trajectories are interpolated using linear interpolation, allowing users
+to preserve observed vessel movements while avoiding additional
+modelling assumptions. Similarly, GPS correction procedures rely on
+explicit movement constraints.
 
 AISanalyze is structured into six user-facing functions with additional
-(internal) helper functions to simplify package maintenance, facilitate
-unit testing, and enable future extensions without modifying the public
+internal functions to simplify package maintenance, facilitate unit
+testing, and enable future extensions without modifying the public
 interface. Because every processing step returns standard R data frames,
 AISanalyze integrates naturally with the broader R ecosystem for
 statistical modelling, spatial analyses, movement ecology, and
@@ -175,10 +176,10 @@ visualization.
 AISanalyze supports past and ongoing peer-reviewed studies
 \[@pigeault2024; @wynn2025\] and collaborative research projects
 \[@habitatwal; @saturnh2020; @sustainmare\] investigating the ecological
-impacts of maritime traffic on marine ecosystems. It has been used to
-investigate the short-term relationship between maritime traffic and
-harbour porpoise distribution throughout the North Sea between 2015 and
-2022 by combining extensive AIS records with aerial survey data
+impacts of maritime traffic on marine ecosystems. The package has been
+used to investigate the short-term relationship between maritime traffic
+and harbour porpoise distribution throughout the North Sea between 2015
+and 2022 by combining extensive AIS records with aerial survey data
 \[@pigeault2024\]. It has also been employed to quantify the spatial
 overlap between harbour seals tracked by telemetry and maritime traffic
 in the English Channel, enabling the integration of vessel trajectories
@@ -189,14 +190,13 @@ environmental data, and spatial analyses across broad spatial and
 temporal scales.
 
 Beyond published studies, AISanalyze is currently used within several
-collaborative research initiatives, including SustainMare, SATURN, and
+collaborative research initiatives, including SustainMare and
 HabitatWal, which investigate the impacts of maritime activities on
-marine biodiversity, underwater noise, and ecosystem management and will
-publish their scientific results in peer-reviewed journals. The package
-also supports ongoing research requiring standardized vessel
-characteristics, such as ship type and vessel dimensions, which can be
-integrated with existing ship-noise source models to evaluate maritime
-environmental pressures. By providing a transparent, reproducible, and
+marine biodiversity and ecosystem management and publish scientific
+results in peer-reviewed journals. The package supports ongoing research
+integrating maritime traffic with the distribution of protected marine
+species to inform evidence-based marine spatial planning and
+conservation management. By providing a transparent, reproducible, and
 computationally efficient preprocessing workflow, AISanalyze reduces the
 technical barriers associated with analysing large AIS datasets and
 facilitates the incorporation of maritime traffic into ecological and
