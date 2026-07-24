@@ -54,8 +54,6 @@ method_interpolation_exact_time <- function(ais_data,
        dplyr::distinct()
 
      ais_datah <- ais_data %>%
-       dplyr::filter(timestamp >= (min(to_run) - (5*60*60)) &
-                       timestamp <= (max(to_run) + (5*60*60))) %>%
        dplyr::filter(X >= (min(datah$X, na.rm = T) - radius) & X <= (max(datah$X, na.rm = T) + radius) &
                        Y >= (min(datah$Y, na.rm = T) - radius) & Y <= (max(datah$Y, na.rm = T) + radius))
 
@@ -70,8 +68,6 @@ method_interpolation_exact_time <- function(ais_data,
        data_coords <- datah[datah$timestamp == t, ]
 
        temp <- ais_datah %>%
-         dplyr::filter(timestamp >= (t - 5*60*60) &
-                         timestamp <= (t + 5*60*60)) %>%
          dplyr::filter(!(mmsi %in% unique(ais_ok$mmsi[ais_ok$timestamp %in% t]))) %>%
          dplyr::filter(X >= (min(data_coords$X, na.rm = T) - radius) & X <= (max(data_coords$X, na.rm = T) + radius) &
                          Y >= (min(data_coords$Y, na.rm = T) - radius) & Y <= (max(data_coords$Y, na.rm = T) + radius)) %>%

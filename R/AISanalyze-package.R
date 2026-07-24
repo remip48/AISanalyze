@@ -10,8 +10,8 @@
 #' * [AIScorrect_speed()]
 #'
 #' **Vessel characteristics**
-#' * [AISidentify_stations_aircraft()]
 #' * [AISinfos()]
+#' * [AISidentify_stations_aircraft()]
 #'
 #' **Interpolation**
 #' * [AISinterpolate()]

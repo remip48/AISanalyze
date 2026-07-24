@@ -130,8 +130,6 @@ AISinterpolate <- function(ais_data,
   ais_data <- ais_data %>%
     add_coordinates_meters(., crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
-    dplyr::filter(timestamp >= (min(timestamp_to_interpolate) - (5*60*60)) &
-                    timestamp <= (max(timestamp_to_interpolate) + (5*60*60))) %>%
     dplyr::filter(X >= (min(data$X, na.rm = T) - radius) & X <= (max(data$X, na.rm = T) + radius) &
                     Y >= (min(data$Y, na.rm = T) - radius) & Y <= (max(data$Y, na.rm = T) + radius))
 

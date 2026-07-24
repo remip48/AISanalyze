@@ -142,3 +142,51 @@ The following objects are masked from 'package:base':
 
 Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 1 / 1 
+starting worker pid=12256 on localhost:11515 at 11:59:43.734
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 
+starting worker pid=7660 on localhost:11515 at 11:59:46.590
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 
+starting worker pid=16596 on localhost:11515 at 11:59:48.423
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+1 / 1 

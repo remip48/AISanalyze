@@ -20,8 +20,8 @@ Identification System (AIS) vessel data.
 
 \strong{Vessel characteristics}
 \itemize{
-\item \code{\link[=AISidentify_stations_aircraft]{AISidentify_stations_aircraft()}}
 \item \code{\link[=AISinfos]{AISinfos()}}
+\item \code{\link[=AISidentify_stations_aircraft]{AISidentify_stations_aircraft()}}
 }
 
 \strong{Interpolation}
@@ -46,11 +46,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: R<U+00E9>mi Pigeault \email{remi.pigeault@tiho-hannover.de}
+\strong{Maintainer}: Rémi Pigeault \email{remi.pigeault@tiho-hannover.de}
 
 Authors:
 \itemize{
-  \item R<U+00E9>mi Pigeault \email{remi.pigeault@tiho-hannover.de}
+  \item Rémi Pigeault \email{remi.pigeault@tiho-hannover.de}
 }
 
 }

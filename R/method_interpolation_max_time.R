@@ -26,8 +26,7 @@ method_interpolation_max_time <- function(ais_data,
     dplyr::ungroup() %>%
     dplyr::filter(idd != 1)  %>%
     dplyr::select(-idd)%>%
-    dplyr::filter(time_travelled > maximum_gap_seconds) %>%
-    dplyr::filter(time_travelled < 5*60*60)
+    dplyr::filter(time_travelled > maximum_gap_seconds)
 
   prec <- ais_data[to_interp$id_ais_data_initial - 1, ]
 

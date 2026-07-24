@@ -80,8 +80,7 @@ AIScorrect_speed <- function(ais_data,
     dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),
                                                    threshold_speed_to_correct,
                                                    threshold_strange_speed)) %>%
-    dplyr::filter((speed_kmh > threshold_speed_to_correct | speed_kmh > threshold_strange_speed) &
-                    (time_travelled < 5*60*60))
+    dplyr::filter(speed_kmh > threshold_speed_to_correct | speed_kmh > threshold_strange_speed)
 
   ## extract only rows with strange speed that are not consecutive in the dataset
   strange_speed <- strange_speed[c(T, (strange_speed$id_ais_data_initial[-1] - strange_speed$id_ais_data_initial[-nrow(strange_speed)]) >= 2), ]
