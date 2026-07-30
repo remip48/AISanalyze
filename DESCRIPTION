@@ -1,13 +1,13 @@
 Package: AISanalyze
-Title: AISanalyze: Tools for Preprocessing and Extracting AIS Vessel Tracking Data
+Title: Tools for Preprocessing and Extracting AIS Vessel Tracking Data
 Version: 2.0.1
 Authors@R: c(
     person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
 Description: Provides tools for preprocessing Automatic Identification
     System (AIS) vessel tracking data, including travel estimation,
-    trajectory correction, interpolation, extraction, and vessel
-    information summarisation. The package is designed to facilitate
+    trajectory correction, interpolation, extraction, and summarising 
+    vessel information. The package is designed to facilitate
     reproducible analyses of maritime traffic in ecological,
     environmental, and marine spatial planning applications.
 License: MIT + file LICENSE
