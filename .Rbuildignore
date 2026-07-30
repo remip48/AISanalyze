@@ -8,3 +8,6 @@
 ^\.github$
 ^doc$
 ^Meta$
+^CONTRIBUTING\.md$
+^paper\.md$
+^paper\.bib$

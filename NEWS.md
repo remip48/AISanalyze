@@ -1,3 +1,11 @@
+# AISanalyze 2.0.1 (2026-07-30)
+
+## Improvements
+
+- Finalized documentation and package metadata for the first CRAN release.
+- Minor improvements to the package website and documentation.
+
+
 # AISanalyze 2.0.0 (2026-07-20)
 
 ## New features

@@ -1,10 +1,15 @@
 Package: AISanalyze
-Title: AISanalyze
-Version: 2.0.0
+Title: AISanalyze: Tools for Preprocessing and Extracting AIS Vessel Tracking Data
+Version: 2.0.1
 Authors@R: c(
     person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
-Description: Correct, interpolate, extract and analyze AIS data.
+Description: Provides tools for preprocessing Automatic Identification
+    System (AIS) vessel tracking data, including travel estimation,
+    trajectory correction, interpolation, extraction, and vessel
+    information summarisation. The package is designed to facilitate
+    reproducible analyses of maritime traffic in ecological,
+    environmental, and marine spatial planning applications.
 License: MIT + file LICENSE
 Depends:
     R(>= 4.2.0)
@@ -24,7 +29,7 @@ Suggests:
     units,
     rmarkdown,
     testthat (>= 3.0.0)
-URL: https://github.com/remip48/AISanalyze, https://remip48.github.io/AISanalyze, https://remip48.github.io/AISanalyze/
+URL: https://github.com/remip48/AISanalyze, https://remip48.github.io/AISanalyze/
 BugReports: https://github.com/remip48/AISanalyze/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
