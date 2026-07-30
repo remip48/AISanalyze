@@ -6,7 +6,7 @@ A complete step-by-step workflow is available in the [User
 guide](https://remip48.github.io/AISanalyze/articles/AISanalyze.html).
 
 📖 Full documentation, tutorials and function reference:
-<https://remip48.github.io/AISanalyze>
+<https://remip48.github.io/AISanalyze/>
 
 ## Overview
 

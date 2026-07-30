@@ -33,8 +33,6 @@ Useful links:
 
 - <https://github.com/remip48/AISanalyze>
 
-- <https://remip48.github.io/AISanalyze>
-
 - <https://remip48.github.io/AISanalyze/>
 
 - Report bugs at <https://github.com/remip48/AISanalyze/issues>
