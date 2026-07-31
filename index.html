@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,8 +139,8 @@
 <span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>ais_corrected <span class="ot">&lt;-</span> <span class="fu">AIScorrect_speed</span>(ais_identified)</span>
 <span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
 <span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>ais_interpolated <span class="ot">&lt;-</span> <span class="fu">AISinterpolate</span>(<span class="at">ais_data =</span> ais_corrected,</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>                                   <span class="at">type_interpolation =</span> <span class="st">"maximum_time_interval"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>                                   <span class="at">maximum_time_interval =</span> <span class="fu">list</span>(<span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>))</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>                                   <span class="at">type_interpolation =</span> <span class="st">"maximum_gap_seconds"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>                                   <span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>)</span>
 <span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>ais_extracted <span class="ot">&lt;-</span> <span class="fu">AISextract</span>(<span class="at">ais_data =</span> ais_interpolated,</span>
 <span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>                            <span class="at">data =</span> point_to_extract,</span>
@@ -159,6 +159,11 @@
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
 <p>This project is licensed under the MIT License. See the <code>LICENSE</code> file for details.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome! Whether you would like to report a bug, suggest a new feature, or contribute code or documentation, please read our <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> guide for information on how to get started.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -202,7 +207,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.21474357" class="external-link"><img src="reference/figures/zenodo.21474293.svg" alt="DOI"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.21474292" class="external-link"><img src="reference/figures/zenodo.21474292.svg" alt="DOI"></a></li>
 <li><a href="https://remip48.github.io/AISanalyze/"><img src="https://img.shields.io/badge/Documentation-pkgdown-blue" alt="Documentation"></a></li>
 <li><a href="https://github.com/remip48/AISanalyze/blob/master/LICENSE.md" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>

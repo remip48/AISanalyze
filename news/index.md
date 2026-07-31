@@ -1,5 +1,12 @@
 # Changelog
 
+## AISanalyze 2.0.2 (2026-07-30)
+
+### Improvements
+
+- Simplify use and code of AISinterpolate().
+- cite CONTRIBUTION.md in README
+
 ## AISanalyze 2.0.1 (2026-07-30)
 
 ### Improvements

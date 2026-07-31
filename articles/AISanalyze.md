@@ -77,9 +77,7 @@ The example below interpolates vessel positions every 60 seconds.
 ais_interpolated_60sec <- AISinterpolate(
   ais_data = ais,
   type_interpolation = "maximum_time_interval",
-  maximum_time_interval = list(
-    maximum_gap_seconds = 60
-  )
+  maximum_gap_seconds = 60
 )
 ```
 

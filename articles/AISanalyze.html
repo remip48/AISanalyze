@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,9 +127,7 @@ transmission delays.</p>
 <code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"maximum_time_interval"</span>,</span>
-<span>  maximum_time_interval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span></span>
-<span>  <span class="op">)</span></span>
+<span>  maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The <code>datetime</code> column can be updated from the interpolated
 timestamps:</p>

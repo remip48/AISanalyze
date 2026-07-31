@@ -4,7 +4,7 @@ Interpolates vessel positions either: (depending on
 `type_interpolation`)
 
 - to ensure time intervals do not exceed a specified maximum
-  (`maximum_time_interval`).
+  (`maximum_gap_seconds`).
 
 - at user-defined timestamps (`exact_timestamp`). Interpolation can
   optionally be restricted to a given radius within target locations to
@@ -16,9 +16,8 @@ Interpolates vessel positions either: (depending on
 AISinterpolate(
   ais_data,
   type_interpolation,
-  maximum_time_interval = list(maximum_gap_seconds = 10 * 60),
-  exact_timestamp = list(timestamp_to_interpolate = NULL, locations_of_interest = NULL,
-    radius = 2e+05),
+  maximum_gap_seconds,
+  exact_timestamp = list(timestamp_to_interpolate, locations_of_interest, radius),
   crs_meters = 3035,
   nb_cores = 1,
   outfile = "log.txt"
@@ -35,12 +34,12 @@ AISinterpolate(
 
 - type_interpolation:
 
-  Interpolation mode: `"maximum_time_interval"` or `"exact_timestamp"`.
+  Interpolation mode: `"maximum_gap_seconds"` or `"exact_timestamp"`.
 
-- maximum_time_interval:
+- maximum_gap_seconds:
 
-  List used when `type_interpolation = "maximum_time_interval"`,
-  containing `maximum_gap_seconds`.
+  used when `type_interpolation = "maximum_gap_seconds"`: threshold
+  above which AIS signals are interpolated.
 
 - exact_timestamp:
 
@@ -88,8 +87,8 @@ ais <- ais %>%
 
 # to interpolate all vessel locations separated by > 60 seconds
 out <- AISinterpolate(ais_data = ais,
-               type_interpolation = "maximum_time_interval",
-               maximum_time_interval = list(maximum_gap_seconds = 60),
+               type_interpolation = "maximum_gap_seconds",
+               maximum_gap_seconds = 60,
                crs_meters = 3035)
 
 # to interpolate all vessel locations at exact timestamps,
