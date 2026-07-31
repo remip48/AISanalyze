@@ -8,6 +8,7 @@ utils::globalVariables(
     "X",
     "Y",
     "ais_X",
+    "locations_of_interest",
     "ais_Y",
     "last_row",
     "id_mmsi_point_initial",

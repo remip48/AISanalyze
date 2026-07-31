@@ -5,7 +5,7 @@
 
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
-[![DOI](man/figures/zenodo.21474293.svg)](https://doi.org/10.5281/zenodo.21474357)
+[![DOI](man/figures/zenodo.21474292.svg)](https://doi.org/10.5281/zenodo.21474292)
 
 [![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 
@@ -73,8 +73,8 @@ ais_identified <- AISidentify_stations_aircraft(ais)
 ais_corrected <- AIScorrect_speed(ais_identified)
 
 ais_interpolated <- AISinterpolate(ais_data = ais_corrected,
-                                   type_interpolation = "maximum_time_interval",
-                                   maximum_time_interval = list(maximum_gap_seconds = 60))
+                                   type_interpolation = "maximum_gap_seconds",
+                                   maximum_gap_seconds = 60)
 
 ais_extracted <- AISextract(ais_data = ais_interpolated,
                             data = point_to_extract,
@@ -97,3 +97,10 @@ the North Sea. *Marine Pollution Bulletin.* 208: 116925.
 
 This project is licensed under the MIT License. See the `LICENSE` file
 for details.
+
+## Contributing
+
+Contributions are welcome! Whether you would like to report a bug,
+suggest a new feature, or contribute code or documentation, please read
+our [CONTRIBUTING.md](CONTRIBUTING.md) guide for information on how to
+get started.

@@ -12,8 +12,8 @@ test_that("AISinterpolate", {
 
   ## interpolate every 30 seconds
   out <- AISinterpolate(ais_data,
-                        type_interpolation = "maximum_time_interval",
-                        maximum_time_interval = list(maximum_gap_seconds = 30),
+                        type_interpolation = "maximum_gap_seconds",
+                        maximum_gap_seconds = 30,
                         nb_cores = 1)
 
   ## check

@@ -7,9 +7,8 @@
 AISinterpolate(
   ais_data,
   type_interpolation,
-  maximum_time_interval = list(maximum_gap_seconds = 10 * 60),
-  exact_timestamp = list(timestamp_to_interpolate = NULL, locations_of_interest = NULL,
-    radius = 2e+05),
+  maximum_gap_seconds,
+  exact_timestamp = list(timestamp_to_interpolate, locations_of_interest, radius),
   crs_meters = 3035,
   nb_cores = 1,
   outfile = "log.txt"
@@ -20,12 +19,12 @@ AISinterpolate(
 \code{mmsi}. \code{timestamp} must be Unix time (seconds since 1970-01-01), while
 \code{lon} and \code{lat} must be numeric.}
 
-\item{type_interpolation}{Interpolation mode: \code{"maximum_time_interval"} or
+\item{type_interpolation}{Interpolation mode: \code{"maximum_gap_seconds"} or
 \code{"exact_timestamp"}.}
 
-\item{maximum_time_interval}{List used when
-\code{type_interpolation = "maximum_time_interval"}, containing
-\code{maximum_gap_seconds}.}
+\item{maximum_gap_seconds}{used when
+\code{type_interpolation = "maximum_gap_seconds"}: threshold above which
+AIS signals are interpolated.}
 
 \item{exact_timestamp}{List used when
 \code{type_interpolation = "exact_timestamp"}, containing:
@@ -53,7 +52,7 @@ The interpolated AIS data with an additional column:
 Interpolates vessel positions either: (depending on \code{type_interpolation})
 \itemize{
 \item to ensure time intervals do not exceed a specified maximum
-(\code{maximum_time_interval}).
+(\code{maximum_gap_seconds}).
 \item at user-defined timestamps (\code{exact_timestamp}). Interpolation
 can optionally be restricted to a given radius within
 target locations to reduce computation time.
@@ -74,8 +73,8 @@ ais <- ais \%>\%
 
 # to interpolate all vessel locations separated by > 60 seconds
 out <- AISinterpolate(ais_data = ais,
-               type_interpolation = "maximum_time_interval",
-               maximum_time_interval = list(maximum_gap_seconds = 60),
+               type_interpolation = "maximum_gap_seconds",
+               maximum_gap_seconds = 60,
                crs_meters = 3035)
 
 # to interpolate all vessel locations at exact timestamps,

@@ -1,6 +1,6 @@
 Package: AISanalyze
 Title: Tools for Preprocessing and Extracting AIS Vessel Tracking Data
-Version: 2.0.1
+Version: 2.0.2
 Authors@R: c(
     person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
