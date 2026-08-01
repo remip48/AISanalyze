@@ -4,9 +4,9 @@ Interpolates vessel positions either: (depending on
 `type_interpolation`)
 
 - to ensure time intervals do not exceed a specified maximum
-  (`maximum_gap_seconds`).
+  (`= maximum_gap_seconds`).
 
-- at user-defined timestamps (`exact_timestamp`). Interpolation can
+- at user-defined timestamps (`= exact_timestamp`). Interpolation can
   optionally be restricted to a given radius within target locations to
   reduce computation time.
 
@@ -45,12 +45,12 @@ AISinterpolate(
 
   List used when `type_interpolation = "exact_timestamp"`, containing:
 
-  - `timestamp_to_interpolate`: Target timestamps.
+  - `timestamp_to_interpolate`
 
-  - `locations_of_interest`: Optional data frame with `lon` and `lat`
-    columns corresponding to each `timestamp_to_interpolate`.
+  - `locations_of_interest`: (optional) data frame with `lon` and `lat`
+    columns corresponding to each `timestamp_to_interpolate`
 
-  - `radius`: Optional search radius (m) around each target location.
+  - `radius`: (optional) a search radius (m) around target locations
 
 - crs_meters:
 

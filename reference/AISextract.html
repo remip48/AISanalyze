@@ -15,7 +15,7 @@ or all vessel positions within a specified time window.
 
     <a class="navbar-brand me-2" href="../index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ or all vessel positions within a specified time window.
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Extract AIS positions around target locations and times</h1>
-      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/v3.0.2/R/AISextract.R" class="external-link"><code>R/AISextract.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/master/R/AISextract.R" class="external-link"><code>R/AISextract.R</code></a></small>
       <div class="d-none name"><code>AISextract.Rd</code></div>
     </div>
 
@@ -53,6 +53,7 @@ or all vessel positions within a specified time window.
 <span>  crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  search_shape <span class="op">=</span> <span class="st">"circle"</span>,</span>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
 <span>  nb_cores <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -91,6 +92,13 @@ closest position in time.</p></dd>
 <dd><p>Search radius (m).</p></dd>
 
 
+<dt id="arg-search-shape">search_shape<a class="anchor" aria-label="anchor" href="#arg-search-shape"></a></dt>
+<dd><p><code>"circle"</code> (default; selects vessels within
+<code>search_into_radius_m</code> of the target location) or <code>"square"</code> (selects
+vessels within <code>search_into_radius_m</code> in both the X and Y directions,
+useful for grid-based analyses).</p></dd>
+
+
 <dt id="arg-interval-time-before">interval_time_before<a class="anchor" aria-label="anchor" href="#arg-interval-time-before"></a></dt>
 <dd><p>Time window (s) before each <code>data$timestamp</code>.</p></dd>
 
@@ -113,7 +121,7 @@ closest position in time.</p></dd>
 several vessel positions match a target location and time. If no vessel is
 found, AIS columns (including <code>mmsi</code>) are filled with <code>NA</code>. The output also
 includes <code>distance_vessel_to_location_m</code>, the distance (m) between the
-target location and each vessel position.</p>
+target location and vessel positions.</p>
     </div>
 
     <div class="section level2">
