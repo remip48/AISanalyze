@@ -82,7 +82,7 @@ AIScorrect_speed <- function(ais_data,
   doParallel::registerDoParallel(cl)
 
   corrected_data <- foreach::foreach(ais_data_core = ais_data,
-                          # .export = c(),
+                          .export = c("add_coordinates_meters"),
                           .noexport = c("assign_mmsi_to_core", "ais_data"),
                           .packages = c("dplyr", "sf")
   ) %dopar% {
