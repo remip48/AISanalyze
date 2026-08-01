@@ -1,4 +1,4 @@
-starting worker pid=16632 on localhost:11698 at 13:47:41.395
+starting worker pid=15956 on localhost:11293 at 14:10:39.875
 Loading required package: AISanalyze
 loaded AISanalyze and set parent environment
 
