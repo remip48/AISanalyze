@@ -81,13 +81,6 @@ ais_interpolated_60sec <- AISinterpolate(
 )
 ```
 
-The `datetime` column can be updated from the interpolated timestamps:
-
-``` r
-
-ais_interpolated_60sec$datetime <- lubridate::as_datetime(ais_interpolated_60sec$timestamp)
-```
-
 Alternatively, interpolation can be performed at exact timestamps.
 Target locations and a search radius (m) can be specified to limit
 interpolation to the area of interest and reduce computation time. The
@@ -104,6 +97,13 @@ ais_interpolated_exact_timestamps <- AISinterpolate(
     radius = 200000
   )
 )
+```
+
+The `datetime` column can be updated from the interpolated timestamps:
+
+``` r
+
+ais_interpolated_60sec$datetime <- lubridate::as_datetime(ais_interpolated_60sec$timestamp)
 
 ais_interpolated_exact_timestamps$datetime <- lubridate::as_datetime(ais_interpolated_exact_timestamps$timestamp)
 ```
@@ -135,6 +135,22 @@ AISextract(
   ais_data = ais_interpolated_exact_timestamps,
   return_all_vessel_locations = FALSE,
   search_into_radius_m = 50000,
+  interval_time_before = 300,
+  interval_time_after = 300
+)
+```
+
+Alternatively, you can pass the centroids of a square grid to `d` and
+set `search_shape = "square` to extract vessel positions on its cells:
+
+``` r
+
+AISextract(
+  data = point_to_extract,
+  ais_data = ais_interpolated_exact_timestamps,
+  return_all_vessel_locations = FALSE, # or TRUE
+  search_into_radius_m = 50000,
+  search_shape = "square",
   interval_time_before = 300,
   interval_time_after = 300
 )

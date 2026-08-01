@@ -129,16 +129,12 @@ transmission delays.</p>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"maximum_time_interval"</span>,</span>
 <span>  maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The <code>datetime</code> column can be updated from the interpolated
-timestamps:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, interpolation can be performed at exact timestamps.
 Target locations and a search radius (m) can be specified to limit
 interpolation to the area of interest and reduce computation time. The
 <code>datetime</code> column can then be updated from the new
 <code>timestamp</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ais_interpolated_exact_timestamps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"exact_timestamp"</span>,</span>
@@ -147,7 +143,11 @@ interpolation to the area of interest and reduce computation time. The
 <span>    locations_of_interest <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    radius <span class="op">=</span> <span class="fl">200000</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The <code>datetime</code> column can be updated from the interpolated
+timestamps:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ais_interpolated_exact_timestamps</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_exact_timestamps</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -176,11 +176,24 @@ the vessel position at the target timestamps:</p>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, you can pass the centroids of a square grid to
+<code>d</code> and set <code>search_shape = "square</code> to extract
+vessel positions on its cells:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
+<span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>
+<span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># or TRUE</span></span>
+<span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  search_shape <span class="op">=</span> <span class="st">"square"</span>,</span>
+<span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="estimate-vessel-characteristics">Estimate vessel characteristics<a class="anchor" aria-label="anchor" href="#estimate-vessel-characteristics"></a>
 </h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">infos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinfos.html">AISinfos</a></span><span class="op">(</span><span class="va">ais</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">summary_values</span> <span class="op">&lt;-</span> <span class="va">infos</span><span class="op">$</span><span class="va">summary</span></span>
