@@ -81,7 +81,11 @@ AIScorrect_speed <- function(ais_data,
   cl <- parallel::makeCluster(nb_cores, outfile = outfile)
   doParallel::registerDoParallel(cl)
 
-  .worker_correct_speed_internally <- function() {
+  corrected_data <- foreach::foreach(ais_data_core = ais_data,
+                          .export = c("add_coordinates_meters"),
+                          .noexport = c("assign_mmsi_to_core", "ais_data"),
+                          .packages = c("dplyr", "sf")
+  ) %dopar% {
     ais_data <- ais_data_core %>%
       add_coordinates_meters(., crs_meters = crs_meters) %>%
       sf::st_drop_geometry() %>%
@@ -116,39 +120,35 @@ AIScorrect_speed <- function(ais_data,
 
     ## avoid consecutive GPS detected (but not always actual) errors to be both removed: only the first error is removed
     strange_speed <- strange_speed[c(T, (strange_speed[-1] - strange_speed[-length(strange_speed)]) >= 2)]
-    it_sp <- 0
-
-    ## recalculate the time/speed/distance travelled for points consecutive to removed errors
-    if (length(strange_speed) > 0) {
-      to_correct <- ais_data[!(ais_data$id_ais_data_initial %in% strange_speed) & ais_data$id_ais_data_initial %in% c(strange_speed - 1, strange_speed + 1), ] %>%
-        dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) %>%
-        dplyr::left_join(AIStravel(.,
-                                   crs_meters = crs_meters) %>%
-                           dplyr::select(time_travelled, distance_travelled, speed_kmh, mmsi, timestamp),
-                         by = c("mmsi", "timestamp"))
-
-      ais_data <- ais_data[!(ais_data$id_ais_data_initial %in% c(strange_speed, strange_speed + 1)), ] %>%
-        dplyr::mutate(speed_kmh_corrected = F) %>%
-        rbind(to_correct %>%
-                dplyr::filter(id_ais_data_initial %in% (strange_speed + 1)) %>%
-                dplyr::mutate(speed_kmh_corrected = T)) %>%
-        dplyr::arrange(id_ais_data_initial)
-    }
 
     return(ais_data %>%
-             dplyr::select(dplyr::all_of(c(init_cols, "speed_kmh_corrected"))))
-  }
-
-  corrected_data <- foreach::foreach(ais_data_core = ais_data,
-                          .export = c(".worker_correct_speed_internally"),
-                          .noexport = c("assign_mmsi_to_core", "ais_data"),
-                          .packages = c("dplyr", "sf")
-  ) %dopar% {
-    .worker_correct_speed_internally()
+             dplyr::filter(!(id_ais_data_initial %in% strange_speed)) %>%
+             dplyr::mutate(speed_to_correct = ifelse(id_ais_data_initial %in% (strange_speed + 1), T, F)))
   }
 
   parallel::stopCluster(cl)
   gc()
 
-  return(purrr::map_dfr(corrected_data, rbind))
+  corrected_data <- purrr::map_dfr(corrected_data, rbind)
+
+  lines_to_correct <- which(corrected_data$speed_to_correct)
+
+  if (length(lines_to_correct) > 0) {
+    correct_speed <- corrected_data[c(lines_to_correct - 1, lines_to_correct), ] %>%
+      dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) %>%
+      dplyr::left_join(AIStravel(.,
+                                 crs_meters = crs_meters) %>%
+                         dplyr::select(time_travelled, distance_travelled, speed_kmh, mmsi, timestamp),
+                       by = c("mmsi", "timestamp")) %>%
+      dplyr::filter(speed_to_correct) %>%
+      dplyr::mutate(speed_kmh_corrected = T)
+
+    corrected_data <- corrected_data[-lines_to_correct, ] %>%
+      dplyr::mutate(speed_kmh_corrected = F) %>%
+      rbind(correct_speed) %>%
+      dplyr::arrange(id_ais_data_initial)
+  }
+
+  return(corrected_data %>%
+           dplyr::select(dplyr::all_of(c(init_cols, "speed_kmh_corrected"))))
 }

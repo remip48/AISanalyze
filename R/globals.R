@@ -8,6 +8,7 @@ utils::globalVariables(
     "X",
     "Y",
     "Estimated_c",
+    "speed_to_correct",
     "ais_data_core",
     "all_values_c",
     "core",
