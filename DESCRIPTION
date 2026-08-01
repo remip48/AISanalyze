@@ -1,6 +1,6 @@
 Package: AISanalyze
 Title: Tools for Preprocessing and Analyzing AIS Vessel Tracking Data
-Version: 3.0.2
+Version: 3.0.3
 Authors@R: c(
     person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"))
   )
@@ -16,7 +16,6 @@ Depends:
 Imports:
     dplyr (>= 1.1.2),
     sf (>= 1.0-9),
-    lubridate (>= 1.9.2),
     purrr (>= 1.0.1),
     stats (>= 4.2.1),
     stringr (>= 1.5.0),

@@ -53,8 +53,6 @@ test_that("AISextract", {
                                                                                                     lat = data$lat),
                                                                  radius = 200000))
 
-  unlink(r"(tests\testthat\log.txt)")
-
   out <- AISextract(data,
                     crs_meters = 3035,
                     ais_data_interpolated,

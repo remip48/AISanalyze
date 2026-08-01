@@ -1,3 +1,11 @@
+# AISanalyze 3.0.3 (2026-08-01)
+
+## Improvements
+
+* Optimized the parallel processing for AISinterpolate() with the option "exact_timestamp".
+* Added the option of running AISextract() for a square grid.
+
+
 # AISanalyze 3.0.2 (2026-08-01)
 
 ## Bug fixes

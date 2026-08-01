@@ -29,10 +29,10 @@ AIS signals are interpolated.}
 \item{exact_timestamp}{List used when
 \code{type_interpolation = "exact_timestamp"}, containing:
 \itemize{
-\item \code{timestamp_to_interpolate}: Target timestamps.
-\item \code{locations_of_interest}: Optional data frame with \code{lon} and \code{lat}
-columns corresponding to each \code{timestamp_to_interpolate}.
-\item \code{radius}: Optional search radius (m) around each target location.
+\item \code{timestamp_to_interpolate}
+\item \code{locations_of_interest}: (optional) data frame with \code{lon} and \code{lat}
+columns corresponding to each \code{timestamp_to_interpolate}
+\item \code{radius}: (optional) a search radius (m) around target locations
 }}
 
 \item{crs_meters}{CRS (in metres) used for distance calculations. Defaults
@@ -52,8 +52,8 @@ The interpolated AIS data with an additional column:
 Interpolates vessel positions either: (depending on \code{type_interpolation})
 \itemize{
 \item to ensure time intervals do not exceed a specified maximum
-(\code{maximum_gap_seconds}).
-\item at user-defined timestamps (\code{exact_timestamp}). Interpolation
+(\verb{= maximum_gap_seconds}).
+\item at user-defined timestamps (\verb{= exact_timestamp}). Interpolation
 can optionally be restricted to a given radius within
 target locations to reduce computation time.
 }

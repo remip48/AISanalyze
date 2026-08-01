@@ -18,6 +18,10 @@
 #'   positions within the specified time window. Otherwise, returns only the
 #'   closest position in time.
 #' @param search_into_radius_m Search radius (m).
+#' @param search_shape `"circle"` (default; selects vessels within
+#'   `search_into_radius_m` of the target location) or `"square"` (selects
+#'   vessels within `search_into_radius_m` in both the X and Y directions,
+#'   useful for grid-based analyses).
 #' @param interval_time_before Time window (s) before each `data$timestamp`.
 #' @param interval_time_after Time window (s) after each `data$timestamp`.
 #' @param nb_cores Number of CPU cores used.
@@ -27,7 +31,7 @@
 #' several vessel positions match a target location and time. If no vessel is
 #' found, AIS columns (including `mmsi`) are filled with `NA`. The output also
 #' includes `distance_vessel_to_location_m`, the distance (m) between the
-#' target location and each vessel position.
+#' target location and vessel positions.
 #'
 #' @examples
 #' \dontrun{
@@ -76,6 +80,7 @@ AISextract <- function(data,
                        crs_meters = 3035,
                        return_all_vessel_locations = T,
                        search_into_radius_m = 50000,
+                       search_shape = "circle",
                        interval_time_before = 5 * 60,
                        interval_time_after = 5 * 60,
                        nb_cores = 1,
@@ -100,104 +105,130 @@ AISextract <- function(data,
              "Returning only the vessel position closest in time within [t - interval_time_before, t + interval_time_after]. Set `return_all_vessel_locations = TRUE` to return all matching positions.\n"
   ))
 
-  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp, na.rm = T) - (interval_time_before)) &
-                         ais_data$timestamp <= (max(data$timestamp, na.rm = T) + interval_time_after), ]
-
-  assign_mmsi_to_core <- ais_data %>%
-    dplyr::group_by(mmsi) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::arrange(-n) %>%
-    dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
-
-  ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
-    ais_data %>%
-      dplyr::filter(mmsi %in% (assign_mmsi_to_core %>%
-                                 dplyr::filter(core == co) %>%
-                                 dplyr::pull(mmsi))) %>%
-      add_coordinates_meters(.,
-                             crs_meters = crs_meters,
-                             coordinates_to_write = c("ais_X", "ais_Y")) %>%
-      sf::st_drop_geometry() %>%
-      rename_colums_ais(.,
-                        data)  %>%
-      dplyr::rename(ais_timestamp = timestamp)%>%
-      as.data.frame()
-  })
-
   data <- data %>%
     rename_columns_data(.) %>%
     add_coordinates_meters(., crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
     dplyr::mutate(idd_effort = 1:dplyr::n())
 
-  cl <- parallel::makeCluster(nb_cores, outfile = outfile)
-  doParallel::registerDoParallel(cl)
+  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp, na.rm = T) - (interval_time_before)) &
+                         ais_data$timestamp <= (max(data$timestamp, na.rm = T) + interval_time_after), ] %>%
+    add_coordinates_meters(.,
+                           crs_meters = crs_meters,
+                           coordinates_to_write = c("ais_X", "ais_Y")) %>%
+    sf::st_drop_geometry() %>%
+    dplyr::filter(ais_X >= (min(data$X) - search_into_radius_m)) %>%
+    dplyr::filter(ais_X <= (max(data$X) + search_into_radius_m)) %>%
+    dplyr::filter(ais_Y >= (min(data$Y) - search_into_radius_m)) %>%
+    dplyr::filter(ais_Y <= (max(data$Y) + search_into_radius_m)) %>%
+    rename_colums_ais(.,
+                    data)  %>%
+    dplyr::rename(ais_timestamp = timestamp)%>%
+    as.data.frame()
 
-  extracted_ais <- foreach::foreach(ais_data_core = ais_data,
-                          # .export = c(),
-                          .noexport = c("assign_mmsi_to_core", "ais_data"),
-                          .packages = c("dplyr", "purrr")
-  ) %dopar% {
-    purrr::map_dfr(unique(data$timestamp), function(dt) {
-      eff_dt <- data[data$timestamp == dt, ]
+  init_cols <- colnames(ais_data)
 
-      mmsi_ref <- ais_data_core[ais_data_core$ais_timestamp >= (dt - interval_time_before) &
-                             ais_data_core$ais_timestamp <= (dt + interval_time_after) &
-                             ais_data_core$ais_X >= (min(eff_dt$X) - search_into_radius_m) &
-                             ais_data_core$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
-                             ais_data_core$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) &
-                             ais_data_core$ais_Y <= (max(eff_dt$Y) + search_into_radius_m), ]
+  if (nrow(ais_data) > 0) {
+    assign_mmsi_to_core <- ais_data %>%
+      dplyr::group_by(mmsi) %>%
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::ungroup() %>%
+      dplyr::arrange(-n) %>%
+      dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
 
-      if (nrow(mmsi_ref) >= 1 & !return_all_vessel_locations) {
-        mmsi_refi <- mmsi_ref %>%
-          dplyr::mutate(idd_ais = 1:dplyr::n())
+    ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
+      ais_data %>%
+        dplyr::filter(mmsi %in% (assign_mmsi_to_core %>%
+                                   dplyr::filter(core == co) %>%
+                                   dplyr::pull(mmsi)))
+    })
 
-        mmsi_ref <- mmsi_refi %>%
-          as.data.frame() %>%
-          dplyr::group_by(mmsi) %>%
-          dplyr::reframe(point = which.min(abs(ais_timestamp - dt)),
-                         idd_ais = idd_ais[point],
-                         ais_X = ais_X[point],
-                         ais_Y = ais_Y[point],
-                         ais_timestamp = ais_timestamp[point]
-          )
-      }
+    cl <- parallel::makeCluster(nb_cores, outfile = outfile)
+    doParallel::registerDoParallel(cl)
 
-      if (nrow(mmsi_ref) >= 1) {
-        out <- eff_dt %>%
-          as.data.frame() %>%
-          dplyr::group_by(idd_effort) %>%
-          dplyr::reframe(mmsi_ref %>%
-                           dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2))) %>%
-          dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m) %>%
-          dplyr::left_join(eff_dt, by = "idd_effort")
+    extracted_ais <- foreach::foreach(ais_data_core = ais_data,
+                                      # .export = c(),
+                                      .noexport = c("assign_mmsi_to_core", "ais_data"),
+                                      .packages = c("dplyr", "purrr")
+    ) %dopar% {
 
-        if (!return_all_vessel_locations) {
+      purrr::map_dfr(unique(data$timestamp), function(dt) {
+        eff_dt <- data[data$timestamp == dt, ]
+
+        mmsi_ref <- ais_data_core[ais_data_core$ais_timestamp >= (dt - interval_time_before) &
+                                    ais_data_core$ais_timestamp <= (dt + interval_time_after) &
+                                    ais_data_core$ais_X >= (min(eff_dt$X) - search_into_radius_m) &
+                                    ais_data_core$ais_X <= (max(eff_dt$X) + search_into_radius_m) &
+                                    ais_data_core$ais_Y >= (min(eff_dt$Y) - search_into_radius_m) &
+                                    ais_data_core$ais_Y <= (max(eff_dt$Y) + search_into_radius_m), ]
+
+        if (nrow(mmsi_ref) >= 1) {
+
+          if (!return_all_vessel_locations) {
+            mmsi_ref_infos <- mmsi_ref %>%
+              dplyr::mutate(idd_ais = 1:dplyr::n())
+
+            mmsi_ref <- mmsi_ref_infos %>%
+              as.data.frame() %>%
+              dplyr::group_by(mmsi) %>%
+              dplyr::reframe(point = which.min(abs(ais_timestamp - dt)),
+                             idd_ais = idd_ais[point],
+                             ais_X = ais_X[point],
+                             ais_Y = ais_Y[point],
+                             ais_timestamp = ais_timestamp[point])
+          }
+
+          if (search_shape == "circle") {
+            out <- eff_dt %>%
+              as.data.frame() %>%
+              dplyr::group_by(idd_effort) %>%
+              dplyr::reframe(mmsi_ref %>%
+                               dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2))) %>%
+              dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m)
+          } else if (search_shape == "square") {
+            out <- eff_dt %>%
+              as.data.frame() %>%
+              dplyr::group_by(idd_effort) %>%
+              dplyr::reframe(mmsi_ref %>%
+                               dplyr::filter(abs(ais_X - X) <= search_into_radius_m,
+                                             abs(ais_Y - Y) <= search_into_radius_m) %>%
+                               dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2)))
+          } else {
+            stop("`search_shape` must be either 'circle' or 'square'.")
+          }
+
           out <- out %>%
-            dplyr::left_join(mmsi_refi %>%
-                               dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") %>%
-            dplyr::select(-c(idd_ais, point))
+            dplyr::left_join(eff_dt, by = "idd_effort")
+
+          if (!return_all_vessel_locations) {
+            out <- out %>%
+              dplyr::left_join(mmsi_ref_infos %>%
+                                 dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") %>%
+              dplyr::select(-c(idd_ais, point))
+          }
+
+        } else {
+          out <- eff_dt
         }
 
-      } else {
-        out <- eff_dt
-      }
+        return(out)
+      })
+    }
 
-      return(out)
-    })
+    parallel::stopCluster(cl)
+    gc()
+
+    extracted_ais <- purrr::map_dfr(extracted_ais, rbind)
+  } else {
+    extracted_ais <- data
   }
-
-  parallel::stopCluster(cl)
-  gc()
-
-  extracted_ais <- purrr::map_dfr(extracted_ais, rbind)
 
   if (!("ais_timestamp" %in% colnames(extracted_ais))) {
     cat("\nNo AIS data extracted at all for the input data\n")
     extracted_ais <- extracted_ais %>%
       dplyr::mutate(mmsi = NA,
-                    ais_timestamp = NA)
+                    ais_timestamp = NA,
+                    distance_vessel_to_location_m = NA)
   }
 
   if (any(!(data$idd_effort %in% extracted_ais$idd_effort))) {
@@ -205,14 +236,10 @@ AISextract <- function(data,
                         function(l) {return(l)})
   }
 
-  extracted_ais <- extracted_ais %>%
-    dplyr::select(!(c("idd_effort", "ais_X", "ais_Y")[c("idd_effort", "ais_X", "ais_Y") %in% colnames(.)])) %>%
-    dplyr::select(dplyr::all_of(colnames(data)[colnames(data) %in% colnames(.)]),
-                  dplyr::all_of(colnames(.)[!(colnames(.) %in% c(colnames(data),
-                                                          colnames(ais_data)))]),
-                  dplyr::all_of(colnames(ais_data)[colnames(ais_data) %in% colnames(.)])
-                  ) %>%
-    dplyr::arrange(timestamp, ais_timestamp)
-
-  return(extracted_ais)
+  return(extracted_ais %>%
+           dplyr::select(!(c("idd_effort", "ais_X", "ais_Y")[c("idd_effort", "ais_X", "ais_Y") %in% colnames(.)])) %>%
+           dplyr::select(dplyr::all_of(c(colnames(data)[colnames(data) %in% colnames(.)],
+                                         "distance_vessel_to_location_m",
+                                         init_cols[init_cols %in% colnames(.)]))) %>%
+           dplyr::arrange(timestamp, ais_timestamp))
 }

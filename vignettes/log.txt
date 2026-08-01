@@ -1,0 +1,15 @@
+starting worker pid=3148 on localhost:11713 at 20:27:45.905
+Loading required package: AISanalyze
+loaded AISanalyze and set parent environment
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE

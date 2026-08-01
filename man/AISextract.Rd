@@ -10,6 +10,7 @@ AISextract(
   crs_meters = 3035,
   return_all_vessel_locations = T,
   search_into_radius_m = 50000,
+  search_shape = "circle",
   interval_time_before = 5 * 60,
   interval_time_after = 5 * 60,
   nb_cores = 1,
@@ -34,6 +35,11 @@ closest position in time.}
 
 \item{search_into_radius_m}{Search radius (m).}
 
+\item{search_shape}{\code{"circle"} (default; selects vessels within
+\code{search_into_radius_m} of the target location) or \code{"square"} (selects
+vessels within \code{search_into_radius_m} in both the X and Y directions,
+useful for grid-based analyses).}
+
 \item{interval_time_before}{Time window (s) before each \code{data$timestamp}.}
 
 \item{interval_time_after}{Time window (s) after each \code{data$timestamp}.}
@@ -47,7 +53,7 @@ closest position in time.}
 several vessel positions match a target location and time. If no vessel is
 found, AIS columns (including \code{mmsi}) are filled with \code{NA}. The output also
 includes \code{distance_vessel_to_location_m}, the distance (m) between the
-target location and each vessel position.
+target location and vessel positions.
 }
 \description{
 Returns either (depending on \code{return_all_vessel_locations}):

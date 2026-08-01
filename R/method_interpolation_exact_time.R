@@ -41,46 +41,40 @@ method_interpolation_exact_time <- function(ais_data,
      return(ifelse(all(ais_data$mmsi %in% done), NA, t))
    }))
 
-   hour_to_run <- paste(all_to_run %>%
-                          lubridate::as_datetime() %>%
-                          lubridate::date() %>%
-                          as.character(),
-                        all_to_run %>%
-                          lubridate::as_datetime() %>%
-                          lubridate::hour() %>%
-                          as.character)
+   assign_mmsi_to_core <- ais_data %>%
+     dplyr::group_by(mmsi) %>%
+     dplyr::summarise(n = dplyr::n()) %>%
+     dplyr::ungroup() %>%
+     dplyr::arrange(-n) %>%
+     dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
+
+   ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
+     ais_data %>%
+       dplyr::filter(mmsi %in% (assign_mmsi_to_core %>%
+                                  dplyr::filter(core == co) %>%
+                                  dplyr::pull(mmsi)))
+   })
 
    cl <- parallel::makeCluster(nb_cores, outfile = outfile)
    doParallel::registerDoParallel(cl)
 
-   ais_data <- purrr::map_dfr(unique(hour_to_run), function(hh) {
+   ais_data <- foreach::foreach(ais_data_core = ais_data,
+                           .noexport = c("assign_mmsi_to_core", "ais_data"),
+                           .packages = c("dplyr", "purrr")
+   ) %dopar% {
 
-     to_run <- all_to_run[hour_to_run == hh]
-
-     datah <- data[data$timestamp %in% to_run, ] %>%
-       dplyr::distinct()
-
-     ais_datah <- ais_data %>%
-       dplyr::filter(X >= (min(datah$X, na.rm = T) - radius) & X <= (max(datah$X, na.rm = T) + radius) &
-                       Y >= (min(datah$Y, na.rm = T) - radius) & Y <= (max(datah$Y, na.rm = T) + radius))
-
-     out <- foreach::foreach(t = to_run,
-                             .export = c("ais_ok", "all_to_run",
-                                         "radius"),
-                             .noexport = c("data", "ais_data"),
-                             .packages = c("dplyr", "sf")
-     ) %dopar% {
+     purrr::map_dfr(all_to_run, function(t) {
        cat(match(t, all_to_run), "/", length(all_to_run), "\n")
 
-       data_coords <- datah[datah$timestamp == t, ]
+       data_coords <- data[data$timestamp == t, ]
 
-       temp <- ais_datah %>%
+       temp <- ais_data_core %>%
          dplyr::filter(!(mmsi %in% unique(ais_ok$mmsi[ais_ok$timestamp %in% t]))) %>%
-         dplyr::filter(X >= (min(data_coords$X, na.rm = T) - radius) & X <= (max(data_coords$X, na.rm = T) + radius) &
-                         Y >= (min(data_coords$Y, na.rm = T) - radius) & Y <= (max(data_coords$Y, na.rm = T) + radius)) %>%
+         dplyr::filter(X >= (min(data_coords$X, na.rm = T) - radius)) %>%
+         dplyr::filter(X <= (max(data_coords$X, na.rm = T) + radius)) %>%
+         dplyr::filter(Y >= (min(data_coords$Y, na.rm = T) - radius)) %>%
+         dplyr::filter(Y <= (max(data_coords$Y, na.rm = T) + radius)) %>%
          dplyr::mutate(difftimestamp = timestamp - t)
-
-       rm(data_coords)
 
        sup <- temp[temp$difftimestamp > 0, ] %>%
          dplyr::group_by(mmsi) %>%
@@ -110,17 +104,12 @@ method_interpolation_exact_time <- function(ais_data,
 
            interp_ref <- sup[sup$mmsi %in% m_to_interp, ]
 
-           rm(sup)
-           rm(inf)
-
            interp <- interp_ref %>%
              dplyr::mutate(ttimestamp = prec$timestamp,
                            tmmsi = prec$mmsi,
                            tlon = prec$lon,
                            tlat = prec$lat) %>%
              dplyr::filter(tmmsi == mmsi)
-
-           rm(prec)
 
            interp_eez <- interp %>%
              dplyr::mutate(interpolated = T,
@@ -131,10 +120,6 @@ method_interpolation_exact_time <- function(ais_data,
                            timestamp = t
              ) %>%
              dplyr::select(-c("tlon", "tlat", "tmmsi", "ttimestamp"))
-
-           rm(to_interp)
-           rm(interp)
-           rm(interp_ref)
 
            out <- purrr::map_dfr(list(out_ok,
                                       interp_eez),
@@ -153,14 +138,9 @@ method_interpolation_exact_time <- function(ais_data,
          return(to_interp %>%
                   dplyr::select(-"difftimestamp"))
        }
-     }
+     })
 
-     out <- purrr::map_dfr(out, function(d) {return(d)})
-
-     gc()
-
-     return(out)
-   })
+   }
 
    parallel::stopCluster(cl)
    gc()

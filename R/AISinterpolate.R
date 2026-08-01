@@ -3,8 +3,8 @@
 #' Interpolates vessel positions either: (depending on `type_interpolation`)
 #'   \itemize{
 #'   \item to ensure time intervals do not exceed a specified maximum
-#'   (`maximum_gap_seconds`).
-#'   \item at user-defined timestamps (`exact_timestamp`). Interpolation
+#'   (`= maximum_gap_seconds`).
+#'   \item at user-defined timestamps (`= exact_timestamp`). Interpolation
 #'   can optionally be restricted to a given radius within
 #'   target locations to reduce computation time.
 #'   }
@@ -20,10 +20,10 @@
 #' @param exact_timestamp List used when
 #'   `type_interpolation = "exact_timestamp"`, containing:
 #'   \itemize{
-#'   \item `timestamp_to_interpolate`: Target timestamps.
-#'   \item `locations_of_interest`: Optional data frame with `lon` and `lat`
-#'     columns corresponding to each `timestamp_to_interpolate`.
-#'   \item `radius`: Optional search radius (m) around each target location.
+#'   \item `timestamp_to_interpolate`
+#'   \item `locations_of_interest`: (optional) data frame with `lon` and `lat`
+#'     columns corresponding to each `timestamp_to_interpolate`
+#'   \item `radius`: (optional) a search radius (m) around target locations
 #'   }
 #' @param crs_meters CRS (in metres) used for distance calculations. Defaults
 #'   to EPSG:3035.
