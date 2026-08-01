@@ -1,5 +1,12 @@
 # Changelog
 
+## AISanalyze 3.0.3 (2026-08-01)
+
+### Bug fixes
+
+- Correct a bug preventing helper function to be used in the parallel
+  processing loop of AIScorrect_speed().
+
 ## AISanalyze 3.0.2 (2026-08-01)
 
 ### Bug fixes
