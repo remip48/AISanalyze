@@ -68,11 +68,10 @@ library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-point_to_extract <- point_to_extract \%>\%
-  mutate(timestamp = as.numeric(ymd_hm(datetime)))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
 
 ais <- ais \%>\%
-  mutate(timestamp = as.numeric(ymd_hms(datetime))) \%>\%
+  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) \%>\%
   AIStravel(ais_data = .) \%>\%
   AISinterpolate(ais_data = .,
            type_interpolation = "exact_timestamp",

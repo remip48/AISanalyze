@@ -39,11 +39,10 @@
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' point_to_extract <- point_to_extract %>%
-#'   mutate(timestamp = as.numeric(ymd_hm(datetime)))
+#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
 #'
 #' ais <- ais %>%
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
 #'   AIStravel(ais_data = .) %>%
 #'   AISinterpolate(ais_data = .,
 #'            type_interpolation = "exact_timestamp",
@@ -87,6 +86,7 @@ AISextract <- function(data,
                        outfile = "log.txt")
 {
 
+  assertthat::assert_that(search_shape %in% c("circle", "square"))
   assertthat::assert_that(is.numeric(ais_data$lon))
   assertthat::assert_that(is.numeric(ais_data$lat))
   assertthat::assert_that(is.numeric(ais_data$timestamp))
@@ -178,23 +178,17 @@ AISextract <- function(data,
                              ais_timestamp = ais_timestamp[point])
           }
 
+          out <- eff_dt %>%
+            as.data.frame() %>%
+            dplyr::group_by(idd_effort) %>%
+            dplyr::reframe(mmsi_ref %>%
+                             dplyr::filter(abs(ais_X - X) <= search_into_radius_m) %>%
+                             dplyr::filter(abs(ais_Y - Y) <= search_into_radius_m) %>%
+                             dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2)))
+
           if (search_shape == "circle") {
-            out <- eff_dt %>%
-              as.data.frame() %>%
-              dplyr::group_by(idd_effort) %>%
-              dplyr::reframe(mmsi_ref %>%
-                               dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2))) %>%
+            out <- out %>%
               dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m)
-          } else if (search_shape == "square") {
-            out <- eff_dt %>%
-              as.data.frame() %>%
-              dplyr::group_by(idd_effort) %>%
-              dplyr::reframe(mmsi_ref %>%
-                               dplyr::filter(abs(ais_X - X) <= search_into_radius_m,
-                                             abs(ais_Y - Y) <= search_into_radius_m) %>%
-                               dplyr::mutate(distance_vessel_to_location_m = sqrt((ais_X - X)^2 + (ais_Y - Y)^2)))
-          } else {
-            stop("`search_shape` must be either 'circle' or 'square'.")
           }
 
           out <- out %>%

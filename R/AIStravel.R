@@ -24,7 +24,7 @@
 #' data("ais")
 #'
 #' ais <- ais %>%
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime)))
+#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
 #'
 #' out <- AIStravel(ais_data = ais)}
 #' @export

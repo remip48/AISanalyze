@@ -21,7 +21,7 @@
 #' data("ais")
 #'
 #' ais <- ais %>%
-#'   mutate(timestamp = as.numeric(ymd_hms(datetime))) %>%
+#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
 #'   AIStravel(.)
 #'
 #' out <- AISidentify_stations_aircraft(ais_data = ais)}
