@@ -140,8 +140,9 @@ AISextract(
 )
 ```
 
-Alternatively, you can pass the centroids of a square grid to `d` and
-set `search_shape = "square` to extract vessel positions on its cells:
+Alternatively, you can pass the centroids of a square grid to `data` and
+set `search_shape = "square"` to extract vessel positions within square
+grid cells:
 
 ``` r
 
