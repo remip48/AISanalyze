@@ -13,7 +13,9 @@ AIScorrect_speed(
     stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 *
     stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh >
     1], 0.75)]))
- }
+ },
+  nb_cores = 1,
+  outfile = "log.txt"
 )
 }
 \arguments{
@@ -30,6 +32,10 @@ observations are corrected.}
 
 \item{threshold_speed_to_correct_expr}{Function returning a vessel-specific
 speed threshold from \code{speed_kmh}.}
+
+\item{nb_cores}{Number of CPU cores used.}
+
+\item{outfile}{File used to save logs.}
 }
 \value{
 The input data with corrected travel metrics and the following

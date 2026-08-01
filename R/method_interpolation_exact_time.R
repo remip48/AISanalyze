@@ -14,8 +14,8 @@
 #'   to EPSG:3035.
 #' @param radius Optional search radius (m) around each target location.
 #' @param timestamp_to_interpolate Target timestamps.
-#' @param nb_cores Number of CPU cores used if `type_interpolation = exact_timestamp`.
-#' @param outfile File used to save logs when `type_interpolation = exact_timestamp`.
+#' @param nb_cores Number of CPU cores used.
+#' @param outfile File used to save logs.
 #'
 #' @return The interpolated AIS data with an additional column:
 #' \itemize{
@@ -29,8 +29,8 @@ method_interpolation_exact_time <- function(ais_data,
                                             crs_meters,
                                             radius,
                                             timestamp_to_interpolate,
-                                            nb_cores,
-                                            outfile) {
+                                            nb_cores = 1,
+                                            outfile = "log.txt") {
    ais_ok <- ais_data %>%
      dplyr::filter(timestamp %in% timestamp_to_interpolate)
 
@@ -41,14 +41,21 @@ method_interpolation_exact_time <- function(ais_data,
      return(ifelse(all(ais_data$mmsi %in% done), NA, t))
    }))
 
-   hour_to_run <- unique(lubridate::hour(lubridate::as_datetime(all_to_run)))
+   hour_to_run <- paste(all_to_run %>%
+                          lubridate::as_datetime() %>%
+                          lubridate::date() %>%
+                          as.character(),
+                        all_to_run %>%
+                          lubridate::as_datetime() %>%
+                          lubridate::hour() %>%
+                          as.character)
 
    cl <- parallel::makeCluster(nb_cores, outfile = outfile)
    doParallel::registerDoParallel(cl)
 
-   ais_data <- purrr::map_dfr(hour_to_run, function(hh) {
+   ais_data <- purrr::map_dfr(unique(hour_to_run), function(hh) {
 
-     to_run <- all_to_run[lubridate::hour(lubridate::as_datetime(all_to_run)) == hh]
+     to_run <- all_to_run[hour_to_run == hh]
 
      datah <- data[data$timestamp %in% to_run, ] %>%
        dplyr::distinct()
@@ -59,7 +66,7 @@ method_interpolation_exact_time <- function(ais_data,
 
      out <- foreach::foreach(t = to_run,
                              .export = c("ais_ok", "all_to_run",
-                                         "hh", "radius"),
+                                         "radius"),
                              .noexport = c("data", "ais_data"),
                              .packages = c("dplyr", "sf")
      ) %dopar% {

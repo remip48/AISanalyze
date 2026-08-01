@@ -27,13 +27,13 @@ test_that("AISinfos", {
   out <- AISinfos(ais)
 
   ## check selected values are correct
-  expect_true(out$estimated_values$Selected_shiptype == "Cargo")
-  expect_true(out$estimated_values$Selected_name == "Fastest boat")
-  expect_true(out$estimated_values$Selected_imo == 000)
-  expect_true(out$estimated_values$Selected_length == 55)
-  expect_true(out$estimated_values$Selected_width == 30)
-  expect_true(out$estimated_values$Selected_draught == 5)
+  expect_true(out$estimated_values$Estimated_shiptype == "Cargo")
+  expect_true(out$estimated_values$Estimated_name == "Fastest boat")
+  expect_true(out$estimated_values$Estimated_imo == 000)
+  expect_true(out$estimated_values$Estimated_length == 55)
+  expect_true(out$estimated_values$Estimated_width == 30)
+  expect_true(out$estimated_values$Estimated_draught == 5)
   expect_true(out$summary$n_point_mmsi == 100)
-  expect_true(out$summary$n_point_with_length_value == 80)
+  expect_true(out$summary$n_point_no_NA_length == 80)
 
 })

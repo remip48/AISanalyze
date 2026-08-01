@@ -1,3 +1,17 @@
+# AISanalyze 3.0.1 (2026-08-01)
+
+## New features
+
+* Added parallel processing to AISinterpolate() for the option type_interpolation = "maximum_gap_seconds".
+* Added parallel processing to AISextract().
+* Added parallel processing to AIScorrect_speed().
+
+## Improvements
+
+* Redesigned the AISinfos() function to provide simplify the readability of the script and output results.
+* Checked all functions performed well and fast with the abovementionned changes.
+
+
 # AISanalyze 2.0.2 (2026-07-30)
 
 ## Improvements

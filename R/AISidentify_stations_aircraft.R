@@ -34,12 +34,10 @@ AISidentify_stations_aircraft <- function(ais_data,
   assertthat::assert_that(is.numeric(ais_data$lat))
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that(is.numeric(crs_meters))
+  assertthat::assert_that("time_travelled" %in% colnames(ais_data) & "distance_travelled" %in% colnames(ais_data) & "speed_kmh" %in% colnames(ais_data),
+                          msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
 
   cat("Stations and aircraft are identified from speed, distance and time only. Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.\n")
-
-  if (!("time_travelled" %in% colnames(ais_data)) | !("distance_travelled" %in% colnames(ais_data)) | !("speed_kmh" %in% colnames(ais_data))) {
-    stop("Please run AIStravel() before AISidentify_stations_aircraft()")
-  }
 
   init_cols <- colnames(ais_data)
 

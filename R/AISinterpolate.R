@@ -27,8 +27,8 @@
 #'   }
 #' @param crs_meters CRS (in metres) used for distance calculations. Defaults
 #'   to EPSG:3035.
-#' @param nb_cores Number of CPU cores used if `type_interpolation = exact_timestamp`.
-#' @param outfile File used to save logs when `type_interpolation = exact_timestamp`.
+#' @param nb_cores Number of CPU cores used.
+#' @param outfile File used to save logs.
 #'
 #' @return The interpolated AIS data with an additional column:
 #' \itemize{
@@ -83,7 +83,8 @@ AISinterpolate <- function(ais_data,
   assertthat::assert_that(is.numeric(ais_data$lat))
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that("time_travelled" %in% colnames(ais_data) & "distance_travelled" %in% colnames(ais_data) & "speed_kmh" %in% colnames(ais_data),
-                          msg = "Please run AIStravel() before AISinterpolate() to calculate speed, distance and time travelled.")
+                          msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
+
 
   ## set up the parameters of interpolation according to the type of interpolation
   if (type_interpolation == "exact_timestamp") {

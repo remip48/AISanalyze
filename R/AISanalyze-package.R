@@ -24,4 +24,8 @@
 #' @keywords internal
 #' @importFrom magrittr %>%
 #' @importFrom foreach %dopar%
+#' @importFrom data.table :=
+#' @importFrom data.table .SD
+#' @importFrom data.table .N
+#' @importFrom data.table .I
 "_PACKAGE"

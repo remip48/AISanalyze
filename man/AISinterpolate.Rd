@@ -38,9 +38,9 @@ columns corresponding to each \code{timestamp_to_interpolate}.
 \item{crs_meters}{CRS (in metres) used for distance calculations. Defaults
 to EPSG:3035.}
 
-\item{nb_cores}{Number of CPU cores used if \code{type_interpolation = exact_timestamp}.}
+\item{nb_cores}{Number of CPU cores used.}
 
-\item{outfile}{File used to save logs when \code{type_interpolation = exact_timestamp}.}
+\item{outfile}{File used to save logs.}
 }
 \value{
 The interpolated AIS data with an additional column:

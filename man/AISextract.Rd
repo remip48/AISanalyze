@@ -11,7 +11,9 @@ AISextract(
   return_all_vessel_locations = T,
   search_into_radius_m = 50000,
   interval_time_before = 5 * 60,
-  interval_time_after = 5 * 60
+  interval_time_after = 5 * 60,
+  nb_cores = 1,
+  outfile = "log.txt"
 )
 }
 \arguments{
@@ -35,6 +37,10 @@ closest position in time.}
 \item{interval_time_before}{Time window (s) before each \code{data$timestamp}.}
 
 \item{interval_time_after}{Time window (s) after each \code{data$timestamp}.}
+
+\item{nb_cores}{Number of CPU cores used.}
+
+\item{outfile}{File used to save logs.}
 }
 \value{
 \code{data} joined with matching AIS positions. Rows are duplicated when

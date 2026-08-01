@@ -7,6 +7,8 @@
 #'   `lon` and `lat` must be numeric.
 #' @param maximum_gap_seconds threshold of time interval between AIS positions
 #' (seconds) above which the track is interpolated.
+#' @param nb_cores Number of CPU cores used.
+#' @param outfile File used to save logs.
 #'
 #' @return The interpolated AIS data with an additional column:
 #' \itemize{
@@ -16,47 +18,78 @@
 #' @noRd
 #'
 method_interpolation_max_time <- function(ais_data,
-                                          maximum_gap_seconds) {
-  ais_data <- ais_data %>%
-    dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
+                                          maximum_gap_seconds,
+                                          nb_cores = 1,
+                                          outfile = "log.txt") {
 
-  to_interp <- ais_data %>%
+  assign_mmsi_to_core <- ais_data %>%
     dplyr::group_by(mmsi) %>%
-    dplyr::mutate(idd = 1:dplyr::n()) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
     dplyr::ungroup() %>%
-    dplyr::filter(idd != 1)  %>%
-    dplyr::select(-idd)%>%
-    dplyr::filter(time_travelled > maximum_gap_seconds)
+    dplyr::arrange(-n) %>%
+    dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
 
-  prec <- ais_data[to_interp$id_ais_data_initial - 1, ]
+  ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
+    ais_data %>%
+      dplyr::filter(mmsi %in% (assign_mmsi_to_core %>%
+                                 dplyr::filter(core == co) %>%
+                                 dplyr::pull(mmsi)))
+  })
 
-  interp <- to_interp %>%
-    dplyr::mutate(ttimestamp = prec$timestamp,
-                  tmmsi = prec$mmsi,
-                  tlon = prec$lon,
-                  tlat = prec$lat)
+  cl <- parallel::makeCluster(nb_cores, outfile = outfile)
+  doParallel::registerDoParallel(cl)
 
-  rm(prec)
+  out <- foreach::foreach(ais_data_core = ais_data,
+                          # .export = c("maximum_gap_seconds"),
+                          .noexport = c("assign_mmsi_to_core", "ais_data"),
+                          .packages = c("dplyr")
+  ) %dopar% {
+    ais_data <- ais_data_core %>%
+      dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
 
-  interp <- interp[interp$mmsi == interp$tmmsi, ] %>%
-    dplyr::group_by(id_ais_data_initial) %>%
-    dplyr::reframe(timestamp = seq(from = ttimestamp,
-                                   to = timestamp,
-                                   length = 1 + ceiling((timestamp - ttimestamp) / maximum_gap_seconds))[-1],
-                   speed_kmh = unique(speed_kmh),
-                   interpolated = c(rep(T, length(timestamp) - 1), F),
-                   time_travelled = rep(timestamp[2] - timestamp[1], length(timestamp)),
-                   distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
-                   lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = T)),
-                   lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = T))
-    )
+    to_interp <- ais_data %>%
+      dplyr::group_by(mmsi) %>%
+      dplyr::mutate(idd = 1:dplyr::n()) %>%
+      dplyr::ungroup() %>%
+      dplyr::filter(idd != 1)  %>%
+      dplyr::select(-idd)%>%
+      dplyr::filter(time_travelled > maximum_gap_seconds)
 
-  interp <- to_interp %>%
-    dplyr::select(!c("timestamp", "speed_kmh", "time_travelled", "distance_travelled", "lon", "lat")) %>%
-    dplyr::left_join(interp, by = "id_ais_data_initial")
+    prec <- ais_data[to_interp$id_ais_data_initial - 1, ]
 
-  return(ais_data %>%
-           dplyr::filter(!(id_ais_data_initial %in% unique(interp$id_ais_data_initial))) %>%
-           dplyr::mutate(interpolated = F) %>%
-           rbind(interp))
+    interp <- to_interp %>%
+      dplyr::mutate(ttimestamp = prec$timestamp,
+                    tmmsi = prec$mmsi,
+                    tlon = prec$lon,
+                    tlat = prec$lat)
+
+    rm(prec)
+
+    interp <- interp[interp$mmsi == interp$tmmsi, ] %>%
+      dplyr::group_by(id_ais_data_initial) %>%
+      dplyr::reframe(timestamp = seq(from = ttimestamp,
+                                     to = timestamp,
+                                     length = 1 + ceiling((timestamp - ttimestamp) / maximum_gap_seconds))[-1],
+                     speed_kmh = unique(speed_kmh),
+                     interpolated = c(rep(T, length(timestamp) - 1), F),
+                     time_travelled = rep(timestamp[2] - timestamp[1], length(timestamp)),
+                     distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
+                     lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = T)),
+                     lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = T))
+      )
+
+    interp <- to_interp %>%
+      dplyr::select(!c("timestamp", "speed_kmh", "time_travelled", "distance_travelled", "lon", "lat")) %>%
+      dplyr::left_join(interp, by = "id_ais_data_initial")
+
+    return(ais_data %>%
+             dplyr::filter(!(id_ais_data_initial %in% unique(interp$id_ais_data_initial))) %>%
+             dplyr::mutate(interpolated = F) %>%
+             rbind(interp))
+  }
+
+  parallel::stopCluster(cl)
+  gc()
+
+  return(purrr::map_dfr(out, rbind))
 }
