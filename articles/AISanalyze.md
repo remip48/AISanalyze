@@ -26,8 +26,8 @@ Convert timestamps to Unix time.
 
 ``` r
 
-ais$timestamp <- as.numeric(ymd_hms(ais$datetime))
-point_to_extract$timestamp <- as.numeric(ymd_hm(point_to_extract$datetime))
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 ```
 
 ## Estimate travelled distance and speed
