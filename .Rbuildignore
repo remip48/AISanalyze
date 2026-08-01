@@ -9,5 +9,6 @@
 ^doc$
 ^Meta$
 ^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
 ^paper\.md$
 ^paper\.bib$
