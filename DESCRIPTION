@@ -27,6 +27,7 @@ Imports:
 Suggests: 
     knitr,
     units,
+    lubridate (>= 1.9.2),
     rmarkdown,
     testthat (>= 3.0.0)
 URL: https://github.com/remip48/AISanalyze, https://remip48.github.io/AISanalyze/
