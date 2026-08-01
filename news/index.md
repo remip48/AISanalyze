@@ -1,5 +1,12 @@
 # Changelog
 
+## AISanalyze 3.0.2 (2026-08-01)
+
+### Bug fixes
+
+- Load the helper function add_coordinates_meters() in parallel
+  processing loop of AIScorrect_speed().
+
 ## AISanalyze 3.0.1 (2026-08-01)
 
 ### New features
