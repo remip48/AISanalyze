@@ -58,11 +58,11 @@ AISinterpolate(
 
 - nb_cores:
 
-  Number of CPU cores used if `type_interpolation = exact_timestamp`.
+  Number of CPU cores used.
 
 - outfile:
 
-  File used to save logs when `type_interpolation = exact_timestamp`.
+  File used to save logs.
 
 ## Value
 

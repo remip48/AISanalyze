@@ -15,7 +15,9 @@ AIScorrect_speed(
     stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 *
     stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh >
     1], 0.75)]))
- }
+ },
+  nb_cores = 1,
+  outfile = "log.txt"
 )
 ```
 
@@ -40,6 +42,14 @@ AIScorrect_speed(
 - threshold_speed_to_correct_expr:
 
   Function returning a vessel-specific speed threshold from `speed_kmh`.
+
+- nb_cores:
+
+  Number of CPU cores used.
+
+- outfile:
+
+  File used to save logs.
 
 ## Value
 

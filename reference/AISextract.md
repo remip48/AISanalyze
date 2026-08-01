@@ -16,7 +16,9 @@ AISextract(
   return_all_vessel_locations = T,
   search_into_radius_m = 50000,
   interval_time_before = 5 * 60,
-  interval_time_after = 5 * 60
+  interval_time_after = 5 * 60,
+  nb_cores = 1,
+  outfile = "log.txt"
 )
 ```
 
@@ -54,6 +56,14 @@ AISextract(
 - interval_time_after:
 
   Time window (s) after each `data$timestamp`.
+
+- nb_cores:
+
+  Number of CPU cores used.
+
+- outfile:
+
+  File used to save logs.
 
 ## Value
 
