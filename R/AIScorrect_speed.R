@@ -81,12 +81,7 @@ AIScorrect_speed <- function(ais_data,
   cl <- parallel::makeCluster(nb_cores, outfile = outfile)
   doParallel::registerDoParallel(cl)
 
-  corrected_data <- foreach::foreach(ais_data_core = ais_data,
-                          .export = c("add_coordinates_meters", "AIStravel"),
-                          .noexport = c("assign_mmsi_to_core", "ais_data"),
-                          .packages = c("dplyr", "sf")
-  ) %dopar% {
-
+  .worker_correct_speed_internally <- function() {
     ais_data <- ais_data_core %>%
       add_coordinates_meters(., crs_meters = crs_meters) %>%
       sf::st_drop_geometry() %>%
@@ -142,6 +137,14 @@ AIScorrect_speed <- function(ais_data,
 
     return(ais_data %>%
              dplyr::select(dplyr::all_of(c(init_cols, "speed_kmh_corrected"))))
+  }
+
+  corrected_data <- foreach::foreach(ais_data_core = ais_data,
+                          .export = c(".worker_correct_speed_internally"),
+                          .noexport = c("assign_mmsi_to_core", "ais_data"),
+                          .packages = c("dplyr", "sf")
+  ) %dopar% {
+    .worker_correct_speed_internally()
   }
 
   parallel::stopCluster(cl)
