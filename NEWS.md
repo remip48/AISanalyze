@@ -1,15 +1,9 @@
-# AISanalyze 3.0.3 (2026-08-01)
-
-## Bug fixes
-
-* Correct a bug preventing helper function to be used in the parallel processing loop of AIScorrect_speed().
-
-
 # AISanalyze 3.0.2 (2026-08-01)
 
 ## Bug fixes
 
 * Load the helper function add_coordinates_meters() in parallel processing loop of AIScorrect_speed().
+* Correct a bug preventing helper function to be used in the parallel processing loop of AIScorrect_speed().
 
 
 # AISanalyze 3.0.1 (2026-08-01)
