@@ -140,36 +140,35 @@ analyses.
 
 AISanalyze was intentionally designed around a small number of
 user-facing functions representing the principal stages of AIS
-preprocessing. Rather than exposing numerous specialized functions, the
-package adopts a modular workflow in which each function performs a
-well-defined preprocessing task while remaining independent from the
-others. This design minimizes the learning curve for new users while
-preserving the flexibility to apply individual processing steps
-according to the requirements of a given study.
+preprocessing. This modular workflow reduces the learning curve while
+allowing users to combine only the processing steps required for a given
+study.
 
-A central design objective was to preserve compatibility with existing R
-workflows. Consequently, all functions return standard data frames whose
-structure closely matches the input environmental datasets. AIS
-attributes, such as travel distance, travel time, and corrected vessel
-positions, are appended to these data. Preserving the original datasets
-while augmenting them with AIS data facilitates the analysis of maritime
-traffic impacts in environmental assessments.
+A primary design objective was to minimise computational time when
+processing large AIS datasets. Computationally intensive functions
+therefore implement parallel processing where appropriate and rely on
+vectorised algorithms operating directly on tabular data, avoiding
+repeated manipulation of spatial objects whenever possible.
+Consequently, large AIS datasets can typically be transformed from raw
+vessel positions to analysis-ready data in only a few seconds to
+minutes. These design choices substantially reduce execution time and
+memory usage.
 
-Transparency and reproducibility were also important design
-considerations. AISanalyze implements deterministic algorithms whose
-behaviour can be directly interpreted by users. For example, vessel
-trajectories are interpolated using linear interpolation, allowing users
-to preserve observed vessel movements while avoiding additional
-modelling assumptions. Similarly, GPS correction procedures rely on
-explicit movement constraints.
+A second design objective was to preserve compatibility with the broader
+R ecosystem and established spatial analysis workflows. All functions
+return standard data frames that retain the original data structure
+while appending AIS-derived variables, facilitating downstream
+statistical, spatial, and ecological analyses without requiring users to
+modify existing workflows.
 
-AISanalyze is structured into six user-facing functions with additional
-internal functions to simplify package maintenance, facilitate unit
-testing, and enable future extensions without modifying the public
-interface. Because every processing step returns standard R data frames,
-AISanalyze integrates naturally with the broader R ecosystem for
-statistical modelling, spatial analyses, movement ecology, and
-visualization.
+Transparency and reproducibility were also central design
+considerations. AISanalyze implements deterministic preprocessing
+algorithms whose behaviour can be directly interpreted and reproduced.
+For example, vessel trajectories are reconstructed using linear
+interpolation, avoiding additional modelling assumptions while
+preserving observed vessel movements. Similarly, GPS correction
+procedures rely on explicit movement constraints that remain fully
+reproducible across analyses.
 
 # Research impact statement
 

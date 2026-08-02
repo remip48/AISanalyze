@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -158,8 +158,8 @@ timestamps:</p>
 target locations and timestamps (<code>point_to_extract</code>).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_60sec</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
@@ -169,8 +169,8 @@ target locations and timestamps (<code>point_to_extract</code>).</p>
 the vessel position at the target timestamps:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
@@ -181,8 +181,8 @@ the vessel position at the target timestamps:</p>
 extract vessel positions within square grid cells:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># or TRUE</span></span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  search_shape <span class="op">=</span> <span class="st">"square"</span>,</span>

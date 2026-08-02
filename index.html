@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,14 +62,15 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>AISanalyze is an R package for analysing Automatic Identification System (AIS) data. It provides tools to</p>
+<p>AISanalyze is an R package providing a fast and reproducible workflow for preprocessing Automatic Identification System (AIS) vessel tracking data for environmental and ecological research. It streamlines common preprocessing tasks through a small set of user-friendly functions, including vessel trajectory reconstruction, GPS correction, interpolation, and the extraction of vessel positions around target locations or time periods.</p>
+<p>The package emphasizes computational efficiency and reproducibility, allowing large AIS datasets to be prepared for downstream analyses in seconds to minutes. Its main functionalities include:</p>
 <ul>
-<li>estimate vessel travel distance, time and speed;</li>
-<li>correct GPS errors and delays;</li>
-<li>identify AIS base stations and aircraft;</li>
-<li>interpolate vessel positions;</li>
-<li>extract vessel positions around target locations and times;</li>
-<li>estimate vessel characteristics (ship type, length, width, draught, IMO and name).</li>
+<li>estimating vessel travel distance, time, and speed;</li>
+<li>correcting GPS errors and delays;</li>
+<li>identifying AIS base stations and aircraft;</li>
+<li>interpolating vessel positions;</li>
+<li>extracting vessel positions around target locations and times;</li>
+<li>retrieving vessel characteristics (ship type, length, width, draught, IMO number, and vessel name).</li>
 </ul>
 </div>
 <div class="section level2">
@@ -123,35 +124,55 @@
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(AISanalyze)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ais"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"point_to_extract"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="do">## define the Unix time (seconds since 1970-01-01)</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>ais<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hms</span>(ais<span class="sc">$</span>datetime))<span class="er">)</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>point_to_extract<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hm</span>(point_to_extract<span class="sc">$</span>datetime))<span class="er">)</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="do">## process, correct, interpolate and extract AIS data:</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>ais <span class="ot">&lt;-</span> <span class="fu">AIStravel</span>(ais)</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>ais_identified <span class="ot">&lt;-</span> <span class="fu">AISidentify_stations_aircraft</span>(ais)</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>ais_corrected <span class="ot">&lt;-</span> <span class="fu">AIScorrect_speed</span>(ais_identified)</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>ais_interpolated <span class="ot">&lt;-</span> <span class="fu">AISinterpolate</span>(<span class="at">ais_data =</span> ais_corrected,</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>                                   <span class="at">type_interpolation =</span> <span class="st">"maximum_gap_seconds"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>                                   <span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>ais_extracted <span class="ot">&lt;-</span> <span class="fu">AISextract</span>(<span class="at">ais_data =</span> ais_interpolated,</span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>                            <span class="at">data =</span> point_to_extract,</span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>                            <span class="at">return_all_vessel_locations =</span> T,</span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>                            <span class="at">search_into_radius_m =</span> <span class="dv">50000</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">head</span>(ais_extracted)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ais"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"point_to_extract"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="do">## define the Unix time (seconds since 1970-01-01)</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>ais<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hms</span>(ais<span class="sc">$</span>datetime))<span class="er">)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>point_to_extract<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hm</span>(point_to_extract<span class="sc">$</span>datetime))<span class="er">)</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="do">## Run the worklow:</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>results <span class="ot">&lt;-</span> ais <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">AIStravel</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">AISidentify_stations_aircraft</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>station <span class="sc">&amp;</span> <span class="sc">!</span>high_speed) <span class="sc">|&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">AIScorrect_speed</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">AISinterpolate</span>(.,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                 <span class="at">type_interpolation =</span> <span class="st">"maximum_gap_seconds"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                 <span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">AISextract</span>(<span class="at">data =</span> point_to_extract, </span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>             <span class="at">search_into_radius_m =</span> <span class="dv">10000</span>)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
+</h2>
+<p>Total execution time for the complete workflow (for 100 target data points and using 4 CPU cores):</p>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="25%">
+<col width="22%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr>
+<th>AIS dataset size</th>
+<th>100,000 points</th>
+<th>1,000,000 points</th>
+<th>2,500,000 points</th>
+</tr></thead>
+<tbody><tr>
+<td>Time</td>
+<td>14 sec</td>
+<td>68 sec</td>
+<td>146 sec</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"AISanalyze"</span><span class="op">)</span></span></code></pre></div>
 <p>If you use AISanalyze, please cite:</p>
 <p>Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. <em>Marine Pollution Bulletin.</em> 208: 116925.</p>
 </div>
@@ -163,7 +184,12 @@
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Contributions are welcome! Whether you would like to report a bug, suggest a new feature, or contribute code or documentation, please read our <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> guide for information on how to get started.</p>
+<p>Contributions are welcome! Whether you would like to report a bug, suggest a new feature, or contribute code or documentation, please read our <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> guide to get started.</p>
+</div>
+<div class="section level2">
+<h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
+</h2>
+<p>Please use the GitHub issue tracker to report bugs, request features, or ask questions. For other enquiries, you may also contact the package author directly.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

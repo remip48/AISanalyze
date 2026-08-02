@@ -6,7 +6,7 @@ between consecutive AIS positions for each vessel (`mmsi`).
 ## Usage
 
 ``` r
-AIStravel(ais_data, crs_meters = 3035)
+AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = "log.txt")
 ```
 
 ## Arguments
@@ -21,6 +21,14 @@ AIStravel(ais_data, crs_meters = 3035)
 - crs_meters:
 
   CRS (in metres) used to calculate distances. Defaults to EPSG:3035.
+
+- nb_cores:
+
+  Number of CPU cores used.
+
+- outfile:
+
+  File used to save logs.
 
 ## Value
 

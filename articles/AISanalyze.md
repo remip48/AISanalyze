@@ -116,8 +116,8 @@ locations and timestamps (`point_to_extract`).
 ``` r
 
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_60sec,
+  data = point_to_extract,
   return_all_vessel_locations = TRUE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
@@ -131,8 +131,8 @@ position at the target timestamps:
 ``` r
 
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_exact_timestamps,
+  data = point_to_extract,
   return_all_vessel_locations = FALSE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
@@ -147,8 +147,8 @@ grid cells:
 ``` r
 
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_exact_timestamps,
+  data = point_to_extract,
   return_all_vessel_locations = FALSE, # or TRUE
   search_into_radius_m = 50000,
   search_shape = "square",

@@ -10,16 +10,25 @@ guide](https://remip48.github.io/AISanalyze/articles/AISanalyze.html).
 
 ## Overview
 
-AISanalyze is an R package for analysing Automatic Identification System
-(AIS) data. It provides tools to
+AISanalyze is an R package providing a fast and reproducible workflow
+for preprocessing Automatic Identification System (AIS) vessel tracking
+data for environmental and ecological research. It streamlines common
+preprocessing tasks through a small set of user-friendly functions,
+including vessel trajectory reconstruction, GPS correction,
+interpolation, and the extraction of vessel positions around target
+locations or time periods.
 
-- estimate vessel travel distance, time and speed;
-- correct GPS errors and delays;
-- identify AIS base stations and aircraft;
-- interpolate vessel positions;
-- extract vessel positions around target locations and times;
-- estimate vessel characteristics (ship type, length, width, draught,
-  IMO and name).
+The package emphasizes computational efficiency and reproducibility,
+allowing large AIS datasets to be prepared for downstream analyses in
+seconds to minutes. Its main functionalities include:
+
+- estimating vessel travel distance, time, and speed;
+- correcting GPS errors and delays;
+- identifying AIS base stations and aircraft;
+- interpolating vessel positions;
+- extracting vessel positions around target locations and times;
+- retrieving vessel characteristics (ship type, length, width, draught,
+  IMO number, and vessel name).
 
 ## Installation
 
@@ -44,7 +53,6 @@ remotes::install_github("remip48/AISanalyze")
 
 ``` r
 library(AISanalyze)
-
 data("ais")
 data("point_to_extract")
 
@@ -52,26 +60,34 @@ data("point_to_extract")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime)))
 point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
 
-## process, correct, interpolate and extract AIS data:
-ais <- AIStravel(ais)
-
-ais_identified <- AISidentify_stations_aircraft(ais)
-
-ais_corrected <- AIScorrect_speed(ais_identified)
-
-ais_interpolated <- AISinterpolate(ais_data = ais_corrected,
-                                   type_interpolation = "maximum_gap_seconds",
-                                   maximum_gap_seconds = 60)
-
-ais_extracted <- AISextract(ais_data = ais_interpolated,
-                            data = point_to_extract,
-                            return_all_vessel_locations = T,
-                            search_into_radius_m = 50000)
-
-head(ais_extracted)
+## Run the worklow:
+results <- ais |>
+  AIStravel() |>
+  AISidentify_stations_aircraft() |>
+  dplyr::filter(!station & !high_speed) |>
+  AIScorrect_speed() |>
+  AISinterpolate(.,
+                 type_interpolation = "maximum_gap_seconds",
+                 maximum_gap_seconds = 60) |>
+  AISextract(data = point_to_extract, 
+             search_into_radius_m = 10000)
 ```
 
+## Performance
+
+Total execution time for the complete workflow (for 100 target data
+points and using 4 CPU cores):
+
+| AIS dataset size | 100,000 points | 1,000,000 points | 2,500,000 points |
+|------------------|----------------|------------------|------------------|
+| Time             | 14 sec         | 68 sec           | 146 sec          |
+
 ## Citation
+
+``` r
+
+citation("AISanalyze")
+```
 
 If you use AISanalyze, please cite:
 
@@ -91,7 +107,13 @@ Contributions are welcome! Whether you would like to report a bug,
 suggest a new feature, or contribute code or documentation, please read
 our
 [CONTRIBUTING.md](https://remip48.github.io/AISanalyze/CONTRIBUTING.md)
-guide for information on how to get started.
+guide to get started.
+
+## Support
+
+Please use the GitHub issue tracker to report bugs, request features, or
+ask questions. For other enquiries, you may also contact the package
+author directly.
 
 # Package index
 
