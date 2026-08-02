@@ -5,8 +5,8 @@
 \title{Extract AIS positions around target locations and times}
 \usage{
 AISextract(
-  data,
   ais_data,
+  data,
   crs_meters = 3035,
   return_all_vessel_locations = T,
   search_into_radius_m = 50000,
@@ -18,13 +18,13 @@ AISextract(
 )
 }
 \arguments{
-\item{data}{Data frame containing \code{timestamp}, \code{lon}, and \code{lat}.
-\code{timestamp} must be Unix time (seconds since 1970-01-01), while \code{lon}
-and \code{lat} must be numeric.}
-
 \item{ais_data}{AIS data frame containing \code{timestamp}, \code{lon}, \code{lat}, and
 \code{mmsi}. \code{timestamp}, \code{lon}, and \code{lat} must be numeric. Another vessel
 identifier may be used if the column is named \code{mmsi}.}
+
+\item{data}{Data frame containing \code{timestamp}, \code{lon}, and \code{lat}.
+\code{timestamp} must be Unix time (seconds since 1970-01-01), while \code{lon}
+and \code{lat} must be numeric.}
 
 \item{crs_meters}{CRS (metres) used to calculate distances. Defaults to
 EPSG:3035.}
@@ -68,7 +68,7 @@ library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 
 ais <- ais \%>\%
   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) \%>\%
@@ -83,8 +83,8 @@ ais <- ais \%>\%
            crs_meters = 3035)
 
 # to return all vessel positions around the target location/timestamps:
-out <- AISextract(data = point_to_extract,
-           ais_data = ais,
+out <- AISextract(ais_data = ais,
+           data = point_to_extract,
            crs_meters = 3035,
            return_all_vessel_locations = TRUE,
            search_into_radius_m = 50000,
@@ -93,8 +93,8 @@ out <- AISextract(data = point_to_extract,
 
 # to return the position of each vessel closest in time to the target
 # timestamps (around the target location)
-out <- AISextract(data = point_to_extract,
-           ais_data = ais,
+out <- AISextract(ais_data = ais,
+           data = point_to_extract,
            crs_meters = 3035,
            return_all_vessel_locations = FALSE,
            search_into_radius_m = 50000,

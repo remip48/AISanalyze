@@ -122,8 +122,8 @@ timestamps (`point_to_extract`).
 
 ```{r eval=FALSE}
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_60sec,
+  data = point_to_extract,
   return_all_vessel_locations = TRUE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
@@ -136,8 +136,8 @@ at the target timestamps:
 
 ```{r eval=FALSE}
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_exact_timestamps,
+  data = point_to_extract,
   return_all_vessel_locations = FALSE,
   search_into_radius_m = 50000,
   interval_time_before = 300,
@@ -149,8 +149,8 @@ Alternatively, you can pass the centroids of a square grid to `data` and set `se
 
 ```{r eval=FALSE}
 AISextract(
-  data = point_to_extract,
   ais_data = ais_interpolated_exact_timestamps,
+  data = point_to_extract,
   return_all_vessel_locations = FALSE, # or TRUE
   search_into_radius_m = 50000,
   search_shape = "square",

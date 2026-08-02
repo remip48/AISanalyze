@@ -18,9 +18,9 @@ test_that("AISextract", {
 
   ## extract all vessel locations within a radius of 500 meters around this point
   # within a time interval of -5 min -> +5min
-  out <- AISextract(data,
+  out <- AISextract(ais_data,
+                    data,
                     crs_meters = 3035,
-                    ais_data,
                     return_all_vessel_locations = T,
                     search_into_radius_m = 500,
                     interval_time_before = 5 * 60,
@@ -53,9 +53,9 @@ test_that("AISextract", {
                                                                                                     lat = data$lat),
                                                                  radius = 200000))
 
-  out <- AISextract(data,
+  out <- AISextract(ais_data_interpolated,
+                    data,
                     crs_meters = 3035,
-                    ais_data_interpolated,
                     return_all_vessel_locations = FALSE,
                     search_into_radius_m = 500,
                     interval_time_before = 5 * 60,
@@ -77,9 +77,9 @@ test_that("AISextract", {
   expect_all_true(length(na.omit(out$mmsi)) == nrow(actually_inside))
 
   ## now increase the radius to extract the vessel location
-  out <- AISextract(data,
+  out <- AISextract(ais_data_interpolated,
+                    data,
                     crs_meters = 3035,
-                    ais_data_interpolated,
                     return_all_vessel_locations = FALSE,
                     search_into_radius_m = 1000,
                     interval_time_before = 5 * 60,

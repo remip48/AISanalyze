@@ -41,7 +41,7 @@
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime)))
+#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime))
 #'
 #' ais <- ais %>%
 #'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
@@ -142,7 +142,9 @@ AISinterpolate <- function(ais_data,
 
     ais_data <- if (type_interpolation == "maximum_gap_seconds") {
       method_interpolation_max_time(ais_data,
-                                    maximum_gap_seconds)
+                                    maximum_gap_seconds = maximum_gap_seconds,
+                                    nb_cores = nb_cores,
+                                    outfile = outfile)
     } else {
       out <- method_interpolation_exact_time(ais_data,
                                              data,

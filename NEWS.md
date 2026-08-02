@@ -1,3 +1,11 @@
+# AISanalyze 3.1.0 (2026-08-03)
+
+## New features
+
+* Added parallel processing to AIStravel().
+* Optimmized parallel processing for other functions.
+
+
 # AISanalyze 3.0.3 (2026-08-01)
 
 ## Improvements

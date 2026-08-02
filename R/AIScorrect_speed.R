@@ -69,7 +69,11 @@ AIScorrect_speed <- function(ais_data,
     dplyr::summarise(n = dplyr::n()) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(-n) %>%
-    dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
+    dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()]) %>%
+    dplyr::group_by(core) %>%
+    dplyr::mutate(split_datasets = floor(cumsum(n) / 50000)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(core = paste(core, split_datasets))
 
   ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
     ais_data %>%
@@ -134,7 +138,7 @@ AIScorrect_speed <- function(ais_data,
   lines_to_correct <- which(corrected_data$speed_to_correct)
 
   if (length(lines_to_correct) > 0) {
-    correct_speed <- corrected_data[c(lines_to_correct - 1, lines_to_correct), ] %>%
+    correct_speed <- corrected_data[unique(c(lines_to_correct - 1, lines_to_correct)), ] %>%
       dplyr::select(-(c(time_travelled, distance_travelled, speed_kmh))) %>%
       dplyr::left_join(AIStravel(.,
                                  crs_meters = crs_meters) %>%

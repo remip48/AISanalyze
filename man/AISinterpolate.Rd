@@ -64,7 +64,7 @@ library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime)))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime))
 
 ais <- ais \%>\%
   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) \%>\%

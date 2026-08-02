@@ -6,12 +6,12 @@
 #'   \item or all vessel positions within a specified time window.
 #'  }
 #'
-#' @param data Data frame containing `timestamp`, `lon`, and `lat`.
-#'   `timestamp` must be Unix time (seconds since 1970-01-01), while `lon`
-#'   and `lat` must be numeric.
 #' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
 #'   `mmsi`. `timestamp`, `lon`, and `lat` must be numeric. Another vessel
 #'   identifier may be used if the column is named `mmsi`.
+#' @param data Data frame containing `timestamp`, `lon`, and `lat`.
+#'   `timestamp` must be Unix time (seconds since 1970-01-01), while `lon`
+#'   and `lat` must be numeric.
 #' @param crs_meters CRS (metres) used to calculate distances. Defaults to
 #'   EPSG:3035.
 #' @param return_all_vessel_locations Logical. If `TRUE`, returns all vessel
@@ -39,7 +39,7 @@
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
+#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 #'
 #' ais <- ais %>%
 #'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
@@ -54,8 +54,8 @@
 #'            crs_meters = 3035)
 #'
 #' # to return all vessel positions around the target location/timestamps:
-#' out <- AISextract(data = point_to_extract,
-#'            ais_data = ais,
+#' out <- AISextract(ais_data = ais,
+#'            data = point_to_extract,
 #'            crs_meters = 3035,
 #'            return_all_vessel_locations = TRUE,
 #'            search_into_radius_m = 50000,
@@ -64,8 +64,8 @@
 #'
 #' # to return the position of each vessel closest in time to the target
 #' # timestamps (around the target location)
-#' out <- AISextract(data = point_to_extract,
-#'            ais_data = ais,
+#' out <- AISextract(ais_data = ais,
+#'            data = point_to_extract,
 #'            crs_meters = 3035,
 #'            return_all_vessel_locations = FALSE,
 #'            search_into_radius_m = 50000,
@@ -74,8 +74,8 @@
 #'            }
 #' @export
 
-AISextract <- function(data,
-                       ais_data,
+AISextract <- function(ais_data,
+                       data,
                        crs_meters = 3035,
                        return_all_vessel_locations = T,
                        search_into_radius_m = 50000,
@@ -134,7 +134,11 @@ AISextract <- function(data,
       dplyr::summarise(n = dplyr::n()) %>%
       dplyr::ungroup() %>%
       dplyr::arrange(-n) %>%
-      dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()])
+      dplyr::mutate(core = rep(1:nb_cores, ceiling(dplyr::n() / nb_cores))[1:dplyr::n()]) %>%
+      dplyr::group_by(core) %>%
+      dplyr::mutate(split_datasets = floor(cumsum(n) / 50000)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(core = paste(core, split_datasets))
 
     ais_data <- purrr::map(unique(assign_mmsi_to_core$core), function(co) {
       ais_data %>%

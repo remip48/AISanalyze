@@ -9,6 +9,7 @@ utils::globalVariables(
     "Y",
     "Estimated_c",
     "speed_to_correct",
+    "split_datasets",
     "ais_data_core",
     "all_values_c",
     "core",

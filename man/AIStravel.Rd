@@ -4,7 +4,7 @@
 \alias{AIStravel}
 \title{Calculate vessel travel metrics}
 \usage{
-AIStravel(ais_data, crs_meters = 3035)
+AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = "log.txt")
 }
 \arguments{
 \item{ais_data}{AIS data frame containing \code{timestamp}, \code{lon}, \code{lat}, and
@@ -14,6 +14,10 @@ the column is named \code{mmsi}.}
 
 \item{crs_meters}{CRS (in metres) used to calculate distances. Defaults to
 EPSG:3035.}
+
+\item{nb_cores}{Number of CPU cores used.}
+
+\item{outfile}{File used to save logs.}
 }
 \value{
 The input AIS data with the following additional columns:
