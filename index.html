@@ -131,22 +131,24 @@
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>ais<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hms</span>(ais<span class="sc">$</span>datetime))<span class="er">)</span></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>point_to_extract<span class="sc">$</span>timestamp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lubridate<span class="sc">::</span><span class="fu">ymd_hm</span>(point_to_extract<span class="sc">$</span>datetime))<span class="er">)</span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="do">## Run the worklow:</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>results <span class="ot">&lt;-</span> ais <span class="sc">|&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">AIStravel</span>() <span class="sc">|&gt;</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">AISidentify_stations_aircraft</span>() <span class="sc">|&gt;</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>station <span class="sc">&amp;</span> <span class="sc">!</span>high_speed) <span class="sc">|&gt;</span></span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">AIScorrect_speed</span>() <span class="sc">|&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">AISinterpolate</span>(.,</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                 <span class="at">type_interpolation =</span> <span class="st">"maximum_gap_seconds"</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                 <span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">AISextract</span>(<span class="at">data =</span> point_to_extract, </span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>             <span class="at">search_into_radius_m =</span> <span class="dv">10000</span>)</span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>results <span class="ot">&lt;-</span> ais <span class="sc">|&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="fu">AIStravel</span>(<span class="at">nb_cores =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> <span class="co"># estimate travelled speed, distance, time</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">AISidentify_stations_aircraft</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>station <span class="sc">&amp;</span> <span class="sc">!</span>high_speed) <span class="sc">|&gt;</span> <span class="co"># remove stations and aircrafts</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="fu">AIScorrect_speed</span>(<span class="at">nb_cores =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> <span class="co"># correct speed</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">AISinterpolate</span>(., <span class="co"># interpolate AIS data</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                 <span class="at">type_interpolation =</span> <span class="st">"maximum_gap_seconds"</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                 <span class="at">maximum_gap_seconds =</span> <span class="dv">60</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                 <span class="at">nb_cores =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">AISextract</span>(<span class="at">data =</span> point_to_extract, <span class="co"># extract around your points</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>             <span class="at">search_into_radius_m =</span> <span class="dv">10000</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>             <span class="at">nb_cores =</span> <span class="dv">4</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co"># done!</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
 </h2>
-<p>Total execution time for the complete workflow (for 100 target data points and using 4 CPU cores):</p>
+<p>Total execution time to complete the example workflow with 100 points to extract and 4 CPU cores:</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="25%">
@@ -171,10 +173,10 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
+<p>If you use AISanalyze, please cite:</p>
+<p>Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. <em>Marine Pollution Bulletin.</em> 208: 116925. DOI: <a href="https://doi.org/10.1016/j.marpolbul.2024.116925" class="external-link">10.1016/j.marpolbul.2024.116925</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"AISanalyze"</span><span class="op">)</span></span></code></pre></div>
-<p>If you use AISanalyze, please cite:</p>
-<p>Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A. (2024). Maritime traffic alters distribution of the harbour porpoise in the North Sea. <em>Marine Pollution Bulletin.</em> 208: 116925.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
