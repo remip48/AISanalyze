@@ -173,9 +173,9 @@ reproducible across analyses.
 # Research impact statement
 
 AISanalyze supports past and ongoing peer-reviewed studies
-\[@pigeault2024; @wynn2025\] and collaborative research projects
-\[@habitatwal; @saturnh2020; @sustainmare\] investigating the ecological
-impacts of maritime traffic on marine ecosystems.
+\[@pigeault2024; @wynn2025; @maurer2026\] and collaborative research
+projects \[@habitatwal; @saturnh2020; @sustainmare\] investigating the
+ecological impacts of maritime traffic on marine ecosystems.
 
 The package has been used to investigate the short-term relationship
 between maritime traffic and harbour porpoise distribution throughout
@@ -183,11 +183,14 @@ the North Sea between 2015 and 2022 by combining extensive AIS records
 with aerial survey data \[@pigeault2024\]. It has also been employed to
 quantify the spatial overlap between harbour seals tracked by telemetry
 and maritime traffic in the English Channel, enabling the integration of
-vessel trajectories with habitat selection analyses \[@wynn2025\]. These
-studies illustrate the package ability to efficiently preprocess large
-AIS datasets and integrate vessel trajectories with biological
-observations, environmental data, and spatial analyses across broad
-spatial and temporal scales.
+vessel trajectories with habitat selection analyse \[@wynn2025\]. More
+recently, AISanalyze was used to investigate the response of harbour
+seals to their local environment, including vessel presence and
+activity, in the German Wadden Sea \[@maurer2026\]. These studies
+illustrate the package ability to efficiently preprocess large AIS
+datasets and integrate vessel trajectories with biological observations,
+environmental data, and spatial analyses across broad spatial and
+temporal scales.
 
 Beyond these published applications, AISanalyze is currently used in
 collaborative research initiatives, including @habitatwal and
