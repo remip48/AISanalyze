@@ -73,23 +73,25 @@ data("point_to_extract")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime)))
 point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
 
-## Run the worklow:
 results <- ais |>
-  AIStravel() |>
-  AISidentify_stations_aircraft() |>
-  dplyr::filter(!station & !high_speed) |>
-  AIScorrect_speed() |>
-  AISinterpolate(.,
+  AIStravel(nb_cores = 4) |> # estimate travelled speed, distance, time
+  AISidentify_stations_aircraft() |> 
+  dplyr::filter(!station & !high_speed) |> # remove stations and aircrafts
+  AIScorrect_speed(nb_cores = 4) |> # correct speed
+  AISinterpolate(., # interpolate AIS data
                  type_interpolation = "maximum_gap_seconds",
-                 maximum_gap_seconds = 60) |>
-  AISextract(data = point_to_extract, 
-             search_into_radius_m = 10000)
+                 maximum_gap_seconds = 60,
+                 nb_cores = 4) |>
+  AISextract(data = point_to_extract, # extract around your points
+             search_into_radius_m = 10000,
+             nb_cores = 4)
+# done!
 ```
 
 ## Performance
 
-Total execution time for the complete workflow (for 100 target data
-points and using 4 CPU cores):
+Total execution time to complete the example workflow with 100 points to
+extract and 4 CPU cores:
 
 | AIS dataset size | 100,000 points | 1,000,000 points | 2,500,000 points |
 |------------------|----------------|------------------|------------------|
@@ -97,16 +99,17 @@ points and using 4 CPU cores):
 
 ## Citation
 
-``` r
-citation("AISanalyze")
-```
-
 If you use AISanalyze, please cite:
 
 Pigeault R., Ruser A., Ramírez-Martínez N.C., Geelhoed S.C.V., Haelters
 J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.
 (2024). Maritime traffic alters distribution of the harbour porpoise in
-the North Sea. *Marine Pollution Bulletin.* 208: 116925.
+the North Sea. *Marine Pollution Bulletin.* 208: 116925. DOI:
+[10.1016/j.marpolbul.2024.116925](https://doi.org/10.1016/j.marpolbul.2024.116925)
+
+``` r
+citation("AISanalyze")
+```
 
 ## License
 
