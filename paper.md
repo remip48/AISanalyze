@@ -192,16 +192,16 @@ datasets and integrate vessel trajectories with biological observations,
 environmental data, and spatial analyses across broad spatial and
 temporal scales.
 
-Beyond these published applications, AISanalyze is currently used in
-collaborative research initiatives, including @habitatwal and
-@sustainmare. These projects investigate the effects of maritime
-activities on marine biodiversity, underwater radiated noise, and
-ecosystem management, and use AIS data to support evidence-based
-conservation and marine spatial planning. The package has also supported
-research conducted within the @saturnh2020 project and related ongoing
-studies, which develops scientific knowledge and practical solutions to
-understand and reduce underwater radiated noise from shipping and its
-impacts on aquatic species.
+Beyond these applications, AISanalyze is currently used in collaborative
+research initiatives, including @habitatwal and @sustainmare. These
+projects investigate the effects of maritime activities on marine
+biodiversity, underwater radiated noise, and ecosystem management, and
+use AIS data to support evidence-based conservation and marine spatial
+planning. The package has also supported research conducted within the
+@saturnh2020 project and related ongoing studies, which develops
+scientific knowledge and practical solutions to understand and reduce
+underwater radiated noise from shipping and its impacts on aquatic
+species.
 
 By providing a transparent, reproducible, and computationally efficient
 preprocessing workflow, AISanalyze reduces the technical barriers
