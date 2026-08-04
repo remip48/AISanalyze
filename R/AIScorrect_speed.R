@@ -151,6 +151,8 @@ AIScorrect_speed <- function(ais_data,
       dplyr::mutate(speed_kmh_corrected = F) %>%
       rbind(correct_speed) %>%
       dplyr::arrange(id_ais_data_initial)
+  } else {
+    corrected_data$speed_kmh_corrected <- F
   }
 
   return(corrected_data %>%
