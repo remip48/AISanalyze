@@ -6,6 +6,8 @@ output: github_document
 
 <!-- badges: start -->
 
+[![status](https://joss.theoj.org/papers/0cd8c6cdaf483d19cfec7ce93c1e5c4f/status.svg)](https://joss.theoj.org/papers/0cd8c6cdaf483d19cfec7ce93c1e5c4f)
+
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
 [![DOI](man/figures/zenodo.21474292.svg)](https://doi.org/10.5281/zenodo.21474292)
