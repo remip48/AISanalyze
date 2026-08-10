@@ -3,7 +3,10 @@
 Estimates the most likely vessel characteristics for each `mmsi` from
 AIS messages, including ship type, length, width, draught, IMO number,
 and vessel name. Estimates are based on the most frequent values, giving
-greater weight to records with more complete information.
+greater weight to records with more complete information. Warnings are
+printed if any value of length, draught, width, or IMO cannot be
+converted to numeric (and is therefore set to `NA`) or any value of ship
+type or name cannot be converted to character (set to `NA`).
 
 ## Usage
 
@@ -62,9 +65,12 @@ A list containing:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 library(AISanalyze)
 data("ais")
 
-out <- AISinfos(ais_data = ais)} # }
+out <- AISinfos(ais_data = ais)
+#> Warning: There was 1 warning in `dplyr::mutate()`.
+#> ℹ In argument: `imo = as.numeric(imo)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
 ```

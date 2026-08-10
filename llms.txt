@@ -52,13 +52,14 @@ remotes::install_github("remip48/AISanalyze")
 ## Example
 
 ``` r
+
 library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
 ## define the Unix time (seconds since 1970-01-01)
-ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime)))
-point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 
 results <- ais |>
   AIStravel(nb_cores = 4) |> # estimate travelled speed, distance, time

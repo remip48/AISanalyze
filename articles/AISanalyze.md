@@ -48,7 +48,6 @@ Three variables are added:
 ``` r
 
 ais <- AISidentify_stations_aircraft(ais_data = ais)
-#> Stations and aircraft are identified from speed, distance and time only. Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.
 ```
 
 Two logical variables are added:
@@ -61,8 +60,6 @@ Two logical variables are added:
 ``` r
 
 ais <- AIScorrect_speed(ais_data = ais)
-#> For consecutive GPS errors, only the first point is removed to avoid overcorrection.
-#> High-speed craft are not corrected.
 ```
 
 This step corrects unrealistic speeds caused by GPS errors or

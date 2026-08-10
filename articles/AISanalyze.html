@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
 Pigeault</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/main/vignettes/AISanalyze.Rmd" class="external-link"><code>vignettes/AISanalyze.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/master/vignettes/AISanalyze.Rmd" class="external-link"><code>vignettes/AISanalyze.Rmd</code></a></small>
       <div class="d-none name"><code>AISanalyze.Rmd</code></div>
     </div>
 
@@ -101,8 +101,7 @@ System (AIS) data, including:</p>
 <h2 id="identify-stations-and-aircraft">Identify stations and aircraft<a class="anchor" aria-label="anchor" href="#identify-stations-and-aircraft"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISidentify_stations_aircraft.html">AISidentify_stations_aircraft</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Stations and aircraft are identified from speed, distance and time only. Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISidentify_stations_aircraft.html">AISidentify_stations_aircraft</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></code></pre></div>
 <p>Two logical variables are added:</p>
 <ul>
 <li><code>station</code></li>
@@ -113,9 +112,7 @@ System (AIS) data, including:</p>
 <h2 id="correct-gps-errors">Correct GPS errors<a class="anchor" aria-label="anchor" href="#correct-gps-errors"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIScorrect_speed.html">AIScorrect_speed</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span>
-<span><span class="co">#&gt; For consecutive GPS errors, only the first point is removed to avoid overcorrection.</span></span>
-<span><span class="co">#&gt; High-speed craft are not corrected.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIScorrect_speed.html">AIScorrect_speed</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></code></pre></div>
 <p>This step corrects unrealistic speeds caused by GPS errors or
 transmission delays.</p>
 </div>

@@ -15,7 +15,7 @@ or all vessel positions within a specified time window.
 
     <a class="navbar-brand me-2" href="../index.html">AISanalyze</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ or all vessel positions within a specified time window.
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Extract AIS positions around target locations and times</h1>
-      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/main/R/AISextract.R" class="external-link"><code>R/AISextract.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/remip48/AISanalyze/blob/master/R/AISextract.R" class="external-link"><code>R/AISextract.R</code></a></small>
       <div class="d-none name"><code>AISextract.Rd</code></div>
     </div>
 
@@ -51,13 +51,13 @@ or all vessel positions within a specified time window.
 <span>  <span class="va">ais_data</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span>
-<span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  search_shape <span class="op">=</span> <span class="st">"circle"</span>,</span>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
 <span>  nb_cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  outfile <span class="op">=</span> <span class="st">"log.txt"</span></span>
+<span>  outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,26 +126,26 @@ target location and vessel positions.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/remip48/AISanalyze" class="external-link">AISanalyze</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/remip48/AISanalyze" class="external-link">AISanalyze</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ais"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"point_to_extract"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Define the Unix time (seconds since 1970-01-01)</span></span></span>
 <span class="r-in"><span><span class="va">point_to_extract</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hm</a></span><span class="op">(</span><span class="va">point_to_extract</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ais</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">ais</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="va">ais</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">.</span>,</span></span>
-<span class="r-in"><span>           type_interpolation <span class="op">=</span> <span class="st">"exact_timestamp"</span>,</span></span>
-<span class="r-in"><span>           exact_timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="co"># calculate the travelled distance, time, speed, and interpolate AIS data:</span></span></span>
+<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="va">ais</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span>type_interpolation <span class="op">=</span> <span class="st">"exact_timestamp"</span>,</span></span>
+<span class="r-in"><span>                 exact_timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>             timestamp_to_interpolate <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">$</span><span class="va">timestamp</span>,</span></span>
 <span class="r-in"><span>             locations_of_interest <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">$</span><span class="va">lon</span>,</span></span>
 <span class="r-in"><span>                                                lat <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             radius <span class="op">=</span> <span class="fl">200000</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>           crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                 crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># to return all vessel positions around the target location/timestamps:</span></span></span>
+<span class="r-in"><span><span class="co"># Extract all vessel positions within the target time interval and radius:</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">AISextract</span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>,</span></span>
 <span class="r-in"><span>           data <span class="op">=</span> <span class="va">point_to_extract</span>,</span></span>
 <span class="r-in"><span>           crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span></span>
@@ -153,9 +153,10 @@ target location and vessel positions.</p>
 <span class="r-in"><span>           search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span></span>
 <span class="r-in"><span>           interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span></span>
 <span class="r-in"><span>           interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The columns 'datetime, lon, lat' in the AIS data have been renamed to 'ais_datetime, ais_lon, ais_lat'</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># to return the position of each vessel closest in time to the target</span></span></span>
-<span class="r-in"><span><span class="co"># timestamps (around the target location)</span></span></span>
+<span class="r-in"><span><span class="co"># Extract each vessel position at the target timestamps within the radius:</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">AISextract</span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>,</span></span>
 <span class="r-in"><span>           data <span class="op">=</span> <span class="va">point_to_extract</span>,</span></span>
 <span class="r-in"><span>           crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span></span>
@@ -163,7 +164,8 @@ target location and vessel positions.</p>
 <span class="r-in"><span>           search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span></span>
 <span class="r-in"><span>           interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span></span>
 <span class="r-in"><span>           interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span><span class="op">)</span></span></span>
-<span class="r-in"><span>           <span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The columns 'datetime, lon, lat' in the AIS data have been renamed to 'ais_datetime, ais_lon, ais_lat'</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

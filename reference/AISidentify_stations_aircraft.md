@@ -1,6 +1,7 @@
 # Identify AIS base stations and high-speed craft
 
-Identify AIS base stations and high-speed craft
+Stations and aircraft are identified from speed, distance and time only.
+Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.
 
 ## Usage
 
@@ -37,13 +38,15 @@ The input AIS data with the following additional columns:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 library(AISanalyze)
 data("ais")
 
-ais <- ais %>%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
-  AIStravel(.)
+# Define the Unix time (seconds since 1970-01-01)
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
-out <- AISidentify_stations_aircraft(ais_data = ais)} # }
+# calculate the travelled distance, time, and speed:
+ais <- AIStravel(ais_data = ais)
+
+# Identify stations and aircrafts:
+out <- AISidentify_stations_aircraft(ais_data = ais)
 ```

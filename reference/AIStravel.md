@@ -6,7 +6,7 @@ between consecutive AIS positions for each vessel (`mmsi`).
 ## Usage
 
 ``` r
-AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = "log.txt")
+AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = tempfile())
 ```
 
 ## Arguments
@@ -46,12 +46,12 @@ The input AIS data with the following additional columns:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 library(AISanalyze)
 data("ais")
 
-ais <- ais %>%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
+# Define the Unix time (seconds since 1970-01-01)
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
-out <- AIStravel(ais_data = ais)} # }
+# calculate the travelled distance, time, and speed:
+out <- AIStravel(ais_data = ais)
 ```
