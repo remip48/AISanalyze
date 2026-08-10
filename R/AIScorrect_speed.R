@@ -2,6 +2,8 @@
 #'
 #' Detects and corrects GPS errors and delayed AIS messages that generate
 #' unrealistic vessel speeds, travelled distances, and travel times.
+#' Note: For consecutive GPS errors, only the first point is removed to
+#' avoid overcorrection.
 #'
 #' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
 #'   `mmsi`. `timestamp` must be Unix time (seconds since 1970-01-01), while
@@ -26,17 +28,19 @@
 #'   }
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' ais <- ais %>%
-#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
-#'   AIStravel(ais_data = .)
+#' # Define the Unix time (seconds since 1970-01-01)
+#' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
+#' # calculate the travelled distance, time, and speed:
+#' ais <- AIStravel(ais_data = ais)
+#'
+#' # Correct speed:
 #' out <- AIScorrect_speed(ais_data = ais,
 #'                  crs_meters = 3035,
-#'                  threshold_speed_to_correct = 100)}
+#'                  threshold_speed_to_correct = 100)
 #' @export
 
 AIScorrect_speed <- function(ais_data,
@@ -44,10 +48,10 @@ AIScorrect_speed <- function(ais_data,
                              threshold_speed_to_correct = 100,
                              threshold_speed_to_correct_expr = function(speed_kmh) {
                                return(
-                                 15 + stats::median(speed_kmh[speed_kmh > 1], na.rm = T) + 5 * stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh > 1], .75)])
+                                 15 + stats::median(speed_kmh[speed_kmh > 1], na.rm = TRUE) + 5 * stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh > 1], .75)])
                                )},
                                nb_cores = 1,
-                               outfile = "log.txt"
+                               outfile = tempfile()
 ) {
 
   assertthat::assert_that(is.numeric(ais_data$lon))
@@ -57,10 +61,6 @@ AIScorrect_speed <- function(ais_data,
   assertthat::assert_that(is.numeric(threshold_speed_to_correct))
   assertthat::assert_that("time_travelled" %in% colnames(ais_data) & "distance_travelled" %in% colnames(ais_data) & "speed_kmh" %in% colnames(ais_data),
                           msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
-
-  cat(
-    "For consecutive GPS errors, only the first point is removed to avoid overcorrection.\nHigh-speed craft are not corrected.\n"
-  )
 
   init_cols <- colnames(ais_data)
 
@@ -97,7 +97,7 @@ AIScorrect_speed <- function(ais_data,
       dplyr::mutate(id_ais_data_initial = 1:dplyr::n()) %>%
       dplyr::group_by(mmsi) %>%
       dplyr::mutate(last_row = 1:dplyr::n(),
-                    last_row = ifelse(last_row == dplyr::n(), T, F),
+                    last_row = ifelse(last_row == dplyr::n(), TRUE, FALSE),
                     id_mmsi_point_initial = 1:dplyr::n()) %>%
       dplyr::ungroup()
 
@@ -112,7 +112,7 @@ AIScorrect_speed <- function(ais_data,
       dplyr::filter(speed_kmh > threshold_speed_to_correct | speed_kmh > threshold_strange_speed)
 
     ## extract only rows with strange speed that are not consecutive in the dataset
-    strange_speed <- strange_speed[c(T, (strange_speed$id_ais_data_initial[-1] - strange_speed$id_ais_data_initial[-nrow(strange_speed)]) >= 2), ]
+    strange_speed <- strange_speed[c(TRUE, (strange_speed$id_ais_data_initial[-1] - strange_speed$id_ais_data_initial[-nrow(strange_speed)]) >= 2), ]
 
     strange_speed <- strange_speed$id_ais_data_initial
 
@@ -123,15 +123,14 @@ AIScorrect_speed <- function(ais_data,
     strange_speed <- sort(unique(c(strange_speed[!(strange_speed %in% short_time)], short_time)))
 
     ## avoid consecutive GPS detected (but not always actual) errors to be both removed: only the first error is removed
-    strange_speed <- strange_speed[c(T, (strange_speed[-1] - strange_speed[-length(strange_speed)]) >= 2)]
+    strange_speed <- strange_speed[c(TRUE, (strange_speed[-1] - strange_speed[-length(strange_speed)]) >= 2)]
 
     return(ais_data %>%
              dplyr::filter(!(id_ais_data_initial %in% strange_speed)) %>%
-             dplyr::mutate(speed_to_correct = ifelse(id_ais_data_initial %in% (strange_speed + 1), T, F)))
+             dplyr::mutate(speed_to_correct = ifelse(id_ais_data_initial %in% (strange_speed + 1), TRUE, FALSE)))
   }
 
   parallel::stopCluster(cl)
-  gc()
 
   corrected_data <- purrr::map_dfr(corrected_data, rbind)
 
@@ -145,14 +144,14 @@ AIScorrect_speed <- function(ais_data,
                          dplyr::select(time_travelled, distance_travelled, speed_kmh, mmsi, timestamp),
                        by = c("mmsi", "timestamp")) %>%
       dplyr::filter(speed_to_correct) %>%
-      dplyr::mutate(speed_kmh_corrected = T)
+      dplyr::mutate(speed_kmh_corrected = TRUE)
 
     corrected_data <- corrected_data[-lines_to_correct, ] %>%
-      dplyr::mutate(speed_kmh_corrected = F) %>%
+      dplyr::mutate(speed_kmh_corrected = FALSE) %>%
       rbind(correct_speed) %>%
       dplyr::arrange(id_ais_data_initial)
   } else {
-    corrected_data$speed_kmh_corrected <- F
+    corrected_data$speed_kmh_corrected <- FALSE
   }
 
   return(corrected_data %>%

@@ -16,7 +16,7 @@ test_that("rename_colums_ais", {
                      other_columns = "X",
                      other_columns2 = "Y")
 
-  ais_data <- rename_colums_ais(init_ais_data,
+  ais_data <- rename_columns_ais(init_ais_data,
                                 data)
 
   ## check

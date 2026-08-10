@@ -30,7 +30,7 @@ method_interpolation_exact_time <- function(ais_data,
                                             radius,
                                             timestamp_to_interpolate,
                                             nb_cores = 1,
-                                            outfile = "log.txt") {
+                                            outfile = tempfile()) {
    ais_ok <- ais_data %>%
      dplyr::filter(timestamp %in% timestamp_to_interpolate)
 
@@ -68,16 +68,16 @@ method_interpolation_exact_time <- function(ais_data,
    ) %dopar% {
 
      purrr::map_dfr(all_to_run, function(t) {
-       cat(match(t, all_to_run), "/", length(all_to_run), "\n")
+       # message(match(t, all_to_run), "/", length(all_to_run), "\n")
 
        data_coords <- data[data$timestamp == t, ]
 
        temp <- ais_data_core %>%
          dplyr::filter(!(mmsi %in% unique(ais_ok$mmsi[ais_ok$timestamp %in% t]))) %>%
-         dplyr::filter(X >= (min(data_coords$X, na.rm = T) - radius)) %>%
-         dplyr::filter(X <= (max(data_coords$X, na.rm = T) + radius)) %>%
-         dplyr::filter(Y >= (min(data_coords$Y, na.rm = T) - radius)) %>%
-         dplyr::filter(Y <= (max(data_coords$Y, na.rm = T) + radius)) %>%
+         dplyr::filter(X >= (min(data_coords$X, na.rm = TRUE) - radius)) %>%
+         dplyr::filter(X <= (max(data_coords$X, na.rm = TRUE) + radius)) %>%
+         dplyr::filter(Y >= (min(data_coords$Y, na.rm = TRUE) - radius)) %>%
+         dplyr::filter(Y <= (max(data_coords$Y, na.rm = TRUE) + radius)) %>%
          dplyr::mutate(difftimestamp = timestamp - t)
 
        sup <- temp[temp$difftimestamp > 0, ] %>%
@@ -116,7 +116,7 @@ method_interpolation_exact_time <- function(ais_data,
              dplyr::filter(tmmsi == mmsi)
 
            interp_eez <- interp %>%
-             dplyr::mutate(interpolated = T,
+             dplyr::mutate(interpolated = TRUE,
                            time_travelled = t - ttimestamp,
                            distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
                            lon = tlon + (lon - tlon) * time_travelled / (timestamp - ttimestamp),
@@ -147,7 +147,6 @@ method_interpolation_exact_time <- function(ais_data,
    }
 
    parallel::stopCluster(cl)
-   gc()
 
    out <- purrr::map_dfr(list(ais_ok,
                               ais_data),
@@ -157,7 +156,7 @@ method_interpolation_exact_time <- function(ais_data,
 
    if (!("interpolated") %in% colnames(out)) {
      out <- out %>%
-       dplyr::mutate(interpolated = F)
+       dplyr::mutate(interpolated = FALSE)
    }
 
    return(out)

@@ -5,8 +5,8 @@
 #'   \item to ensure time intervals do not exceed a specified maximum
 #'   (`= maximum_gap_seconds`).
 #'   \item at user-defined timestamps (`= exact_timestamp`). Interpolation
-#'   can optionally be restricted to a given radius within
-#'   target locations to reduce computation time.
+#'   can optionally be restricted to specific regions to reduce computation
+#'   time with `locations_of_interest` and `radius` arguments.
 #'   }
 #'
 #' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
@@ -36,26 +36,25 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #' data("point_to_extract")
 #'
-#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime))
+#' # Define the Unix time (seconds since 1970-01-01)
+#' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
+#' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
-#' ais <- ais %>%
-#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
-#'   AIStravel(ais_data = .)
+#' # calculate the travelled distance, time, and speed:
+#' ais <- AIStravel(ais_data = ais)
 #'
-#' # to interpolate all vessel locations separated by > 60 seconds
+#' # Interpolate all AIS signals further than > 60 seconds:
 #' out <- AISinterpolate(ais_data = ais,
 #'                type_interpolation = "maximum_gap_seconds",
 #'                maximum_gap_seconds = 60,
 #'                crs_meters = 3035)
 #'
-#' # to interpolate all vessel locations at exact timestamps,
-#' # within a radius of 200 000 meters around
-#' # target locations
+#' # Interpolate all vessel positions at target timestamps and within
+#' # a radius of 200 km around locations_of_interest:
 #' out <- AISinterpolate(ais_data = ais,
 #'            type_interpolation = "exact_timestamp",
 #'            exact_timestamp = list(
@@ -64,7 +63,6 @@
 #'                                                  lat = point_to_extract$lat),
 #'                radius = 200000),
 #'            crs_meters = 3035)
-#'            }
 #' @export
 
 AISinterpolate <- function(ais_data,
@@ -75,7 +73,7 @@ AISinterpolate <- function(ais_data,
                                                   radius),
                            crs_meters = 3035,
                            nb_cores = 1,
-                           outfile = "log.txt"
+                           outfile = tempfile()
 ){
 
   assertthat::assert_that(is.numeric(ais_data$lon))
@@ -95,7 +93,6 @@ AISinterpolate <- function(ais_data,
       exact_timestamp$locations_of_interest <- data.frame(lon = 0, lat = 0)
       radius <- Inf
 
-      cat("`timestamp_to_interpolate` will be interpolated for all AIS data. If you want to target a specific region, use `locations_of_interest` and `radius` arguments\n.")
     } else {
       assertthat::assert_that(is.numeric(exact_timestamp$radius))
       assertthat::assert_that(ncol(exact_timestamp$locations_of_interest) == 2)
@@ -132,11 +129,9 @@ AISinterpolate <- function(ais_data,
   ais_data <- ais_data %>%
     add_coordinates_meters(., crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
-    dplyr::filter(X >= (min(data$X, na.rm = T) - radius) & X <= (max(data$X, na.rm = T) + radius) &
-                    Y >= (min(data$Y, na.rm = T) - radius) & Y <= (max(data$Y, na.rm = T) + radius)) %>%
+    dplyr::filter(X >= (min(data$X, na.rm = TRUE) - radius) & X <= (max(data$X, na.rm = TRUE) + radius) &
+                    Y >= (min(data$Y, na.rm = TRUE) - radius) & Y <= (max(data$Y, na.rm = TRUE) + radius)) %>%
     dplyr::arrange(mmsi, timestamp)
-
-  gc()
 
   if (nrow(ais_data) > 0) {
 
@@ -158,10 +153,10 @@ AISinterpolate <- function(ais_data,
     ais_data <- AIStravel(ais_data = ais_data %>%
                             dplyr::select(-c(time_travelled, distance_travelled, speed_kmh)),
                           crs_meters = crs_meters) %>%
-      dplyr::mutate(interpolated = ifelse(is.na(interpolated), F, interpolated))
+      dplyr::mutate(interpolated = ifelse(is.na(interpolated), FALSE, interpolated))
 
   } else {
-    cat("No point left in AIS data for interpolation.\n")
+    message("No AIS data remained for interpolation after applying `locations_of_interest` and `radius`.\n")
   }
 
   return(ais_data %>%

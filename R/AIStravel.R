@@ -21,20 +21,20 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' ais <- ais %>%
-#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
+#' # Define the Unix time (seconds since 1970-01-01)
+#' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
-#' out <- AIStravel(ais_data = ais)}
+#' # calculate the travelled distance, time, and speed:
+#' out <- AIStravel(ais_data = ais)
 #' @export
 
 AIStravel <- function(ais_data,
                       crs_meters = 3035,
                       nb_cores = 1,
-                      outfile = "log.txt"
+                      outfile = tempfile()
 ) {
   assertthat::assert_that(is.numeric(ais_data$timestamp))
   assertthat::assert_that(is.numeric(ais_data$lon))
@@ -91,7 +91,6 @@ AIStravel <- function(ais_data,
   }
 
   parallel::stopCluster(cl)
-  gc()
 
   return(purrr::map_dfr(travelled_data, rbind))
 

@@ -4,6 +4,9 @@
 #' messages, including ship type, length, width, draught, IMO number, and
 #' vessel name. Estimates are based on the most frequent values, giving greater
 #' weight to records with more complete information.
+#' Warnings are printed if any value of length, draught, width, or IMO cannot
+#' be converted to numeric (and is therefore set to `NA`) or any value of
+#' ship type or name cannot be converted to character (set to `NA`).
 #'
 #' @param ais_data AIS data frame containing the columns `mmsi`, `shiptype`,
 #'   `length`, `width`, `draught`, `imo`, and `name`. Another vessel identifier
@@ -31,11 +34,10 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' out <- AISinfos(ais_data = ais)}
+#' out <- AISinfos(ais_data = ais)
 #' @export
 
 AISinfos <- function(ais_data,
@@ -198,9 +200,6 @@ AISinfos <- function(ais_data,
     estimated_values <- estimated_values %>%
       dplyr::left_join(all_infos_character[[i]], by = "mmsi")
   }
-
-  cat("\nWarnings are printed if any value of length, draught, width or imo can not be transformed to numeric (set as `NA`),
-      or any value of shiptype and name can not be transformed to character (set as `NA`).\n")
 
   return(list(estimated_values = estimated_values %>%
                 dplyr::select(mmsi,

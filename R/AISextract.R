@@ -34,26 +34,26 @@
 #' target location and vessel positions.
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #' data("point_to_extract")
 #'
+#' # Define the Unix time (seconds since 1970-01-01)
 #' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
+#' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
-#' ais <- ais %>%
-#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
-#'   AIStravel(ais_data = .) %>%
-#'   AISinterpolate(ais_data = .,
-#'            type_interpolation = "exact_timestamp",
-#'            exact_timestamp = list(
+#' # calculate the travelled distance, time, speed, and interpolate AIS data:
+#' ais <- ais |>
+#'   AIStravel() |>
+#'   AISinterpolate(type_interpolation = "exact_timestamp",
+#'                  exact_timestamp = list(
 #'              timestamp_to_interpolate = point_to_extract$timestamp,
 #'              locations_of_interest = data.frame(lon = point_to_extract$lon,
 #'                                                 lat = point_to_extract$lat),
 #'              radius = 200000),
-#'            crs_meters = 3035)
+#'                  crs_meters = 3035)
 #'
-#' # to return all vessel positions around the target location/timestamps:
+#' # Extract all vessel positions within the target time interval and radius:
 #' out <- AISextract(ais_data = ais,
 #'            data = point_to_extract,
 #'            crs_meters = 3035,
@@ -62,8 +62,7 @@
 #'            interval_time_before = 5 * 60,
 #'            interval_time_after = 5 * 60)
 #'
-#' # to return the position of each vessel closest in time to the target
-#' # timestamps (around the target location)
+#' # Extract each vessel position at the target timestamps within the radius:
 #' out <- AISextract(ais_data = ais,
 #'            data = point_to_extract,
 #'            crs_meters = 3035,
@@ -71,19 +70,18 @@
 #'            search_into_radius_m = 50000,
 #'            interval_time_before = 5 * 60,
 #'            interval_time_after = 5 * 60)
-#'            }
 #' @export
 
 AISextract <- function(ais_data,
                        data,
                        crs_meters = 3035,
-                       return_all_vessel_locations = T,
+                       return_all_vessel_locations = TRUE,
                        search_into_radius_m = 50000,
                        search_shape = "circle",
                        interval_time_before = 5 * 60,
                        interval_time_after = 5 * 60,
                        nb_cores = 1,
-                       outfile = "log.txt")
+                       outfile = tempfile())
 {
 
   assertthat::assert_that(search_shape %in% c("circle", "square"))
@@ -100,19 +98,14 @@ AISextract <- function(ais_data,
   assertthat::assert_that("time_travelled" %in% colnames(ais_data) & "distance_travelled" %in% colnames(ais_data) & "speed_kmh" %in% colnames(ais_data),
                           msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
 
-  cat(ifelse(return_all_vessel_locations,
-             "Returning all vessel positions within [t - interval_time_before, t + interval_time_after]. Set `return_all_vessel_locations = FALSE` to return only the closest in time position.\n",
-             "Returning only the vessel position closest in time within [t - interval_time_before, t + interval_time_after]. Set `return_all_vessel_locations = TRUE` to return all matching positions.\n"
-  ))
-
   data <- data %>%
     rename_columns_data(.) %>%
     add_coordinates_meters(., crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
     dplyr::mutate(idd_effort = 1:dplyr::n())
 
-  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp, na.rm = T) - (interval_time_before)) &
-                         ais_data$timestamp <= (max(data$timestamp, na.rm = T) + interval_time_after), ] %>%
+  ais_data <- ais_data[ais_data$timestamp >= (min(data$timestamp, na.rm = TRUE) - (interval_time_before)) &
+                         ais_data$timestamp <= (max(data$timestamp, na.rm = TRUE) + interval_time_after), ] %>%
     add_coordinates_meters(.,
                            crs_meters = crs_meters,
                            coordinates_to_write = c("ais_X", "ais_Y")) %>%
@@ -121,7 +114,7 @@ AISextract <- function(ais_data,
     dplyr::filter(ais_X <= (max(data$X) + search_into_radius_m)) %>%
     dplyr::filter(ais_Y >= (min(data$Y) - search_into_radius_m)) %>%
     dplyr::filter(ais_Y <= (max(data$Y) + search_into_radius_m)) %>%
-    rename_colums_ais(.,
+    rename_columns_ais(.,
                     data)  %>%
     dplyr::rename(ais_timestamp = timestamp)%>%
     as.data.frame()
@@ -175,11 +168,11 @@ AISextract <- function(ais_data,
             mmsi_ref <- mmsi_ref_infos %>%
               as.data.frame() %>%
               dplyr::group_by(mmsi) %>%
-              dplyr::reframe(point = which.min(abs(ais_timestamp - dt)),
-                             idd_ais = idd_ais[point],
-                             ais_X = ais_X[point],
-                             ais_Y = ais_Y[point],
-                             ais_timestamp = ais_timestamp[point])
+              dplyr::reframe(position_to_use = which.min(abs(ais_timestamp - dt)),
+                             idd_ais = idd_ais[position_to_use],
+                             ais_X = ais_X[position_to_use],
+                             ais_Y = ais_Y[position_to_use],
+                             ais_timestamp = ais_timestamp[position_to_use])
           }
 
           out <- eff_dt %>%
@@ -202,7 +195,7 @@ AISextract <- function(ais_data,
             out <- out %>%
               dplyr::left_join(mmsi_ref_infos %>%
                                  dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") %>%
-              dplyr::select(-c(idd_ais, point))
+              dplyr::select(-c(idd_ais, position_to_use))
           }
 
         } else {
@@ -214,7 +207,6 @@ AISextract <- function(ais_data,
     }
 
     parallel::stopCluster(cl)
-    gc()
 
     extracted_ais <- purrr::map_dfr(extracted_ais, rbind)
   } else {
@@ -222,7 +214,7 @@ AISextract <- function(ais_data,
   }
 
   if (!("ais_timestamp" %in% colnames(extracted_ais))) {
-    cat("\nNo AIS data extracted at all for the input data\n")
+    message("\nNo AIS data were extracted for the specified time intervals and locations.\n")
     extracted_ais <- extracted_ais %>%
       dplyr::mutate(mmsi = NA,
                     ais_timestamp = NA,

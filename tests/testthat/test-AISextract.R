@@ -21,7 +21,7 @@ test_that("AISextract", {
   out <- AISextract(ais_data,
                     data,
                     crs_meters = 3035,
-                    return_all_vessel_locations = T,
+                    return_all_vessel_locations = TRUE,
                     search_into_radius_m = 500,
                     interval_time_before = 5 * 60,
                     interval_time_after = 5 * 60)

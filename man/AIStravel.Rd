@@ -4,7 +4,7 @@
 \alias{AIStravel}
 \title{Calculate vessel travel metrics}
 \usage{
-AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = "log.txt")
+AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = tempfile())
 }
 \arguments{
 \item{ais_data}{AIS data frame containing \code{timestamp}, \code{lon}, \code{lat}, and
@@ -33,12 +33,12 @@ Calculates the distance travelled (m), travel time (s), and speed (km/h)
 between consecutive AIS positions for each vessel (\code{mmsi}).
 }
 \examples{
-\dontrun{
 library(AISanalyze)
 data("ais")
 
-ais <- ais \%>\%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime)))
+# Define the Unix time (seconds since 1970-01-01)
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
-out <- AIStravel(ais_data = ais)}
+# calculate the travelled distance, time, and speed:
+out <- AIStravel(ais_data = ais)
 }

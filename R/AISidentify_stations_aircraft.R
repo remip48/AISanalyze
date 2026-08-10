@@ -1,5 +1,8 @@
 #' Identify AIS base stations and high-speed craft
 #'
+#' Stations and aircraft are identified from speed, distance and time only.
+#' Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.
+#'
 #' @param ais_data AIS data frame containing `timestamp`, `lon`, `lat`, and
 #'   `mmsi`. `timestamp` must be Unix time (seconds since 1970-01-01), while
 #'   `lon` and `lat` must be numeric. Another vessel identifier may be used if
@@ -16,15 +19,17 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' ais <- ais %>%
-#'   dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) %>%
-#'   AIStravel(.)
+#' # Define the Unix time (seconds since 1970-01-01)
+#' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
-#' out <- AISidentify_stations_aircraft(ais_data = ais)}
+#' # calculate the travelled distance, time, and speed:
+#' ais <- AIStravel(ais_data = ais)
+#'
+#' # Identify stations and aircrafts:
+#' out <- AISidentify_stations_aircraft(ais_data = ais)
 #' @export
 
 AISidentify_stations_aircraft <- function(ais_data,
@@ -37,15 +42,13 @@ AISidentify_stations_aircraft <- function(ais_data,
   assertthat::assert_that("time_travelled" %in% colnames(ais_data) & "distance_travelled" %in% colnames(ais_data) & "speed_kmh" %in% colnames(ais_data),
                           msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
 
-  cat("Stations and aircraft are identified from speed, distance and time only. Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.\n")
-
   init_cols <- colnames(ais_data)
 
   ais_data <- add_coordinates_meters(ais_data, crs_meters = crs_meters) %>%
     sf::st_drop_geometry() %>%
     dplyr::group_by(mmsi) %>%
-    dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = T) <= 1 | stats::quantile(speed_kmh, 0.975, na.rm = T) <= 0.01, T, F),
-                  high_speed = ifelse(stats::quantile(speed_kmh, 1 - 0.97, na.rm = T) >= 110, T, F),
+    dplyr::mutate(station = ifelse(stats::quantile(distance_travelled, 0.975, na.rm = TRUE) <= 1 | stats::quantile(speed_kmh, 0.975, na.rm = TRUE) <= 0.01, TRUE, FALSE),
+                  high_speed = ifelse(stats::quantile(speed_kmh, 1 - 0.97, na.rm = TRUE) >= 110, TRUE, FALSE),
                   n_point_mmsi_initial_data = dplyr::n(),
                   id_mmsi_point_initial = 1:dplyr::n()) %>%
     dplyr::ungroup()

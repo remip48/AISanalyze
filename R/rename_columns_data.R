@@ -11,7 +11,7 @@
 rename_columns_data <- function(data) {
   if (any(colnames(data) == "mmsi")) {
     colnames(data)[colnames(data) == "mmsi"] <- "data_mmsi"
-    cat("\nmmsi column in dataframe renamed as 'data_mmsi'\n")
+    message("\nThe `mmsi` column in the input data has been renamed to `data_mmsi`.\n")
   }
 
   return(data)

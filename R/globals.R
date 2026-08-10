@@ -25,7 +25,7 @@ utils::globalVariables(
     "id_ais_data_initial",
     "real_high_speed",
     "idd_ais",
-    "point",
+    "position_to_use",
     "idd_effort",
     "distance_vessel_to_location_m",
     "shiptype",

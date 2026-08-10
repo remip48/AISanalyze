@@ -7,6 +7,10 @@
 
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
 [![DOI](man/figures/zenodo.21474292.svg)](https://doi.org/10.5281/zenodo.21474292)
 
 [![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
@@ -72,8 +76,8 @@ data("ais")
 data("point_to_extract")
 
 ## define the Unix time (seconds since 1970-01-01)
-ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime)))
-point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime)))
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 
 results <- ais |>
   AIStravel(nb_cores = 4) |> # estimate travelled speed, distance, time

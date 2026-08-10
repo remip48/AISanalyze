@@ -30,7 +30,4 @@ test_that("method_interpolation_exact_time", {
   expect_equal(out$lon, (ais_data$lon[49] + ais_data$lon[50]) / 2)
   expect_equal(out$lat, (ais_data$lat[49] + ais_data$lat[50]) / 2)
 
-  ## delete log file
-  unlink(r"(tests\testthat\log.txt)")
-
 })

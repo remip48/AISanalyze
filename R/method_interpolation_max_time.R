@@ -20,7 +20,7 @@
 method_interpolation_max_time <- function(ais_data,
                                            maximum_gap_seconds,
                                            nb_cores = 1,
-                                           outfile = "log.txt") {
+                                           outfile = tempfile()) {
 
   ais_data <- ais_data %>%
     dplyr::mutate(id_ais_data_initial = 1:dplyr::n())
@@ -76,16 +76,15 @@ method_interpolation_max_time <- function(ais_data,
                                        to = timestamp,
                                        length = 1 + ceiling((timestamp - ttimestamp) / maximum_gap_seconds))[-1],
                        speed_kmh = unique(speed_kmh),
-                       interpolated = c(rep(T, length(timestamp) - 1), F),
+                       interpolated = c(rep(TRUE, length(timestamp) - 1), FALSE),
                        time_travelled = rep(timestamp[2] - timestamp[1], length(timestamp)),
                        distance_travelled = 1000 * speed_kmh * (time_travelled / (60*60)),
-                       lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = T)),
-                       lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = T))
+                       lon = tlon + (lon - tlon) * cumsum(time_travelled / sum(time_travelled, na.rm = TRUE)),
+                       lat = tlat + (lat - tlat) * cumsum(time_travelled / sum(time_travelled, na.rm = TRUE))
         )
     }
 
     parallel::stopCluster(cl)
-    gc()
 
     interp <- to_interp %>%
       dplyr::select(!c("timestamp", "speed_kmh", "time_travelled", "distance_travelled", "lon", "lat")) %>%
@@ -96,6 +95,6 @@ method_interpolation_max_time <- function(ais_data,
 
   return(ais_data %>%
            dplyr::filter(!(id_ais_data_initial %in% unique(interp$id_ais_data_initial))) %>%
-           dplyr::mutate(interpolated = F) %>%
+           dplyr::mutate(interpolated = FALSE) %>%
            rbind(interp))
 }

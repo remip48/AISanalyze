@@ -11,7 +11,7 @@ AISinterpolate(
   exact_timestamp = list(timestamp_to_interpolate, locations_of_interest, radius),
   crs_meters = 3035,
   nb_cores = 1,
-  outfile = "log.txt"
+  outfile = tempfile()
 )
 }
 \arguments{
@@ -54,31 +54,30 @@ Interpolates vessel positions either: (depending on \code{type_interpolation})
 \item to ensure time intervals do not exceed a specified maximum
 (\verb{= maximum_gap_seconds}).
 \item at user-defined timestamps (\verb{= exact_timestamp}). Interpolation
-can optionally be restricted to a given radius within
-target locations to reduce computation time.
+can optionally be restricted to specific regions to reduce computation
+time with \code{locations_of_interest} and \code{radius} arguments.
 }
 }
 \examples{
-\dontrun{
 library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
-point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(datetime))
+# Define the Unix time (seconds since 1970-01-01)
+point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
+ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
-ais <- ais \%>\%
-  dplyr::mutate(timestamp = as.numeric(lubridate::ymd_hms(datetime))) \%>\%
-  AIStravel(ais_data = .)
+# calculate the travelled distance, time, and speed:
+ais <- AIStravel(ais_data = ais)
 
-# to interpolate all vessel locations separated by > 60 seconds
+# Interpolate all AIS signals further than > 60 seconds:
 out <- AISinterpolate(ais_data = ais,
                type_interpolation = "maximum_gap_seconds",
                maximum_gap_seconds = 60,
                crs_meters = 3035)
 
-# to interpolate all vessel locations at exact timestamps,
-# within a radius of 200 000 meters around
-# target locations
+# Interpolate all vessel positions at target timestamps and within
+# a radius of 200 km around locations_of_interest:
 out <- AISinterpolate(ais_data = ais,
            type_interpolation = "exact_timestamp",
            exact_timestamp = list(
@@ -87,5 +86,4 @@ out <- AISinterpolate(ais_data = ais,
                                                  lat = point_to_extract$lat),
                radius = 200000),
            crs_meters = 3035)
-           }
 }

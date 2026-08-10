@@ -9,17 +9,17 @@
 #' @keywords internal
 #' @noRd
 #'
-rename_colums_ais <- function(ais_data, data) {
+rename_columns_ais <- function(ais_data, data) {
   colnam <- colnames(ais_data)
 
   if (any(colnam[!(colnam %in% c("timestamp", "mmsi"))] %in%
           c(colnames(data)))) {
     colnames(ais_data)[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))] <- paste0("ais_", colnam[colnam %in% c(colnames(data)) & !(colnam %in% c("timestamp", "mmsi"))])
 
-    cat("\n",
-        paste0("'", paste(colnam[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"),
-        "columns in AIS data renamed as",
-        paste0("'", paste(colnames(ais_data)[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"), "\n")
+    message("\nThe columns ",
+            paste0("'", paste(colnam[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"),
+            " in the AIS data have been renamed to ",
+            paste0("'", paste(colnames(ais_data)[colnam %in% colnames(data) & !(colnam %in% c("timestamp", "mmsi"))], collapse = ", "), "'"), "\n")
   }
 
   return(ais_data)

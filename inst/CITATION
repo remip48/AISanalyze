@@ -1,7 +1,7 @@
 citHeader("To cite AISanalyze, please use:")
 
 bibentry(
-  author = "Pigeault R., Ruser A., Ramirez-Martinez N.C., Geelhoed S.C.V., Haelters J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.",
+  author = c(person("Rémi", "Pigeault"), person("Andreas", "Ruser"), person("Nadya C.", "Ramirez-Martinez"), person("Steve C. V.", "Geelhoed"), person("Jan", "Haelters"), person("Dominik A.", "Nachtsheim"), person("Tobias", "Schaffeld"), person("Signe", "Sveegaard"), person("Ursula", "Siebert"), person("Anita", "Gilles")),
   bibtype = "Article",
   title   = "Maritime traffic alters distribution of the harbour porpoise in the North Sea",
   year    = "2024",

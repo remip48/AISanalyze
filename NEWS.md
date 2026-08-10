@@ -1,9 +1,22 @@
+# AISanalyze 3.1.1 (2026-08-10)
+
+## Improvements
+
+* Removed dontun() for all examples.
+* Replaced T and F by TRUE and FALSE.
+* removed cat() and print(), or replace by message() when necessary.
+* Added ORCID in CITATION.
+* Avoided writing files to user directories; use temporary files instead for parallel processing logs.
+* Added repo status badge.
+* Added cran-comment.md
+* cleaned examples
+
 # AISanalyze 3.1.0 (2026-08-03)
 
 ## New features
 
 * Added parallel processing to AIStravel().
-* Optimmized parallel processing for other functions.
+* Optimized parallel processing for other functions.
 
 
 # AISanalyze 3.0.3 (2026-08-01)
