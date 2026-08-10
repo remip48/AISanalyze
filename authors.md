@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/remip48/AISanalyze/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/remip48/AISanalyze/blob/v3.1.1/inst/CITATION)
 
 Pigeault R., Ruser A., Ramirez-Martinez N.C., Geelhoed S.C.V., Haelters
 J., Nachtsheim D.A., Schaffeld T., Sveegaard S., Siebert U., Gilles A.
