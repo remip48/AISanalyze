@@ -47,10 +47,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Rémi Pigeault \email{remi.pigeault@tiho-hannover.de} (\href{https://orcid.org/0000-0003-2714-5122}{ORCID})
 
-Authors:
-\itemize{
-  \item Rémi Pigeault \email{remi.pigeault@tiho-hannover.de} (\href{https://orcid.org/0000-0003-2714-5122}{ORCID})
-}
-
 }
 \keyword{internal}

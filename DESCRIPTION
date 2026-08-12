@@ -13,23 +13,23 @@ License: MIT + file LICENSE
 Depends:
     R(>= 4.2.0)
 Imports:
-    dplyr (>= 1.1.2),
-    sf (>= 1.0-9),
-    purrr (>= 1.0.1),
-    stats (>= 4.2.1),
-    stringr (>= 1.5.0),
-    doParallel (>= 1.0.17),
+    dplyr,
+    sf,
+    purrr,
+    stats,
+    stringr,
+    doParallel,
     parallel,
-    foreach (>= 1.5.2),
-    assertthat (>= 0.2.1),
-    data.table (>= 1.18.4),
-    magrittr (>= 2.0.5)
+    foreach,
+    assertthat,
+    data.table,
+    magrittr
 Suggests: 
     knitr,
     units,
-    lubridate (>= 1.9.2),
+    lubridate,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat
 URL: https://github.com/remip48/AISanalyze, https://remip48.github.io/AISanalyze/
 BugReports: https://github.com/remip48/AISanalyze/issues
 Encoding: UTF-8
@@ -38,3 +38,4 @@ Config/testthat/edition: 3
 LazyData: true
 Config/roxygen2/version: 8.0.0
 VignetteBuilder: knitr
+RoxygenNote: 7.3.1
