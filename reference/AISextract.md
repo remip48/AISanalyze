@@ -2,7 +2,8 @@
 
 Returns either (depending on `return_all_vessel_locations`):
 
-- each vessel position at the target timestamps.
+- the position of each vessel at the time closest to the target
+  timestamps.
 
 - or all vessel positions within a specified time window.
 
@@ -114,7 +115,8 @@ out <- AISextract(ais_data = ais,
 #> 
 #> The columns 'datetime, lon, lat' in the AIS data have been renamed to 'ais_datetime, ais_lon, ais_lat'
 
-# Extract each vessel position at the target timestamps within the radius:
+# Extract each vessel position at the time closest to the target timestamps
+# within the radius:
 out <- AISextract(ais_data = ais,
            data = point_to_extract,
            crs_meters = 3035,

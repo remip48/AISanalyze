@@ -123,7 +123,7 @@ AISextract(
 ```
 
 Set `return_all_vessel_locations = FALSE` to return only the vessel
-position at the target timestamps:
+position closest in time to the target timestamps:
 
 ``` r
 
