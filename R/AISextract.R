@@ -2,7 +2,7 @@
 #'
 #' Returns either (depending on `return_all_vessel_locations`):
 #'  \itemize{
-#'   \item each vessel position at the target timestamps.
+#'   \item the position of each vessel at the time closest to the target timestamps.
 #'   \item or all vessel positions within a specified time window.
 #'  }
 #'
@@ -62,7 +62,8 @@
 #'            interval_time_before = 5 * 60,
 #'            interval_time_after = 5 * 60)
 #'
-#' # Extract each vessel position at the target timestamps within the radius:
+#' # Extract each vessel position at the time closest to the target timestamps
+#' # within the radius:
 #' out <- AISextract(ais_data = ais,
 #'            data = point_to_extract,
 #'            crs_meters = 3035,
