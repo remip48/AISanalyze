@@ -51,12 +51,7 @@ avoid overcorrection.</p>
 <span>  <span class="va">ais_data</span>,</span>
 <span>  crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span>
 <span>  threshold_speed_to_correct <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  threshold_speed_to_correct_expr <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">speed_kmh</span><span class="op">)</span> <span class="op">{</span></span>
-<span>     <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">15</span> <span class="op">+</span></span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">speed_kmh</span><span class="op">[</span><span class="va">speed_kmh</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fl">5</span> <span class="op">*</span></span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">speed_kmh</span><span class="op">[</span><span class="va">speed_kmh</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">&amp;</span> <span class="va">speed_kmh</span> <span class="op">&lt;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">speed_kmh</span><span class="op">[</span><span class="va">speed_kmh</span> <span class="op">&gt;</span></span>
-<span>    <span class="fl">1</span><span class="op">]</span>, <span class="fl">0.75</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="op">}</span>,</span>
+<span>  threshold_speed_to_correct_function <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nb_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -83,9 +78,11 @@ Defaults to EPSG:3035.</p></dd>
 observations are corrected.</p></dd>
 
 
-<dt id="arg-threshold-speed-to-correct-expr">threshold_speed_to_correct_expr<a class="anchor" aria-label="anchor" href="#arg-threshold-speed-to-correct-expr"></a></dt>
-<dd><p>Function returning a vessel-specific
-speed threshold from <code>speed_kmh</code>.</p></dd>
+<dt id="arg-threshold-speed-to-correct-function">threshold_speed_to_correct_function<a class="anchor" aria-label="anchor" href="#arg-threshold-speed-to-correct-function"></a></dt>
+<dd><p>a function to estimate vessel-specific
+speed thresholds. The function can use all columns of ais_data as argument
+(such as <code>speed_kmh</code>, <code>distance_travelled</code> or <code>time_travelled</code>). If set to
+<code>NULL</code>, an internal function is used (see <code>details</code>).</p></dd>
 
 
 <dt id="arg-nb-cores">nb_cores<a class="anchor" aria-label="anchor" href="#arg-nb-cores"></a></dt>
@@ -104,6 +101,21 @@ columns:</p><ul><li><p><code>speed_kmh_corrected</code>: Whether the speed was c
 <li><p><code>distance_travelled</code>: Travelled distance (m).</p></li>
 <li><p><code>speed_kmh</code>: Vessel speed (km/h).</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>When <code>threshold_speed_to_correct_function</code> is set to <code>NULL</code>, a vessel-specific
+speed threshold is estimated from the observed vessel <code>speed_kmh</code>. The
+threshold is calculated as:</p>
+<p>$$
+T = 15 + \operatorname{median}(v_{&gt;1}) +
+5 \times \operatorname{SD}(v_{&gt;1,\;v&lt;Q_{0.75}})
+$$</p>
+<p>where \(v_{&gt;1}\) represents vessel speeds greater than 1 km/h, and
+\(v_{&gt;1,\;v&lt;Q_{0.75}}\) represents vessel speeds between 1 km/h and the
+75th percentile. The equation is designed to capture the typical
+travelling speed of the vessel while accounting for variation in its
+observed travelling speeds.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

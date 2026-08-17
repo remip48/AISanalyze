@@ -39,5 +39,5 @@ Useful links:
 
 ## Author
 
-**Maintainer**: R\<U+00E9\>mi Pigeault <remi.pigeault@tiho-hannover.de>
+**Maintainer**: Rémi Pigeault <remi.pigeault@tiho-hannover.de>
 ([ORCID](https://orcid.org/0000-0003-2714-5122))

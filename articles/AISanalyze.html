@@ -119,18 +119,17 @@ transmission delays.</p>
 <div class="section level2">
 <h2 id="interpolate-vessel-positions">Interpolate vessel positions<a class="anchor" aria-label="anchor" href="#interpolate-vessel-positions"></a>
 </h2>
-<p>The example below interpolates vessel positions every 60 seconds.</p>
+<p>Interpolates AIS data to ensure that consecutive vessel positions are
+no more than 60 seconds apart.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"maximum_time_interval"</span>,</span>
 <span>  maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, interpolation can be performed at exact timestamps.
-Target locations and a search radius (m) can be specified to limit
-interpolation to the area of interest and reduce computation time. The
-<code>datetime</code> column can then be updated from the new
-<code>timestamp</code>.</p>
+<p>Alternatively, vessel positions can be interpolated at exact
+timestamps. Target locations and a search radius (m) can be specified to
+limit interpolation to a specific area and reduce computation time.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ais_interpolated_exact_timestamps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
@@ -141,8 +140,8 @@ interpolation to the area of interest and reduce computation time. The
 <span>    radius <span class="op">=</span> <span class="fl">200000</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The <code>datetime</code> column can be updated from the interpolated
-timestamps:</p>
+<p>The <code>datetime</code> column in the interpolated datasets can
+then be updated:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">datetime</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="va">ais_interpolated_60sec</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span></span>
 <span></span>
@@ -162,8 +161,9 @@ target locations and timestamps (<code>point_to_extract</code>).</p>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Set <code>return_all_vessel_locations = FALSE</code> to return only
-the vessel position closest in time to the target timestamps:</p>
+<p>Alternatively, set <code>return_all_vessel_locations = FALSE</code>
+to return only one vessel position per timestamp (the closest in time to
+the target timestamps):</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>
@@ -173,9 +173,10 @@ the vessel position closest in time to the target timestamps:</p>
 <span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, you can pass the centroids of a square grid to
-<code>data</code> and set <code>search_shape = "square"</code> to
-extract vessel positions within square grid cells:</p>
+<p>Furthermore, you can extract vessel positions over a square grid
+(instead of a circular radius) by setting
+<code>search_shape = "square"</code> and passing the cell centroids to
+<code>data</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/AISextract.html">AISextract</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais_interpolated_exact_timestamps</span>,</span>

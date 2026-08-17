@@ -67,7 +67,8 @@ transmission delays.
 
 ## Interpolate vessel positions
 
-The example below interpolates vessel positions every 60 seconds.
+Interpolates AIS data to ensure that consecutive vessel positions are no
+more than 60 seconds apart.
 
 ``` r
 
@@ -78,10 +79,9 @@ ais_interpolated_60sec <- AISinterpolate(
 )
 ```
 
-Alternatively, interpolation can be performed at exact timestamps.
+Alternatively, vessel positions can be interpolated at exact timestamps.
 Target locations and a search radius (m) can be specified to limit
-interpolation to the area of interest and reduce computation time. The
-`datetime` column can then be updated from the new `timestamp`.
+interpolation to a specific area and reduce computation time.
 
 ``` r
 
@@ -96,7 +96,7 @@ ais_interpolated_exact_timestamps <- AISinterpolate(
 )
 ```
 
-The `datetime` column can be updated from the interpolated timestamps:
+The `datetime` column in the interpolated datasets can then be updated:
 
 ``` r
 
@@ -122,8 +122,9 @@ AISextract(
 )
 ```
 
-Set `return_all_vessel_locations = FALSE` to return only the vessel
-position closest in time to the target timestamps:
+Alternatively, set `return_all_vessel_locations = FALSE` to return only
+one vessel position per timestamp (the closest in time to the target
+timestamps):
 
 ``` r
 
@@ -137,9 +138,9 @@ AISextract(
 )
 ```
 
-Alternatively, you can pass the centroids of a square grid to `data` and
-set `search_shape = "square"` to extract vessel positions within square
-grid cells:
+Furthermore, you can extract vessel positions over a square grid
+(instead of a circular radius) by setting `search_shape = "square"` and
+passing the cell centroids to `data`:
 
 ``` r
 
