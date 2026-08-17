@@ -1,6 +1,7 @@
 url: https://remip48.github.io/AISanalyze/
 template:
   bootstrap: 5
+  math-rendering: mathjax
 home:
   title: AISanalyze
   description: Tools for analysing Automatic Identification System (AIS) vessel tracking

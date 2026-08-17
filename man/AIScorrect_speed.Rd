@@ -56,15 +56,15 @@ speed threshold is estimated from the observed vessel \code{speed_kmh}. The
 threshold is calculated as:
 
 \deqn{
-T = 15 + \operatorname{median}(v_{>1}) +
-5 \times \operatorname{SD}(v_{>1,\;v<Q_{0.75}})
+ T = 15 + \operatorname{median}(v_{>1}) +
+   5 \times \operatorname{SD}(v_{1 < v < Q_{0.75}})
 }{
-T = 15 + median(v > 1) +
-5 * SD(v > 1 and v < Q_{0.75})
+ T = 15 + median(v > 1) +
+   5 * SD(1 < v < 75th percentile)
 }
 
 where \eqn{v_{>1}} represents vessel speeds greater than 1 km/h, and
-\eqn{v_{>1,\;v<Q_{0.75}}} represents vessel speeds between 1 km/h and the
+\eqn{v_{1 < v < Q_{0.75}}} represents vessel speeds between 1 km/h and the
 75th percentile. The equation is designed to capture the typical
 travelling speed of the vessel while accounting for variation in its
 observed travelling speeds.
