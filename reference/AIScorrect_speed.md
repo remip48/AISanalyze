@@ -70,10 +70,10 @@ vessel-specific speed threshold is estimated from the observed vessel
 `speed_kmh`. The threshold is calculated as:
 
 \$\$ T = 15 + \operatorname{median}(v\_{\>1}) + 5 \times
-\operatorname{SD}(v\_{\>1,\\v\<Q\_{0.75}}) \$\$
+\operatorname{SD}(v\_{1 \< v \< Q\_{0.75}}) \$\$
 
 where \\v\_{\>1}\\ represents vessel speeds greater than 1 km/h, and
-\\v\_{\>1,\\v\<Q\_{0.75}}\\ represents vessel speeds between 1 km/h and
+\\v\_{1 \< v \< Q\_{0.75}}\\ represents vessel speeds between 1 km/h and
 the 75th percentile. The equation is designed to capture the typical
 travelling speed of the vessel while accounting for variation in its
 observed travelling speeds.
