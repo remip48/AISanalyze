@@ -15,16 +15,16 @@ test_that("method_interpolation_max_time", {
                                        maximum_gap_seconds = 30)
 
   ## check
-  expect_all_true(out$timestamp %in% seq(dplyr::first(ais_data$timestamp),
+  expect_true(all(out$timestamp %in% seq(dplyr::first(ais_data$timestamp),
                                          dplyr::last(ais_data$timestamp),
-                                         by = 30))
+                                         by = 30)))
 
-  expect_all_true(round(out$lon, 5) %in% round(seq(dplyr::first(ais_data$lon),
+  expect_true(all(round(out$lon, 5) %in% round(seq(dplyr::first(ais_data$lon),
                                                    dplyr::last(ais_data$lon),
-                                                   length = nrow(out)), 5))
+                                                   length = nrow(out)), 5)))
 
-  expect_all_true(round(out$lat, 5) %in% round(seq(dplyr::first(ais_data$lat),
+  expect_true(all(round(out$lat, 5) %in% round(seq(dplyr::first(ais_data$lat),
                                                    dplyr::last(ais_data$lat),
-                                                   length = nrow(out)), 5))
+                                                   length = nrow(out)), 5)))
 
 })

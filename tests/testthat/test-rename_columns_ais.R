@@ -24,7 +24,7 @@ test_that("rename_colums_ais", {
   expect_true(any(colnames(ais_data) == "timestamp"))
   ## check that all other columns that were present in both init_ais_data and data
   # were renamed as paste0("ais_", colnames), excepted mmsi and timestamp.
-  expect_all_true(stringr::str_detect(colnames(ais_data)[colnames(ais_data) != "mmsi" & colnames(ais_data) != "timestamp"],
-                                      stringr::fixed("ais_")))
+  expect_true(all(stringr::str_detect(colnames(ais_data)[colnames(ais_data) != "mmsi" & colnames(ais_data) != "timestamp"],
+                                      stringr::fixed("ais_"))))
 
 })

@@ -28,8 +28,8 @@ test_that("AIStravel", {
   )
 
   ## check
-  expect_all_true(ais_data$distance_travelled == c(0, dst_travelled))
-  expect_all_true(out$time_travelled == c(0, rep(60, nrow(ais_data) - 1)))
-  expect_all_true(round(out$speed_kmh, 0) %in% round(speed_travelled, 0))
+  expect_true(all(ais_data$distance_travelled == c(0, dst_travelled)))
+  expect_true(all(out$time_travelled == c(0, rep(60, nrow(ais_data) - 1))))
+  expect_true(all(round(out$speed_kmh, 0) %in% round(speed_travelled, 0)))
 
 })

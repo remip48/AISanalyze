@@ -8,12 +8,7 @@ AIScorrect_speed(
   ais_data,
   crs_meters = 3035,
   threshold_speed_to_correct = 100,
-  threshold_speed_to_correct_expr = function(speed_kmh) {
-     return(15 +
-    stats::median(speed_kmh[speed_kmh > 1], na.rm = TRUE) + 5 *
-    stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh >
-    1], 0.75)]))
- },
+  threshold_speed_to_correct_function = NULL,
   nb_cores = 1,
   outfile = tempfile()
 )
@@ -30,8 +25,10 @@ Defaults to EPSG:3035.}
 \item{threshold_speed_to_correct}{Speed threshold (km/h) above which
 observations are corrected.}
 
-\item{threshold_speed_to_correct_expr}{Function returning a vessel-specific
-speed threshold from \code{speed_kmh}.}
+\item{threshold_speed_to_correct_function}{a function to estimate vessel-specific
+speed thresholds. The function can use all columns of ais_data as argument
+(such as \code{speed_kmh}, \code{distance_travelled} or \code{time_travelled}). If set to
+\code{NULL}, an internal function is used (see \code{details}).}
 
 \item{nb_cores}{Number of CPU cores used.}
 
@@ -52,6 +49,25 @@ Detects and corrects GPS errors and delayed AIS messages that generate
 unrealistic vessel speeds, travelled distances, and travel times.
 Note: For consecutive GPS errors, only the first point is removed to
 avoid overcorrection.
+}
+\details{
+When \code{threshold_speed_to_correct_function} is set to \code{NULL}, a vessel-specific
+speed threshold is estimated from the observed vessel \code{speed_kmh}. The
+threshold is calculated as:
+
+\deqn{
+T = 15 + \operatorname{median}(v_{>1}) +
+5 \times \operatorname{SD}(v_{>1,\;v<Q_{0.75}})
+}{
+T = 15 + median(v > 1) +
+5 * SD(v > 1 and v < Q_{0.75})
+}
+
+where \eqn{v_{>1}} represents vessel speeds greater than 1 km/h, and
+\eqn{v_{>1,\;v<Q_{0.75}}} represents vessel speeds between 1 km/h and the
+75th percentile. The equation is designed to capture the typical
+travelling speed of the vessel while accounting for variation in its
+observed travelling speeds.
 }
 \examples{
 library(AISanalyze)

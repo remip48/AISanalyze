@@ -62,7 +62,6 @@ remotes::install_github("remip48/AISanalyze")
 ## Example
 
 ```r
-library(AISanalyze)
 data("ais")
 data("point_to_extract")
 
@@ -70,19 +69,21 @@ data("point_to_extract")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
 
+## correct, interpolate and extract vessel positions:
 results <- ais |>
-  AIStravel(nb_cores = 4) |> # estimate travelled speed, distance, time
+  AIStravel(nb_cores = 4) |> 
   AISidentify_stations_aircraft() |> 
-  dplyr::filter(!station & !high_speed) |> # remove stations and aircrafts
+  dplyr::filter(!station & !high_speed) |> 
   AIScorrect_speed(nb_cores = 4) |> # correct speed
-  AISinterpolate(., # interpolate AIS data
+  AISinterpolate(., 
                  type_interpolation = "maximum_gap_seconds",
                  maximum_gap_seconds = 60,
                  nb_cores = 4) |>
-  AISextract(data = point_to_extract, # extract around your points
+  AISextract(data = point_to_extract, 
              search_into_radius_m = 10000,
              nb_cores = 4)
-# done!
+
+# The AIS data are now joined to your dataset!
 ```
 
 ## Performance

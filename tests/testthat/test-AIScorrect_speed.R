@@ -57,14 +57,14 @@ test_that("AIScorrect_speed", {
   expect_equal(nrow(out),
                nrow(data_correct) - 4) # 4 errors point removed
 
-  expect_all_false(any(out$id %in% c(10, 50, 20, 101)))
+  expect_false(any(out$id %in% c(10, 50, 20, 101)))
 
   ## check that the speeds of points following the detected errors have been corrected
-  expect_all_true(all(round(out$speed_kmh[out$id %in% c(11, 51, 21, 102)],
-                            2) %in% round(out$speed_kmh[out$id %in% c(12, 52, 22, 103)],
-                                                        2)))
+  expect_true(all(round(out$speed_kmh[out$id %in% c(11, 51, 21, 102)],
+                        2) == round(out$speed_kmh[out$id %in% c(12, 52, 22, 103)],
+                                      2)))
 
   ## and that this correction was noted in the new column `speed_kmh_corrected`
-  expect_all_true(out$speed_kmh_corrected[out$id %in% c(11, 51, 21, 102)])
+  expect_true(all(out$speed_kmh_corrected[out$id %in% c(11, 51, 21, 102)]))
 
 })

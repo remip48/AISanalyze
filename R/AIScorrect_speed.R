@@ -13,8 +13,10 @@
 #'   Defaults to EPSG:3035.
 #' @param threshold_speed_to_correct Speed threshold (km/h) above which
 #'   observations are corrected.
-#' @param threshold_speed_to_correct_expr Function returning a vessel-specific
-#'   speed threshold from `speed_kmh`.
+#' @param threshold_speed_to_correct_function a function to estimate vessel-specific
+#'   speed thresholds. The function can use all columns of ais_data as argument
+#'   (such as `speed_kmh`, `distance_travelled` or `time_travelled`). If set to
+#'   `NULL`, an internal function is used (see `details`).
 #' @param nb_cores Number of CPU cores used.
 #' @param outfile File used to save logs.
 #'
@@ -26,6 +28,25 @@
 #'   \item `distance_travelled`: Travelled distance (m).
 #'   \item `speed_kmh`: Vessel speed (km/h).
 #'   }
+#'
+#' @details
+#' When `threshold_speed_to_correct_function` is set to `NULL`, a vessel-specific
+#' speed threshold is estimated from the observed vessel `speed_kmh`. The
+#' threshold is calculated as:
+#'
+#' \deqn{
+#' T = 15 + \operatorname{median}(v_{>1}) +
+#' 5 \times \operatorname{SD}(v_{>1,\;v<Q_{0.75}})
+#' }{
+#' T = 15 + median(v > 1) +
+#' 5 * SD(v > 1 and v < Q_{0.75})
+#' }
+#'
+#' where \eqn{v_{>1}} represents vessel speeds greater than 1 km/h, and
+#' \eqn{v_{>1,\;v<Q_{0.75}}} represents vessel speeds between 1 km/h and the
+#' 75th percentile. The equation is designed to capture the typical
+#' travelling speed of the vessel while accounting for variation in its
+#' observed travelling speeds.
 #'
 #' @examples
 #' library(AISanalyze)
@@ -46,12 +67,9 @@
 AIScorrect_speed <- function(ais_data,
                              crs_meters = 3035,
                              threshold_speed_to_correct = 100,
-                             threshold_speed_to_correct_expr = function(speed_kmh) {
-                               return(
-                                 15 + stats::median(speed_kmh[speed_kmh > 1], na.rm = TRUE) + 5 * stats::sd(speed_kmh[speed_kmh > 1 & speed_kmh < stats::quantile(speed_kmh[speed_kmh > 1], .75)])
-                               )},
-                               nb_cores = 1,
-                               outfile = tempfile()
+                             threshold_speed_to_correct_function = NULL,
+                             nb_cores = 1,
+                             outfile = tempfile()
 ) {
 
   assertthat::assert_that(is.numeric(ais_data$lon))
@@ -63,6 +81,10 @@ AIScorrect_speed <- function(ais_data,
                           msg = "Please first run AIStravel() to calculate speed, distance and time travelled.")
 
   init_cols <- colnames(ais_data)
+
+  if (all(is.null(threshold_speed_to_correct_function))) {
+    threshold_speed_to_correct_function <- estimate_unrealistic_speed_threshold
+  }
 
   assign_mmsi_to_core <- ais_data %>%
     dplyr::group_by(mmsi) %>%
@@ -103,7 +125,7 @@ AIScorrect_speed <- function(ais_data,
 
     strange_speed <- ais_data %>%
       dplyr::group_by(mmsi) %>%
-      dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_expr(speed_kmh)) %>%
+      dplyr::mutate(threshold_strange_speed = threshold_speed_to_correct_function(speed_kmh)) %>%
       dplyr::ungroup() %>%
       dplyr::filter(id_mmsi_point_initial != 1 & !last_row) %>%
       dplyr::mutate(threshold_strange_speed = ifelse(is.null(threshold_strange_speed) | is.na(threshold_strange_speed) | is.nan(threshold_strange_speed),

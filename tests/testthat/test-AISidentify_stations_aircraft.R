@@ -22,7 +22,7 @@ test_that("AISidentify_stations_aircraft", {
   out <- AISidentify_stations_aircraft(ais_data)
 
   ## check
-  expect_all_true(out$high_speed[out$mmsi == "aircraft"])
-  expect_all_true(out$station[out$mmsi == "buoy"])
+  expect_true(all(out$high_speed[out$mmsi == "aircraft"]))
+  expect_true(all(out$station[out$mmsi == "buoy"]))
 
 })

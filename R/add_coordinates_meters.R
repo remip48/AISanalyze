@@ -7,11 +7,10 @@
 #' @return same dataset with added coordinates
 #'
 #' @examples
-#' \dontrun{
 #' library(AISanalyze)
 #' data("ais")
 #'
-#' out <- add_coordinates_meters(ais, crs_meters = 3035, coordinates_to_write = c("X", "Y"))}
+#' out <- add_coordinates_meters(ais, crs_meters = 3035, coordinates_to_write = c("X", "Y"))
 #' @keywords internal
 #' @noRd
 #'

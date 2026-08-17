@@ -41,8 +41,8 @@ test_that("AISextract", {
                     timestamp <= (data$timestamp + 5*60))
 
   ## check
-  expect_all_true(out$id %in% actually_inside$id)
-  expect_all_true(round(out$distance_vessel_to_location_m, 0) %in% round(actually_inside$distance_to_data, 0))
+  expect_true(all(out$id %in% actually_inside$id))
+  expect_true(all(round(out$distance_vessel_to_location_m, 0) %in% round(actually_inside$distance_to_data, 0)))
 
   ## extract now the vessel location at the exact data$timestamp, if the position falls
   # within the target radius and time interval
@@ -74,7 +74,7 @@ test_that("AISextract", {
     dplyr::filter(distance_to_data <= 500)
 
   ## check: no vessel extracted as this was outside the 500 meters radius at data$timestamp
-  expect_all_true(length(na.omit(out$mmsi)) == nrow(actually_inside))
+  expect_true(length(na.omit(out$mmsi)) == nrow(actually_inside))
 
   ## now increase the radius to extract the vessel location
   out <- AISextract(ais_data_interpolated,
@@ -98,7 +98,7 @@ test_that("AISextract", {
     dplyr::filter(distance_to_data <= 1000)
 
   ## check
-  expect_all_true(out$id %in% actually_inside$id)
-  expect_all_true(round(out$distance_vessel_to_location_m, 0) %in% round(actually_inside$distance_to_data, 0))
+  expect_true(all(out$id %in% actually_inside$id))
+  expect_true(all(round(out$distance_vessel_to_location_m, 0) %in% round(actually_inside$distance_to_data, 0)))
 
 })
