@@ -13,3 +13,4 @@ This is a resubmission of version 2.0.1. The issues raised in the previous CRAN 
 ## R CMD check results
 
 0 errors | 0 warnings | 0 note
+
