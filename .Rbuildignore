@@ -13,5 +13,4 @@
 ^paper\.md$
 ^paper\.bib$
 ^\.Rhistory$
-^cran-comments\.md$
 ^revdep$
