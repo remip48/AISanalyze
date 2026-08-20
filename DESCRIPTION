@@ -1,8 +1,8 @@
 Package: AISanalyze
-Title: Preprocessing and Analyzing AIS Vessel Tracking Data
+Title: Processing and Analyzing AIS Vessel Tracking Data
 Version: 3.1.1
 Authors@R: c(person("Rémi", "Pigeault", , "remi.pigeault@tiho-hannover.de", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-2714-5122")))
-Description: Preprocesses Automatic Identification
+Description: Processes Automatic Identification
     System (AIS) vessel tracking data, including travel estimation,
     trajectory correction, interpolation, extraction, and summarising 
     vessel information. The package is designed to facilitate

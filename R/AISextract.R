@@ -34,9 +34,11 @@
 #' target location and vessel positions.
 #'
 #' @examples
-#' library(AISanalyze)
 #' data("ais")
 #' data("point_to_extract")
+#'
+#' # use only a sample for the example:
+#' ais <- ais[20000:30000, ]
 #'
 #' # Define the Unix time (seconds since 1970-01-01)
 #' point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
@@ -44,33 +46,18 @@
 #'
 #' # calculate the travelled distance, time, speed, and interpolate AIS data:
 #' ais <- ais |>
-#'   AIStravel() |>
-#'   AISinterpolate(type_interpolation = "exact_timestamp",
-#'                  exact_timestamp = list(
-#'              timestamp_to_interpolate = point_to_extract$timestamp,
-#'              locations_of_interest = data.frame(lon = point_to_extract$lon,
-#'                                                 lat = point_to_extract$lat),
-#'              radius = 200000),
-#'                  crs_meters = 3035)
+#'   AIStravel()
 #'
 #' # Extract all vessel positions within the target time interval and radius:
 #' out <- AISextract(ais_data = ais,
-#'            data = point_to_extract,
-#'            crs_meters = 3035,
-#'            return_all_vessel_locations = TRUE,
-#'            search_into_radius_m = 50000,
-#'            interval_time_before = 5 * 60,
-#'            interval_time_after = 5 * 60)
-#'
-#' # Extract each vessel position at the time closest to the target timestamps
-#' # within the radius:
-#' out <- AISextract(ais_data = ais,
-#'            data = point_to_extract,
-#'            crs_meters = 3035,
-#'            return_all_vessel_locations = FALSE,
-#'            search_into_radius_m = 50000,
-#'            interval_time_before = 5 * 60,
-#'            interval_time_after = 5 * 60)
+#'                   data = point_to_extract,
+#'                   crs_meters = 3035,
+#'                   return_all_vessel_locations = TRUE, # set FALSE to only
+#'                   # extract the vessel position closest in time to the
+#'                   # target timestamps.
+#'                   search_into_radius_m = 50000,
+#'                   interval_time_before = 5 * 60,
+#'                   interval_time_after = 5 * 60)
 #' @export
 
 AISextract <- function(ais_data,

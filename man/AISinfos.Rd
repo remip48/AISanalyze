@@ -53,7 +53,6 @@ be converted to numeric (and is therefore set to \code{NA}) or any value of
 ship type or name cannot be converted to character (set to \code{NA}).
 }
 \examples{
-library(AISanalyze)
 data("ais")
 
 out <- AISinfos(ais_data = ais)

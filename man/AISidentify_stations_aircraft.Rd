@@ -29,7 +29,6 @@ Stations and aircraft are identified from speed, distance and time only.
 Other criteria (e.g. MMSIs with fewer than 9 digits) are not considered.
 }
 \examples{
-library(AISanalyze)
 data("ais")
 
 # Define the Unix time (seconds since 1970-01-01)

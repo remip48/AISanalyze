@@ -127,7 +127,9 @@ for details.
 
 Contributions are welcome! Whether you would like to report a bug,
 suggest a new feature, or contribute code or documentation, please read
-our [CONTRIBUTING.md](CONTRIBUTING.md) guide to get started.
+our [contributing
+guidelines](https://github.com/remip48/AISanalyze/blob/master/CONTRIBUTING.md)
+guide to get started.
 
 ## Support
 

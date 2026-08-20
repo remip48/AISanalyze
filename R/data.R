@@ -8,8 +8,8 @@
 #' The dataset is intended for demonstrating the main functions of
 #' \pkg{AISanalyze}, including travel distance estimation, GPS error correction,
 #' vessel characteristic estimation, interpolation and vessel extraction.
-#' Original MMSI identifiers have been replaced with anonymized values to
-#' protect vessel confidentiality.
+#' Original MMSI identifiers and vessel names have been replaced with
+#' anonymized values to protect vessel confidentiality.
 #'
 #' @format A data frame with AIS messages for multiple vessels. The main
 #' variables include:
@@ -24,7 +24,7 @@
 #'   \item{imo}{Reported International Maritime Organization (IMO) number.}
 #'   \item{shiptype}{Reported vessel type.}
 #'   \item{length}{Reported vessel length (m).}
-#'   \item{name}{Reported vessel name.}
+#'   \item{name}{Anonymized vessel name.}
 #'   \item{width}{Reported vessel width (m).}
 #'   \item{draught}{Reported vessel draught (m).}
 #' }

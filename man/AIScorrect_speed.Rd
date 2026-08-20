@@ -70,8 +70,10 @@ travelling speed of the vessel while accounting for variation in its
 observed travelling speeds.
 }
 \examples{
-library(AISanalyze)
 data("ais")
+
+# use only a sample for the example:
+ais <- ais[1:1000, ]
 
 # Define the Unix time (seconds since 1970-01-01)
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
@@ -81,6 +83,5 @@ ais <- AIStravel(ais_data = ais)
 
 # Correct speed:
 out <- AIScorrect_speed(ais_data = ais,
-                 crs_meters = 3035,
-                 threshold_speed_to_correct = 100)
+                        crs_meters = 3035)
 }

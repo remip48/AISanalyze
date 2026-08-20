@@ -19,7 +19,6 @@
 #' }
 #'
 #' @examples
-#' library(AISanalyze)
 #' data("ais")
 #'
 #' # Define the Unix time (seconds since 1970-01-01)

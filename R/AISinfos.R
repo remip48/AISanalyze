@@ -34,7 +34,6 @@
 #' }
 #'
 #' @examples
-#' library(AISanalyze)
 #' data("ais")
 #'
 #' out <- AISinfos(ais_data = ais)

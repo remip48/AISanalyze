@@ -10,6 +10,10 @@
 * Added repo status badge.
 * Added cran-comment.md
 * cleaned examples
+* Revised the package description to remove the flagged spelling issue.
+* Replaced the relative CONTRIBUTING.md link in the README with a full GitHub URL.
+* Excluded cran-comments.md from the package build.
+* Reduced the runtime of the AISextract() and AISinterpolate() examples to below the 5-second threshold.
 
 # AISanalyze 3.1.0 (2026-08-03)
 

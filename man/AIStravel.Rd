@@ -33,7 +33,6 @@ Calculates the distance travelled (m), travel time (s), and speed (km/h)
 between consecutive AIS positions for each vessel (\code{mmsi}).
 }
 \examples{
-library(AISanalyze)
 data("ais")
 
 # Define the Unix time (seconds since 1970-01-01)
