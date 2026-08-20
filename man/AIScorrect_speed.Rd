@@ -73,7 +73,7 @@ observed travelling speeds.
 data("ais")
 
 # use only a sample for the example:
-ais <- ais[1:1000, ]
+ais <- ais[ais$mmsi \%in\% ais$mmsi[1:5], ]
 
 # Define the Unix time (seconds since 1970-01-01)
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
