@@ -1,6 +1,6 @@
 ## Resubmission
 
-This is a resubmission of version 2.0.1. The issues raised in the previous CRAN review have been addressed as follows:
+This is a resubmission of version 3.1.1. The issues raised in the previous CRAN review have been addressed as follows:
 
 * Removed the redundant "Tools for" from the package description.
 * Added the package documentation URL to the `DESCRIPTION` file (a reference describing the package and its methods are currently in preparation).
