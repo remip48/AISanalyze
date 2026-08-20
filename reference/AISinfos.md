@@ -65,7 +65,6 @@ A list containing:
 ## Examples
 
 ``` r
-library(AISanalyze)
 data("ais")
 
 out <- AISinfos(ais_data = ais)

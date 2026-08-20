@@ -73,9 +73,11 @@ The interpolated AIS data with an additional column:
 ## Examples
 
 ``` r
-library(AISanalyze)
 data("ais")
 data("point_to_extract")
+
+# use only a sample for the example:
+ais <- ais[20000:30000, ]
 
 # Define the Unix time (seconds since 1970-01-01)
 point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$datetime))
@@ -84,20 +86,15 @@ ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 # calculate the travelled distance, time, and speed:
 ais <- AIStravel(ais_data = ais)
 
-# Interpolate all AIS signals further than > 60 seconds:
+# Interpolate all AIS signals further than > 120 seconds:
 out <- AISinterpolate(ais_data = ais,
-               type_interpolation = "maximum_gap_seconds",
-               maximum_gap_seconds = 60,
-               crs_meters = 3035)
-
-# Interpolate all vessel positions at target timestamps and within
-# a radius of 200 km around locations_of_interest:
-out <- AISinterpolate(ais_data = ais,
-           type_interpolation = "exact_timestamp",
-           exact_timestamp = list(
-               timestamp_to_interpolate = point_to_extract$timestamp,
-               locations_of_interest = data.frame(lon = point_to_extract$lon,
-                                                 lat = point_to_extract$lat),
-               radius = 200000),
-           crs_meters = 3035)
+                      type_interpolation = "maximum_gap_seconds",
+                      maximum_gap_seconds = 120, ## Alternatively, you can
+                      ## interpolate at target timestamps with:
+                      # exact_timestamp = list(
+                      #      timestamp_to_interpolate = point_to_extract$timestamp,
+                      #      locations_of_interest = data.frame(lon = point_to_extract$lon,
+                      #                                         lat = point_to_extract$lat),
+                      #      radius = 200000),
+                      crs_meters = 3035)
 ```

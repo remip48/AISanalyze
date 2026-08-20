@@ -38,7 +38,6 @@ The input AIS data with the following additional columns:
 ## Examples
 
 ``` r
-library(AISanalyze)
 data("ais")
 
 # Define the Unix time (seconds since 1970-01-01)

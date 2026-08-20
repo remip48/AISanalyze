@@ -125,8 +125,10 @@ observed travelling speeds.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/remip48/AISanalyze" class="external-link">AISanalyze</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ais"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ais"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># use only a sample for the example:</span></span></span>
+<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="va">ais</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define the Unix time (seconds since 1970-01-01)</span></span></span>
 <span class="r-in"><span><span class="va">ais</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">ais</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -136,8 +138,7 @@ observed travelling speeds.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Correct speed:</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">AIScorrect_speed</span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>,</span></span>
-<span class="r-in"><span>                 crs_meters <span class="op">=</span> <span class="fl">3035</span>,</span></span>
-<span class="r-in"><span>                 threshold_speed_to_correct <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                        crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

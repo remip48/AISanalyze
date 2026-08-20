@@ -53,7 +53,7 @@ include:
 
 - name:
 
-  Reported vessel name.
+  Anonymized vessel name.
 
 - width:
 
@@ -72,5 +72,5 @@ Example subset extracted from AIS observations.
 The dataset is intended for demonstrating the main functions of
 AISanalyze, including travel distance estimation, GPS error correction,
 vessel characteristic estimation, interpolation and vessel extraction.
-Original MMSI identifiers have been replaced with anonymized values to
-protect vessel confidentiality.
+Original MMSI identifiers and vessel names have been replaced with
+anonymized values to protect vessel confidentiality.
