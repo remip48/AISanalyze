@@ -3,7 +3,12 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/AISanalyze)](https://CRAN.R-project.org/package=AISanalyze)
+
 [![status](https://joss.theoj.org/papers/0cd8c6cdaf483d19cfec7ce93c1e5c4f/status.svg)](https://joss.theoj.org/papers/0cd8c6cdaf483d19cfec7ce93c1e5c4f)
+
+[![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 
 [![R-CMD-check](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/remip48/AISanalyze/actions/workflows/R-CMD-check.yaml)
 
@@ -12,8 +17,6 @@ state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 [![DOI](man/figures/zenodo.21474292.svg)](https://doi.org/10.5281/zenodo.21474292)
-
-[![Documentation](https://img.shields.io/badge/Documentation-pkgdown-blue)](https://remip48.github.io/AISanalyze/)
 
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/remip48/AISanalyze/blob/master/LICENSE.md)
@@ -52,9 +55,13 @@ seconds to minutes. Its main functionalities include:
 
 ## Installation
 
+The stable version of `AISanalyze` is available on CRAN and can be
+installed and loaded with:
+
 ``` r
-# install.packages("remotes")
-remotes::install_github("remip48/AISanalyze")
+install.packages("AISanalyze")
+
+library(AISanalyze)
 ```
 
 ## Main functions
