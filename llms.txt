@@ -32,10 +32,14 @@ seconds to minutes. Its main functionalities include:
 
 ## Installation
 
+The stable version of `AISanalyze` is available on CRAN and can be
+installed and loaded with:
+
 ``` r
 
-# install.packages("remotes")
-remotes::install_github("remip48/AISanalyze")
+install.packages("AISanalyze")
+
+library(AISanalyze)
 ```
 
 ## Main functions

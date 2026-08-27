@@ -2,6 +2,8 @@
 
 ## AISanalyze 3.1.2 (2026-08-20)
 
+CRAN release: 2026-08-26
+
 ### Improvements
 
 - Revised the package description to remove the flagged spelling issue.
@@ -10,6 +12,8 @@
 - Excluded cran-comments.md from the package build.
 - Reduced the runtime of the AISextract() and AISinterpolate() examples
   to below the 5-second threshold.
+- added installation instructions for CRAN on the README.md, and added
+  CRAN badge
 
 ## AISanalyze 3.1.1 (2026-08-10)
 
