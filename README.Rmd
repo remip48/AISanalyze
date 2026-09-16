@@ -24,9 +24,9 @@ output: github_document
 
 ## Documentation
 
-A complete step-by-step workflow is available in the [User guide](https://remip48.github.io/AISanalyze/articles/AISanalyze.html).
+A complete step-by-step workflow is available in the [Articles/User guide](https://remip48.github.io/AISanalyze/articles/AISanalyze.html).
 
-📖 Full documentation, tutorials and function reference: https://remip48.github.io/AISanalyze/
+📖 List of functions, example datasets and their documentation: [Reference](https://remip48.github.io/AISanalyze/reference/index.html).
 
 ## Overview
 
@@ -74,17 +74,17 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 
 ## correct, interpolate and extract vessel positions:
 results <- ais |>
-  AIStravel(nb_cores = 4) |> 
-  AISidentify_stations_aircraft() |> 
+  AIStravel(nb_cores = 4, crs = 3035) |> 
+  AISidentify_stations_aircraft(., crs = 3035) |> 
   dplyr::filter(!station & !high_speed) |> 
-  AIScorrect_speed(nb_cores = 4) |> # correct speed
+  AIScorrect_speed(nb_cores = 4, crs = 3035) |> # correct speed
   AISinterpolate(., 
                  type_interpolation = "maximum_gap_seconds",
                  maximum_gap_seconds = 60,
-                 nb_cores = 4) |>
+                 nb_cores = 4, crs = 3035) |>
   AISextract(data = point_to_extract, 
              search_into_radius_m = 10000,
-             nb_cores = 4)
+             nb_cores = 4, crs = 3035)
 
 # The AIS data are now joined to your dataset!
 ```

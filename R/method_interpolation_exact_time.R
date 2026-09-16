@@ -10,8 +10,8 @@
 #'   `lon`, `lat`, `X` and `Y` must be numeric.
 #' @param data target timestamps and locations. Contains `timestamp`,
 #'   `lon`, `lat`, `X` and `Y` (`crs_meters` coordinates).
-#' @param crs_meters CRS (in metres) used for distance calculations. Defaults
-#'   to EPSG:3035.
+#' @param crs_meters CRS (metres) used to calculate distances
+#'   in the study area (defaults to EPSG:3035, Europe).
 #' @param radius Optional search radius (m) around each target location.
 #' @param timestamp_to_interpolate Target timestamps.
 #' @param nb_cores Number of CPU cores used.

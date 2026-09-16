@@ -35,8 +35,8 @@ columns corresponding to each \code{timestamp_to_interpolate}
 \item \code{radius}: (optional) a search radius (m) around target locations
 }}
 
-\item{crs_meters}{CRS (in metres) used for distance calculations. Defaults
-to EPSG:3035.}
+\item{crs_meters}{CRS (metres) used to calculate distances
+in the study area (defaults to EPSG:3035, Europe).}
 
 \item{nb_cores}{Number of CPU cores used.}
 
@@ -70,7 +70,7 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 
 # Interpolate all AIS signals further than > 120 seconds:
 out <- AISinterpolate(ais_data = ais,

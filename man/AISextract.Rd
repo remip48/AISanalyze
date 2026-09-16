@@ -26,8 +26,8 @@ identifier may be used if the column is named \code{mmsi}.}
 \code{timestamp} must be Unix time (seconds since 1970-01-01), while \code{lon}
 and \code{lat} must be numeric.}
 
-\item{crs_meters}{CRS (metres) used to calculate distances. Defaults to
-EPSG:3035.}
+\item{crs_meters}{CRS (metres) used to calculate distances
+in the study area (defaults to EPSG:3035, Europe).}
 
 \item{return_all_vessel_locations}{Logical. If \code{TRUE}, returns all vessel
 positions within the specified time window. Otherwise, returns only the
@@ -75,7 +75,7 @@ ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, speed, and interpolate AIS data:
 ais <- ais |>
-  AIStravel()
+  AIStravel(., crs_meters = 3035)
 
 # Extract all vessel positions within the target time interval and radius:
 out <- AISextract(ais_data = ais,

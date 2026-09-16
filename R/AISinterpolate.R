@@ -25,8 +25,8 @@
 #'     columns corresponding to each `timestamp_to_interpolate`
 #'   \item `radius`: (optional) a search radius (m) around target locations
 #'   }
-#' @param crs_meters CRS (in metres) used for distance calculations. Defaults
-#'   to EPSG:3035.
+#' @param crs_meters CRS (metres) used to calculate distances
+#'   in the study area (defaults to EPSG:3035, Europe).
 #' @param nb_cores Number of CPU cores used.
 #' @param outfile File used to save logs.
 #'
@@ -47,7 +47,7 @@
 #' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
 #' # calculate the travelled distance, time, and speed:
-#' ais <- AIStravel(ais_data = ais)
+#' ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 #'
 #' # Interpolate all AIS signals further than > 120 seconds:
 #' out <- AISinterpolate(ais_data = ais,

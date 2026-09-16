@@ -19,8 +19,8 @@ AIScorrect_speed(
 \code{lon} and \code{lat} must be numeric. Another vessel identifier may be used if
 the column is named \code{mmsi}.}
 
-\item{crs_meters}{CRS (metres) used to calculate travelled distances.
-Defaults to EPSG:3035.}
+\item{crs_meters}{CRS (metres) used to calculate distances
+in the study area (defaults to EPSG:3035, Europe).}
 
 \item{threshold_speed_to_correct}{Speed threshold (km/h) above which
 observations are corrected.}
@@ -79,7 +79,7 @@ ais <- ais[ais$mmsi \%in\% ais$mmsi[1:5], ]
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 
 # Correct speed:
 out <- AIScorrect_speed(ais_data = ais,

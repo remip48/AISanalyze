@@ -12,8 +12,8 @@ AISidentify_stations_aircraft(ais_data, crs_meters = 3035)
 \code{lon} and \code{lat} must be numeric. Another vessel identifier may be used if
 the column is named \code{mmsi}.}
 
-\item{crs_meters}{CRS (metres) used to calculate distances. Defaults to
-EPSG:3035.}
+\item{crs_meters}{CRS (metres) used to calculate distances
+in the study area (defaults to EPSG:3035, Europe).}
 }
 \value{
 The input AIS data with the following additional columns:
@@ -35,8 +35,8 @@ data("ais")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 
 # Identify stations and aircrafts:
-out <- AISidentify_stations_aircraft(ais_data = ais)
+out <- AISidentify_stations_aircraft(ais_data = ais, crs_meters = 3035)
 }

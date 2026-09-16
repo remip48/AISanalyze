@@ -1,7 +1,7 @@
 #' Add spatial coordinates in the crs in meters
 #'
 #' @param data data where coordinates are added
-#' @param crs_meters target crs (must have unit in meters)
+#' @param crs_meters target crs, with units in meters, for the study area
 #' @param coordinates_to_write coordinates to have in the final dataset
 #'
 #' @return same dataset with added coordinates
