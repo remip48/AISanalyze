@@ -49,7 +49,7 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 
 # Estimate travelled distance and speed
 
-The study area falls within European waters, so EPSG:3035 projection is used:
+A CRS with units in metres and suited for the study area must be used (e.g. EPSG:3035 for Europe, as used below):
 
 ```{r}
 ais <- AIStravel(ais_data = ais, crs = 3035)
