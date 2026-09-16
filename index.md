@@ -67,11 +67,10 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 ## correct, interpolate and extract vessel positions:
 results <- ais |>
   AIStravel(nb_cores = 4, crs = 3035) |> 
-  AISidentify_stations_aircraft(., crs = 3035) |> 
+  AISidentify_stations_aircraft(crs = 3035) |> 
   dplyr::filter(!station & !high_speed) |> 
   AIScorrect_speed(nb_cores = 4, crs = 3035) |> # correct speed
-  AISinterpolate(., 
-                 type_interpolation = "maximum_gap_seconds",
+  AISinterpolate(type_interpolation = "maximum_gap_seconds",
                  maximum_gap_seconds = 60,
                  nb_cores = 4, crs = 3035) |>
   AISextract(data = point_to_extract, 

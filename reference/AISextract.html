@@ -143,12 +143,7 @@ target location and vessel positions.</p>
 <span class="r-in"><span><span class="va">ais</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">ais</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate the travelled distance, time, speed, and interpolate AIS data:</span></span></span>
-<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="va">ais</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span><span class="va">.</span>, crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::mutate(., core = rep(1:nb_cores, ceiling(dplyr::n()/nb_cores))[1:dplyr::n()]):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `core = rep(1:nb_cores,</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   ceiling(dplyr::n()/nb_cores))[1:dplyr::n()]`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object '.' not found</span>
+<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span><span class="va">ais</span>, crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract all vessel positions within the target time interval and radius:</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">AISextract</span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>,</span></span>
@@ -160,7 +155,8 @@ target location and vessel positions.</p>
 <span class="r-in"><span>                  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span></span>
 <span class="r-in"><span>                  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span></span>
 <span class="r-in"><span>                  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Please first run AIStravel() to calculate speed, distance and time travelled.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The columns 'datetime, lon, lat' in the AIS data have been renamed to 'ais_datetime, ais_lon, ais_lat'</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
