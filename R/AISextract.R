@@ -14,6 +14,8 @@
 #'   and `lat` must be numeric.
 #' @param crs_meters CRS (metres) used to calculate distances
 #'   in the study area (defaults to EPSG:3035, Europe).
+#'   Tip: use `suggest_crs` function (`crsuggest` package) to find a suitable
+#'   CRS for your study area.
 #' @param return_all_vessel_locations Logical. If `TRUE`, returns all vessel
 #'   positions within the specified time window. Otherwise, returns only the
 #'   closest position in time.

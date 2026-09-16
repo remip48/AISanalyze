@@ -27,6 +27,8 @@
 #'   }
 #' @param crs_meters CRS (metres) used to calculate distances
 #'   in the study area (defaults to EPSG:3035, Europe).
+#'   Tip: use `suggest_crs` function (`crsuggest` package) to find a suitable
+#'   CRS for your study area.
 #' @param nb_cores Number of CPU cores used.
 #' @param outfile File used to save logs.
 #'

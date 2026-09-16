@@ -2,6 +2,8 @@
 #'
 #' @param data data where coordinates are added
 #' @param crs_meters target crs, with units in meters, for the study area
+#' Tip: use `suggest_crs` function (`crsuggest` package) to find a suitable CRS
+#' for your study area.
 #' @param coordinates_to_write coordinates to have in the final dataset
 #'
 #' @return same dataset with added coordinates
