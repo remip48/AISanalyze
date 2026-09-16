@@ -40,7 +40,8 @@ AISextract(
 
 - crs_meters:
 
-  CRS (metres) used to calculate distances. Defaults to EPSG:3035.
+  CRS (metres) used to calculate distances in the study area (defaults
+  to EPSG:3035, Europe).
 
 - return_all_vessel_locations:
 
@@ -97,7 +98,11 @@ ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, speed, and interpolate AIS data:
 ais <- ais |>
-  AIStravel()
+  AIStravel(., crs_meters = 3035)
+#> Error in dplyr::mutate(., core = rep(1:nb_cores, ceiling(dplyr::n()/nb_cores))[1:dplyr::n()]): ℹ In argument: `core = rep(1:nb_cores,
+#>   ceiling(dplyr::n()/nb_cores))[1:dplyr::n()]`.
+#> Caused by error:
+#> ! object '.' not found
 
 # Extract all vessel positions within the target time interval and radius:
 out <- AISextract(ais_data = ais,
@@ -109,6 +114,5 @@ out <- AISextract(ais_data = ais,
                   search_into_radius_m = 50000,
                   interval_time_before = 5 * 60,
                   interval_time_after = 5 * 60)
-#> 
-#> The columns 'datetime, lon, lat' in the AIS data have been renamed to 'ais_datetime, ais_lon, ais_lat'
+#> Error: Please first run AIStravel() to calculate speed, distance and time travelled.
 ```

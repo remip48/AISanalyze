@@ -94,8 +94,10 @@ System (AIS) data, including:</p>
 <div class="section level2">
 <h2 id="estimate-travelled-distance-and-speed">Estimate travelled distance and speed<a class="anchor" aria-label="anchor" href="#estimate-travelled-distance-and-speed"></a>
 </h2>
+<p>The study area falls within European waters, so EPSG:3035 projection
+is used:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>, crs <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></code></pre></div>
 <p>Three variables are added:</p>
 <ul>
 <li><code>distance_travelled</code></li>
@@ -107,7 +109,7 @@ System (AIS) data, including:</p>
 <h2 id="identify-stations-and-aircraft">Identify stations and aircraft<a class="anchor" aria-label="anchor" href="#identify-stations-and-aircraft"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISidentify_stations_aircraft.html">AISidentify_stations_aircraft</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISidentify_stations_aircraft.html">AISidentify_stations_aircraft</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>, crs <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></code></pre></div>
 <p>Two logical variables are added:</p>
 <ul>
 <li><code>station</code></li>
@@ -118,7 +120,7 @@ System (AIS) data, including:</p>
 <h2 id="correct-gps-errors">Correct GPS errors<a class="anchor" aria-label="anchor" href="#correct-gps-errors"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIScorrect_speed.html">AIScorrect_speed</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIScorrect_speed.html">AIScorrect_speed</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>, crs <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></code></pre></div>
 <p>This step corrects unrealistic speeds caused by GPS errors or
 transmission delays.</p>
 </div>
@@ -131,7 +133,8 @@ no more than 60 seconds apart.</p>
 <code class="sourceCode R"><span><span class="va">ais_interpolated_60sec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AISinterpolate.html">AISinterpolate</a></span><span class="op">(</span></span>
 <span>  ais_data <span class="op">=</span> <span class="va">ais</span>,</span>
 <span>  type_interpolation <span class="op">=</span> <span class="st">"maximum_time_interval"</span>,</span>
-<span>  maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span></span>
+<span>  maximum_gap_seconds <span class="op">=</span> <span class="fl">60</span>, </span>
+<span>  crs <span class="op">=</span> <span class="fl">3035</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, vessel positions can be interpolated at exact
 timestamps. Target locations and a search radius (m) can be specified to
@@ -144,7 +147,8 @@ limit interpolation to a specific area and reduce computation time.</p>
 <span>    timestamp_to_interpolate <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">$</span><span class="va">timestamp</span>,</span>
 <span>    locations_of_interest <span class="op">=</span> <span class="va">point_to_extract</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    radius <span class="op">=</span> <span class="fl">200000</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">3035</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The <code>datetime</code> column in the interpolated datasets can
 then be updated:</p>
@@ -164,8 +168,9 @@ target locations and timestamps (<code>point_to_extract</code>).</p>
 <span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
-<span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
-<span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
+<span>  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">3035</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, set <code>return_all_vessel_locations = FALSE</code>
 to return only one vessel position per timestamp (the closest in time to
@@ -176,8 +181,9 @@ the target timestamps):</p>
 <span>  data <span class="op">=</span> <span class="va">point_to_extract</span>,</span>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
-<span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
-<span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
+<span>  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">3035</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Furthermore, you can extract vessel positions over a square grid
 (instead of a circular radius) by setting
@@ -190,8 +196,9 @@ the target timestamps):</p>
 <span>  return_all_vessel_locations <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># or TRUE</span></span>
 <span>  search_into_radius_m <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  search_shape <span class="op">=</span> <span class="st">"square"</span>,</span>
-<span>  interval_time_before <span class="op">=</span> <span class="fl">300</span>,</span>
-<span>  interval_time_after <span class="op">=</span> <span class="fl">300</span></span>
+<span>  interval_time_before <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  interval_time_after <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fl">60</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">3035</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

@@ -29,8 +29,8 @@ AIScorrect_speed(
 
 - crs_meters:
 
-  CRS (metres) used to calculate travelled distances. Defaults to
-  EPSG:3035.
+  CRS (metres) used to calculate distances in the study area (defaults
+  to EPSG:3035, Europe).
 
 - threshold_speed_to_correct:
 
@@ -90,7 +90,7 @@ ais <- ais[ais$mmsi %in% ais$mmsi[1:5], ]
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 
 # Correct speed:
 out <- AIScorrect_speed(ais_data = ais,

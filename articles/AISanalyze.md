@@ -32,9 +32,12 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 
 ## Estimate travelled distance and speed
 
+The study area falls within European waters, so EPSG:3035 projection is
+used:
+
 ``` r
 
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs = 3035)
 ```
 
 Three variables are added:
@@ -47,7 +50,7 @@ Three variables are added:
 
 ``` r
 
-ais <- AISidentify_stations_aircraft(ais_data = ais)
+ais <- AISidentify_stations_aircraft(ais_data = ais, crs = 3035)
 ```
 
 Two logical variables are added:
@@ -59,7 +62,7 @@ Two logical variables are added:
 
 ``` r
 
-ais <- AIScorrect_speed(ais_data = ais)
+ais <- AIScorrect_speed(ais_data = ais, crs = 3035)
 ```
 
 This step corrects unrealistic speeds caused by GPS errors or
@@ -75,7 +78,8 @@ more than 60 seconds apart.
 ais_interpolated_60sec <- AISinterpolate(
   ais_data = ais,
   type_interpolation = "maximum_time_interval",
-  maximum_gap_seconds = 60
+  maximum_gap_seconds = 60, 
+  crs = 3035
 )
 ```
 
@@ -92,7 +96,8 @@ ais_interpolated_exact_timestamps <- AISinterpolate(
     timestamp_to_interpolate = point_to_extract$timestamp,
     locations_of_interest = point_to_extract[c("lon", "lat")],
     radius = 200000
-  )
+  ),
+  crs = 3035
 )
 ```
 
@@ -117,8 +122,9 @@ AISextract(
   data = point_to_extract,
   return_all_vessel_locations = TRUE,
   search_into_radius_m = 50000,
-  interval_time_before = 300,
-  interval_time_after = 300
+  interval_time_before = 5 * 60,
+  interval_time_after = 5 * 60,
+  crs = 3035
 )
 ```
 
@@ -133,8 +139,9 @@ AISextract(
   data = point_to_extract,
   return_all_vessel_locations = FALSE,
   search_into_radius_m = 50000,
-  interval_time_before = 300,
-  interval_time_after = 300
+  interval_time_before = 5 * 60,
+  interval_time_after = 5 * 60,
+  crs = 3035
 )
 ```
 
@@ -150,8 +157,9 @@ AISextract(
   return_all_vessel_locations = FALSE, # or TRUE
   search_into_radius_m = 50000,
   search_shape = "square",
-  interval_time_before = 300,
-  interval_time_after = 300
+  interval_time_before = 5 * 60,
+  interval_time_after = 5 * 60,
+  crs = 3035
 )
 ```
 

@@ -20,7 +20,8 @@ AISidentify_stations_aircraft(ais_data, crs_meters = 3035)
 
 - crs_meters:
 
-  CRS (metres) used to calculate distances. Defaults to EPSG:3035.
+  CRS (metres) used to calculate distances in the study area (defaults
+  to EPSG:3035, Europe).
 
 ## Value
 
@@ -44,8 +45,8 @@ data("ais")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-ais <- AIStravel(ais_data = ais)
+ais <- AIStravel(ais_data = ais, crs_meters = 3035)
 
 # Identify stations and aircrafts:
-out <- AISidentify_stations_aircraft(ais_data = ais)
+out <- AISidentify_stations_aircraft(ais_data = ais, crs_meters = 3035)
 ```

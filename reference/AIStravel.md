@@ -20,7 +20,8 @@ AIStravel(ais_data, crs_meters = 3035, nb_cores = 1, outfile = tempfile())
 
 - crs_meters:
 
-  CRS (in metres) used to calculate distances. Defaults to EPSG:3035.
+  CRS (metres) used to calculate distances in the study area (defaults
+  to EPSG:3035, Europe).
 
 - nb_cores:
 
@@ -52,5 +53,5 @@ data("ais")
 ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 
 # calculate the travelled distance, time, and speed:
-out <- AIStravel(ais_data = ais)
+out <- AIStravel(ais_data = ais, crs_meters = 3035)
 ```

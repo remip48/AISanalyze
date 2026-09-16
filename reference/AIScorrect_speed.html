@@ -75,8 +75,8 @@ the column is named <code>mmsi</code>.</p></dd>
 
 
 <dt id="arg-crs-meters">crs_meters<a class="anchor" aria-label="anchor" href="#arg-crs-meters"></a></dt>
-<dd><p>CRS (metres) used to calculate travelled distances.
-Defaults to EPSG:3035.</p></dd>
+<dd><p>CRS (metres) used to calculate distances
+in the study area (defaults to EPSG:3035, Europe).</p></dd>
 
 
 <dt id="arg-threshold-speed-to-correct">threshold_speed_to_correct<a class="anchor" aria-label="anchor" href="#arg-threshold-speed-to-correct"></a></dt>
@@ -134,7 +134,7 @@ observed travelling speeds.</p>
 <span class="r-in"><span><span class="va">ais</span><span class="op">$</span><span class="va">timestamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">ais</span><span class="op">$</span><span class="va">datetime</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate the travelled distance, time, and speed:</span></span></span>
-<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>, crs_meters <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Correct speed:</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">AIScorrect_speed</span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>,</span></span>
