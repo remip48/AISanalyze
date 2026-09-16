@@ -45,8 +45,7 @@
 #' ais$timestamp <- as.numeric(lubridate::ymd_hms(ais$datetime))
 #'
 #' # calculate the travelled distance, time, speed, and interpolate AIS data:
-#' ais <- ais |>
-#'   AIStravel(., crs_meters = 3035)
+#' ais <- AIStravel(ais, crs_meters = 3035)
 #'
 #' # Extract all vessel positions within the target time interval and radius:
 #' out <- AISextract(ais_data = ais,
