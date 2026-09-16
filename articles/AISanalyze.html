@@ -95,7 +95,9 @@ System (AIS) data, including:</p>
 <h2 id="estimate-travelled-distance-and-speed">Estimate travelled distance and speed<a class="anchor" aria-label="anchor" href="#estimate-travelled-distance-and-speed"></a>
 </h2>
 <p>A CRS with units in metres and suited for the study area must be used
-(e.g. EPSG:3035 for Europe, as used below):</p>
+(e.g. EPSG:3035 for Europe, as used below). Tip: use
+<code>suggest_crs</code> function (<code>crsuggest</code> package) to
+find a suitable CRS for your study area.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ais</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AIStravel.html">AIStravel</a></span><span class="op">(</span>ais_data <span class="op">=</span> <span class="va">ais</span>, crs <span class="op">=</span> <span class="fl">3035</span><span class="op">)</span></span></code></pre></div>
 <p>Three variables are added:</p>

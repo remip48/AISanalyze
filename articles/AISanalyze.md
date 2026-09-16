@@ -33,7 +33,9 @@ point_to_extract$timestamp <- as.numeric(lubridate::ymd_hm(point_to_extract$date
 ## Estimate travelled distance and speed
 
 A CRS with units in metres and suited for the study area must be used
-(e.g. EPSG:3035 for Europe, as used below):
+(e.g. EPSG:3035 for Europe, as used below). Tip: use `suggest_crs`
+function (`crsuggest` package) to find a suitable CRS for your study
+area.
 
 ``` r
 
