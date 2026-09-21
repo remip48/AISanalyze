@@ -26,19 +26,17 @@ transmission delays, identification of non-vessel signals (e.g. base
 stations and aircraft), trajectory interpolation, extraction of vessel
 positions around user-defined locations and times, and summarization of
 vessel characteristics. The package is organized around a small number
-of user-facing functions that preserve a consistent data structure
-throughout the workflow, facilitating integration into existing R
-analysis pipelines.
+of functions that preserve the initial data structure and facilitate the
+use of AIS data in environmental analyses.
 
 AISanalyze is intended for researchers and practitioners working with
 large AIS datasets, particularly in marine ecology, environmental impact
 assessment, underwater noise studies, and marine spatial planning. As
 the use of AIS data continues to expand across scientific and management
-applications \[@yang2019\], the package provides a reproducible and
-computationally efficient framework for preparing AIS data for
-downstream statistical and spatial analyses. AISanalyze is openly
-available on GitHub, archived on Zenodo, and distributed under the MIT
-license.
+applications \[@yang2019\], the package provides a single,
+computationally efficient workflow to prepare AIS data for downstream
+analyses and enhance reproducibility. AISanalyze is openly available on
+GitHub, archived on Zenodo, and distributed under the MIT license.
 
 # Statement of need
 
@@ -54,87 +52,61 @@ assessments, and marine spatial planning \[@Benhemmalegall2023;
 detailed information on vessel movements over broad spatial and temporal
 scales and are increasingly combined with environmental observations,
 species distributions, animal telemetry, and oceanographic data to
-investigate the effects of maritime traffic on marine ecosystems and to
-support evidence-based management decisions \[@yang2019\].
+investigate maritime traffic risks to marine ecosystems, and support
+evidence-based management decisions \[@yang2019\].
 
 Many of these applications require vessel trajectories to be matched
-with external datasets (e.g. animal trajectory), creating preprocessing
-requirements that extend beyond trajectory reconstruction alone.
-However, raw AIS data are not directly suitable for scientific analyses:
-transmission delays, positional inaccuracies, duplicated records,
-missing vessel information, and non-vessel signals require substantial
-preprocessing before vessel trajectories can be reliably analysed
-\[@kiersztyn2025; @robards2016\]. Modern AIS datasets frequently contain
-tens to hundreds of millions of observations \[@natale2015\], making
-routine preprocessing computationally demanding and often requiring
-researchers to develop workflows that are difficult to reproduce and
-maintain.
+with external datasets (e.g. animal trajectory). However, raw AIS data
+are not directly suitable for scientific analyses: transmission delays,
+positional inaccuracies, duplicated records, missing vessel information,
+and non-vessel signals require substantial preprocessing tasks before
+vessel trajectories can be reliably analysed \[@kiersztyn2025;
+@robards2016\]. Modern AIS datasets frequently contain tens to hundreds
+of millions of observations \[@natale2015\], making this computationally
+demanding. To date, these preprocessing tasks were commonly implemented
+through project-specific scripts that were repeatedly redeveloped across
+studies \[@Benhemmalegall2023; @nachtsheim2023; @paille2024\]. A
+standardized framework would therefore considerably reduce the invested
+time and effort, open the range of research applications using AIS data
+and contribute to reproducibility.
 
-To date, these preprocessing tasks were commonly implemented through
-project-specific scripts that were repeatedly redeveloped across
-independent studies \[@Benhemmalegall2023; @nachtsheim2023;
-@paille2024\]. Project-specific scripts reduce reproducibility, increase
-development time, and create unnecessary barriers for researchers
-wishing to integrate maritime traffic into ecological or environmental
-analyses. A standardized preprocessing framework therefore benefits both
-software reuse and the reproducibility of scientific studies relying on
-AIS data. AISanalyze was developed to simplify this preprocessing stage
-by providing an integrated workflow that transforms raw AIS data into
-analysis-ready datasets while preserving compatibility with further
-statistical and spatial analyses. By reducing the technical barriers
-associated with large AIS datasets, the package facilitates reproducible
-studies of maritime traffic for researchers, environmental
-practitioners, and policymakers working across disciplines where vessel
-movements constitute an important explanatory variable.
+AISanalyze was developed to this end: it provides a simple,
+computationally efficient workflow that transforms AIS data into
+analysis-ready datasets and preserves the initial data structure to
+facilitate subsequent analyses. The package reduces the technical
+barriers associated with analyses of large AIS datasets and facilitates
+reproducible studies for researchers, environmental practitioners, and
+policymakers working across disciplines where vessel movements
+constitute an important explanatory variable.
 
 # State of the field
 
 The increasing use of AIS data across scientific disciplines has
 stimulated the development of software tools dedicated to vessel
 trajectory processing, movement reconstruction, and maritime traffic
-analysis \[@robards2016\]. Until recently, AIS preprocessing was largely
-performed through project-specific scripts, limiting reproducibility and
-requiring researchers to repeatedly implement similar correction and
-interpolation procedures. Over the past few years, several open-source
+analysis \[@robards2016\]. Over the past few years, several open-source
 tools have been developed to facilitate AIS analyses by addressing
 specific aspects of vessel trajectory processing, including database
 management, anomaly detection, trajectory reconstruction, and movement
 modelling \[@magnussen2023; @nabenielsen2026; @park2026; @spadon2024;
-@takahashi2024\]. These tools provide valuable capabilities for their
-intended applications but often require users to combine multiple
-software packages or develop additional scripts to complete a typical
-scientific workflow \[@nabenielsen2026; @spadon2024\]. Furthermore, some
-reconstruction methods rely on historical vessel behaviour or predictive
-models to estimate vessel positions \[@magnussen2023; @park2026;
-@takahashi2024\]. While these approaches are appropriate for many
-applications, they introduce modelling assumptions that may not be
-desirable when the objective is to preserve the original vessel
-observations while preparing datasets for subsequent ecological or
-environmental analyses.
+@takahashi2024\].These tools provide valuable capabilities for their
+intended applications, yet multiple scripts or packages are often
+required to prepare AIS data for subsequent analyses, and some
+reconstruction methods rely on predictive models or historical vessel
+behaviour that can be time-consuming for the millions of daily AIS data
+points.
 
-AISanalyze was developed to address a complementary need. Rather than
-focusing on the development of a new trajectory reconstruction
-algorithm, the package provides a reproducible preprocessing workflow
-that prepares AIS datasets for further scientific analyses. It
-integrates the principal preprocessing operations commonly required by
-marine ecologists and environmental scientists within a single software
-package, including travel estimation, GPS correction, identification of
-non-vessel signals, trajectory interpolation, extraction of vessel
-positions around user-defined locations and times, and retrieval of
-vessel characteristics. This allows researchers and practitioners to
-integrate AIS data with their own environmental datasets within a
-single, computationally efficient framework. A key design choice of
-AISanalyze is the use of deterministic preprocessing algorithms that can
-be readily interpreted by users. For example, vessel trajectories are
-interpolated using linear interpolation between consecutive AIS
-positions, following approaches adopted in several existing AIS
-processing frameworks \[@nabenielsen2026; @park2026; @spadon2024\]. This
-choice minimizes methodological assumptions, preserves transparency, and
-remains computationally efficient for large AIS datasets. AISanalyze
-therefore complements existing AIS software by providing an integrated
-workflow that reduces the need for project-specific preprocessing
-scripts while facilitating reproducible ecological and environmental
-analyses.
+AISanalyze was developed to address a complementary need to existing
+softwares. The package provides a reproducible end-to-end workflow that
+readily prepares AIS datasets for scientific analyses and reduces the
+need for project-specific scripts. It integrates the principal
+preprocessing operations commonly required by marine ecologists and
+environmental scientists, including travel estimation, GPS correction,
+identification of non-vessel signals, trajectory interpolation,
+extraction of vessel positions around user-defined locations and times,
+and retrieval of vessel characteristics. This allows researchers and
+practitioners to integrate AIS data with their own environmental
+datasets within a simple, computationally efficient framework.
 
 # Software design
 
@@ -157,18 +129,20 @@ memory usage.
 A second design objective was to preserve compatibility with the broader
 R ecosystem and established spatial analysis workflows. All functions
 return standard data frames that retain the original data structure
-while appending AIS-derived variables, facilitating downstream
-statistical, spatial, and ecological analyses without requiring users to
-modify existing workflows.
+while appending AIS-derived variables, facilitating downstream analyses
+without requiring users to modify existing workflows.
 
 Transparency and reproducibility were also central design
 considerations. AISanalyze implements deterministic preprocessing
 algorithms whose behaviour can be directly interpreted and reproduced.
 For example, vessel trajectories are reconstructed using linear
-interpolation, avoiding additional modelling assumptions while
-preserving observed vessel movements. Similarly, GPS correction
-procedures rely on explicit movement constraints that remain fully
-reproducible across analyses.
+interpolation, following approaches adopted in several existing AIS
+processing frameworks \[@nabenielsen2026; @park2026; @spadon2024\]. This
+avoids additional modelling assumptions while preserving observed vessel
+movements, and remains computationally efficient for large AIS datasets.
+Similarly, GPS correction procedures rely on movement constraints
+(e.g. travelled speed or distance) that remain fully reproducible across
+analyses.
 
 # Research impact statement
 
@@ -179,8 +153,8 @@ ecological impacts of maritime traffic on marine ecosystems.
 
 The package has been used to investigate the short-term relationship
 between maritime traffic and harbour porpoise distribution throughout
-the North Sea between 2015 and 2022 by combining extensive AIS records
-with aerial survey data \[@pigeault2024\]. It has also been employed to
+the North Sea between 2015 and 2022 by combining large AIS datasets with
+aerial survey data \[@pigeault2024\]. It has also been employed to
 quantify the spatial overlap between harbour seals tracked by telemetry
 and maritime traffic in the English Channel, enabling the integration of
 vessel trajectories with habitat selection analyse \[@wynn2025\]. More
@@ -222,11 +196,11 @@ This work was supported by the projects CoastalFutures \[grant number
 03F0911H\], funded by the German Federal Ministry of Education and
 Research (BMBF), and HABITATWal \[grant number 3522520200\], funded by
 the German Federal Agency for Nature Conservation (BfN). We acknowledge
-contributions from Daniel Alexander Schwarzkopf, Volker Matthias, Tobias
-Schaffeld, and Dominik Nachtsheim. We would like to thank the German
-Federal Maritime and Hydrographic Agency (BSH) for providing the AIS
-data that enabled us to build, check and use this package. The
-responsibility for the content of this publication lies with the
-authors.
+contributions from Dr. Daniel Alexander Schwarzkopf, Dr. Volker
+Matthias, Dr. Tobias Schaffeld, and Dr. Dominik Nachtsheim. We would
+like to thank the German Federal Maritime and Hydrographic Agency (BSH)
+for providing the AIS data that enabled us to build, check and use this
+package. The responsibility for the content of this publication lies
+with the authors.
 
 # References
