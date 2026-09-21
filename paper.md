@@ -89,24 +89,24 @@ tools have been developed to facilitate AIS analyses by addressing
 specific aspects of vessel trajectory processing, including database
 management, anomaly detection, trajectory reconstruction, and movement
 modelling \[@magnussen2023; @nabenielsen2026; @park2026; @spadon2024;
-@takahashi2024\].These tools provide valuable capabilities for their
-intended applications, yet multiple scripts or packages are often
-required to prepare AIS data for subsequent analyses, and some
-reconstruction methods rely on predictive models or historical vessel
-behaviour that can be time-consuming for the millions of daily AIS data
-points.
+@takahashi2024\]. However, most tools are implemented in Python, and
+multiple scripts or packages can be required to prepare AIS data and
+join them to ecological datasets. Reconstruction methods can also rely
+on predictive models or historical vessel behaviour that can be
+time-consuming for the millions of daily AIS data points.
 
 AISanalyze was developed to address a complementary need to existing
-softwares. The package provides a reproducible end-to-end workflow that
-readily prepares AIS datasets for scientific analyses and reduces the
-need for project-specific scripts. It integrates the principal
-preprocessing operations commonly required by marine ecologists and
-environmental scientists, including travel estimation, GPS correction,
-identification of non-vessel signals, trajectory interpolation,
-extraction of vessel positions around user-defined locations and times,
-and retrieval of vessel characteristics. This allows researchers and
-practitioners to integrate AIS data with their own environmental
-datasets within a simple, computationally efficient framework.
+softwares. The package provides, in R, an end-to-end workflow to readily
+prepare and join AIS data to ecological datasets (e.g. animal
+trajectory) and reduce the processing time and effort prior to
+environmental analyses. It integrates the principal preprocessing
+operations commonly required by marine ecologists and environmental
+scientists, including travel estimation, GPS correction, identification
+of non-vessel signals, trajectory interpolation, extraction of vessel
+positions around user-defined locations and times, and retrieval of
+vessel characteristics. This allows researchers and practitioners to
+integrate AIS data with their own environmental datasets within a
+simple, computationally efficient framework.
 
 # Software design
 
