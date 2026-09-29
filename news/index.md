@@ -1,5 +1,18 @@
 # Changelog
 
+## AISanalyze 3.1.3 (2026-09-29)
+
+### Improvements
+
+- Corrected description for crs_meters parameter in the help page of
+  functions.
+
+### Bug fixes
+
+- Corrected a bug preventing data without surrounding AIS data to be
+  returned in AISextract() function (while it should be returned with NA
+  filling the AIS columns).
+
 ## AISanalyze 3.1.2 (2026-08-20)
 
 CRAN release: 2026-08-26
