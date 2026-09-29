@@ -151,17 +151,12 @@ AISextract <- function(ais_data,
         if (nrow(mmsi_ref) >= 1) {
 
           if (!return_all_vessel_locations) {
-            mmsi_ref_infos <- mmsi_ref %>%
-              dplyr::mutate(idd_ais = 1:dplyr::n())
-
-            mmsi_ref <- mmsi_ref_infos %>%
+            mmsi_ref <- mmsi_ref %>%
               as.data.frame() %>%
               dplyr::group_by(mmsi) %>%
-              dplyr::reframe(position_to_use = which.min(abs(ais_timestamp - dt)),
-                             idd_ais = idd_ais[position_to_use],
-                             ais_X = ais_X[position_to_use],
-                             ais_Y = ais_Y[position_to_use],
-                             ais_timestamp = ais_timestamp[position_to_use])
+              dplyr::slice_min(abs(ais_timestamp - dt)) %>%
+              dplyr::slice_max(ais_timestamp) %>%
+              dplyr::ungroup()
           }
 
           out <- eff_dt %>%
@@ -177,15 +172,8 @@ AISextract <- function(ais_data,
               dplyr::filter(distance_vessel_to_location_m <= search_into_radius_m)
           }
 
-          out <- out %>%
-            dplyr::left_join(eff_dt, by = "idd_effort")
-
-          if (!return_all_vessel_locations) {
-            out <- out %>%
-              dplyr::left_join(mmsi_ref_infos %>%
-                                 dplyr::select(-c(ais_X, ais_Y, mmsi, ais_timestamp)), by = "idd_ais") %>%
-              dplyr::select(-c(idd_ais, position_to_use))
-          }
+          out <- eff_dt %>%
+            dplyr::left_join(out, by = "idd_effort")
 
         } else {
           out <- eff_dt

@@ -1,3 +1,14 @@
+# AISanalyze 3.1.3 (2026-09-29)
+
+## Improvements
+
+* Corrected description for crs_meters parameter in the help page of functions.
+
+## Bug fixes
+
+* Corrected a bug preventing data without surrounding AIS data to be returned in AISextract() function (while it should be returned with NA filling the AIS columns).
+
+
 # AISanalyze 3.1.2 (2026-08-20)
 
 ## Improvements
@@ -7,6 +18,7 @@
 * Excluded cran-comments.md from the package build.
 * Reduced the runtime of the AISextract() and AISinterpolate() examples to below the 5-second threshold.
 * added installation instructions for CRAN on the README.md, and added CRAN badge
+
 
 # AISanalyze 3.1.1 (2026-08-10)
 
@@ -20,6 +32,7 @@
 * Added repo status badge.
 * Added cran-comment.md
 * cleaned examples
+
 
 # AISanalyze 3.1.0 (2026-08-03)
 
