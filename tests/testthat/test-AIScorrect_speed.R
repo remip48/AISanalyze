@@ -52,7 +52,7 @@ test_that("AIScorrect_speed", {
   data <- AIStravel(data)
 
   ## correct speeds
-  out <- AIScorrect_speed(data)
+  out <- AIScorrect_speed(data, nb_cores = 2)
 
   expect_equal(nrow(out),
                nrow(data_correct) - 4) # 4 errors point removed

@@ -10,7 +10,7 @@ test_that("AIStravel", {
                          mmsi = 1) %>%
     AIStravel()
 
-  out <- AIStravel(ais_data)
+  out <- AIStravel(ais_data, nb_cores = 2)
 
   ## check actual distance and speed travelled:
   dst_travelled <- sf::st_distance(ais_data[-1,] %>%

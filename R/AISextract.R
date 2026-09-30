@@ -104,7 +104,7 @@ AISextract <- function(ais_data,
     dplyr::filter(ais_Y >= (min(data$Y) - search_into_radius_m)) %>%
     dplyr::filter(ais_Y <= (max(data$Y) + search_into_radius_m)) %>%
     rename_columns_ais(.,
-                    data)  %>%
+                       data)  %>%
     dplyr::rename(ais_timestamp = timestamp)%>%
     as.data.frame()
 
@@ -198,9 +198,12 @@ AISextract <- function(ais_data,
                     distance_vessel_to_location_m = NA)
   }
 
+  extracted_ais <- extracted_ais %>%
+    dplyr::filter(!is.na(mmsi))
+
   if (any(!(data$idd_effort %in% extracted_ais$idd_effort))) {
     extracted_ais <- purrr::map_dfr(list(extracted_ais, data[!(data$idd_effort %in% extracted_ais$idd_effort), ]),
-                        function(l) {return(l)})
+                                    function(l) {return(l)})
   }
 
   return(extracted_ais %>%

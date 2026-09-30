@@ -14,7 +14,7 @@ test_that("AISinterpolate", {
   out <- AISinterpolate(ais_data,
                         type_interpolation = "maximum_gap_seconds",
                         maximum_gap_seconds = 30,
-                        nb_cores = 1)
+                        nb_cores = 2)
 
   ## check
   expect_true(all(out$timestamp %in% seq(dplyr::first(ais_data$timestamp),
@@ -40,7 +40,7 @@ test_that("AISinterpolate", {
                                                locations_of_interest = data.frame(lon = target_timestamp_location$lon,
                                                                                   lat = target_timestamp_location$lat),
                                                radius = 200000),
-                        nb_cores = 1)
+                        nb_cores = 2)
 
   ## check
   expect_equal(out$timestamp, (ais_data$timestamp[49] + ais_data$timestamp[50]) / 2)
