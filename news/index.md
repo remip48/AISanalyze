@@ -1,6 +1,16 @@
 # Changelog
 
+## AISanalyze 3.1.4 (2026-10-05)
+
+### Bug fixes
+
+- Corrected the bug induced by last release in AISextract(), creating
+  duplicated lines with NA when run in parallel and that when no vessel
+  is around.
+
 ## AISanalyze 3.1.3 (2026-09-29)
+
+CRAN release: 2026-09-30
 
 ### Improvements
 
